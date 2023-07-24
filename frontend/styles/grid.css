@@ -2,16 +2,19 @@
 .tic-tac-toe-grid {
   padding: 0;
   margin: 0;
-  width: 300px; /* Adjust the width as needed */
+  width: 500px; /* Adjust the width as needed to include the shadow */
 }
 
 .square {
   border: 1px solid #000;
-  padding: 30px; /* Adjust the padding to set the square size */
+  padding: 10px; /* Adjust the padding to set the square size */
   text-align: center;
-  font-size: 24px;
+  font-size: 12px;
   font-weight: bold;
-  background-color: #fff;
+  width: 20px; /* Set a fixed width for the squares */
+  height: 20px; /* Set a fixed height for the squares */
+  line-height: 1; /* Ensure the text is centered vertically */
+  background-color: rgba(255, 0, 0, 1); /* Default red color with 100% opacity */
 }
 
 .square:hover {

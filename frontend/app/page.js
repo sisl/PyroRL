@@ -32,6 +32,7 @@ const Home = () => {
       <h1>Wildfire Evacuation</h1>
       <p>Simulating wildfires with reinforcement learning!</p>
       <Grid />
+      <br />
       <Button onClick={handleClick} variant="danger">Update</Button>
       <p>Response from Flask backend: {message}</p>
     </Container>
