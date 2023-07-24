@@ -1,14 +1,18 @@
 # app.py
-from flask import Flask, jsonify
-from flask_cors import CORS  # Import CORS from flask_cors
+
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for your Flask app
+CORS(app)
 
-# Sample API endpoint to test the communication
-@app.route('/api/hello', methods=['GET'])
-def hello():
-    return jsonify({"message": "Hello from Flask!"})
+@app.route('/api/post-data', methods=['POST'])
+def post_data():
+    data = request.json  # Access the data sent in the request body as a JSON object
+    # Process the 2D array data here (you can perform any necessary operations)
+    # For this example, let's just return the received data
+    
+    return jsonify({"message": "Data received successfully!", "data": data})
 
 if __name__ == '__main__':
     app.run(debug=True)
