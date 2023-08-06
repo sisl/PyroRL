@@ -59,50 +59,58 @@ class FireEnvironment:
     '''
     def deplete_fuel(self, state):
         # Helper function for each cell
-        def edit_cell(cell: LandCell):
-            if (cell.fire):
-                cell.fuel = max(0, cell.fuel - 1)
-                if (not cell.fuel):
-                    cell.fire = False
-            return cell
+        def edit_cell(c: LandCell):
+            if (c.fire):
+                c.fuel = max(0, c.fuel - 1)
+                if (not c.fuel):
+                    c.fire = False
+            return c
         
         # Vectorize operation
         return np.vectorize(edit_cell)(state)
 
     '''
     Updating the action space based on current state of the wildfire
+    [TO-DO]: Line in this function about returning the numpy representation, 
+    unsure what needs to happen
     '''
     def update_action_space(self, state, action_space):
-        with np.nditer(action_space, flags=["refs_OK"], op_flags=['readwrite']) as it:
-            for a in it:
-                if (a.evacuating and a.remaining_time):
-                    if (not a.current_path.active):
-                        a.remaining_time = math.inf
-                        a.evacuating = False
-                        a.current_path = None
-                        # [TO-DO]: Line here about returning the numpy representation, unsure what needs to happen
-                    else:
-                        a.remaining_time -= 1
-                        if (not a.remaining_time):
-                            state[a.i][a.j].populated = False
+        # Helper function to individually update action
+        def update_action(a: PopulatedArea):
+            if (a.evacuating and a.remaining_time):
+                if (not a.current_path.active):
+                    a.remaining_time = math.inf
+                    a.evacuating = False
+                    a.current_path = None
+                else:
+                    a.remaining_time -= 1
+                    if (not a.remaining_time):
+                        state[a.i][a.j].populated = False
+            return a
+        
+        # Vectorize and return state and action space
+        action_space = np.vectorize(update_action)(action_space)
         return state, action_space
 
     '''
     Calculate the utility of all of the states
     '''
     def get_state_utility(self, state, action_space):
+        # Helper function to calculate entire reward
         reward = 0
-        with np.nditer(action_space, flags=["refs_ok"], op_flags=['readwrite']) as it:
-            for a in it:
-                # If populated area is on fire and not evacuated, incur -100 reward
-                if (a.remaining_time and state[a.i][a.j].fire):
-                    reward -= 100
-                    a.remaining_time = 0
-                    state[a.i][a.j].populated = False
-                
-                # Else, if current populated area is not evacuating, add 1 reward
-                elif ((not a.evacuating) and a.remaining_time):
-                    reward += 1
+        def calculate_reward(a: PopulatedArea):
+            # If populated area is on fire and not evacuated, incur -100 reward
+            if (a.remaining_time and state[a.i][a.j].fire):
+                reward -= 100
+                a.remaining_time = 0
+                state[a.i][a.j].populated = False
+            
+            # Else, if current populated area is not evacuating, add 1 reward
+            elif ((not a.evacuating) and a.remaining_time):
+                reward += 1
+
+        # Vectorize operation and return the reward
+        np.vectorize(calculate_reward)(action_space)
         return reward
 
 # [TO-DO]: placeholder to initialize the environment
