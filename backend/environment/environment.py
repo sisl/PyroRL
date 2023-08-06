@@ -4,7 +4,7 @@ Environment for Wildfire Spread
 import math
 import numpy as np
 
-class land_cell:
+class LandCell:
     '''
     Data structure to represent a cell of land
     '''
@@ -12,11 +12,12 @@ class land_cell:
     fuel: float
     populated: bool
 
-    def __init__(self):
+    def __init__(self, fuel):
+        self.fuel = fuel
         self.fire = False
         self.populated = False
 
-class evacuation_path:
+class EvacuationPath:
     '''
     Data structure to account for a set of land cells for evacuation
     '''
@@ -27,7 +28,7 @@ class evacuation_path:
     def __init__(self):
         self.active = True
 
-class populated_area:
+class PopulatedArea:
     '''
     Contains details about the set of populated areas
     '''
@@ -36,7 +37,7 @@ class populated_area:
     evacuating: bool
     remaining_time: int
     available_paths: np.array([])
-    current_path: evacuation_path
+    current_path: EvacuationPath
 
     def __init__(self):
         self.evacuating = False
@@ -44,7 +45,8 @@ class populated_area:
 
 # [TO-DO]: currently making this return stuff, so can be useful in front-end work?
 # [TO-DO]: abstract 'np.nditer' calls to one-liner helper function?
-class fire_environment:
+# [TO-DO]: put a type with each of the parameters
+class FireEnvironment:
     '''
     Class to orchestrate the entire environment
     '''
@@ -56,19 +58,22 @@ class fire_environment:
     Deplete the fuel and check across all states
     '''
     def deplete_fuel(self, state):
-        with np.nditer(state, op_flags=['readwrite']) as it:
-            for s in it:
-                if (s.fire):
-                    s.fuel = max(0, s.fuel - 1)
-                    if (not s.fuel):
-                        s.fire = False
-        return state
+        # Helper function for each cell
+        def edit_cell(cell: LandCell):
+            if (cell.fire):
+                cell.fuel = max(0, cell.fuel - 1)
+                if (not cell.fuel):
+                    cell.fire = False
+            return cell
+        
+        # Vectorize operation
+        return np.vectorize(edit_cell)(state)
 
     '''
     Updating the action space based on current state of the wildfire
     '''
     def update_action_space(self, state, action_space):
-        with np.nditer(action_space, op_flags=['readwrite']) as it:
+        with np.nditer(action_space, flags=["refs_OK"], op_flags=['readwrite']) as it:
             for a in it:
                 if (a.evacuating and a.remaining_time):
                     if (not a.current_path.active):
@@ -82,14 +87,24 @@ class fire_environment:
                             state[a.i][a.j].populated = False
         return state, action_space
 
+    '''
+    Calculate the utility of all of the states
+    '''
+    def get_state_utility(self, state, action_space):
+        reward = 0
+        with np.nditer(action_space, flags=["refs_ok"], op_flags=['readwrite']) as it:
+            for a in it:
+                # If populated area is on fire and not evacuated, incur -100 reward
+                if (a.remaining_time and state[a.i][a.j].fire):
+                    reward -= 100
+                    a.remaining_time = 0
+                    state[a.i][a.j].populated = False
+                
+                # Else, if current populated area is not evacuating, add 1 reward
+                elif ((not a.evacuating) and a.remaining_time):
+                    reward += 1
+        return reward
+
+# [TO-DO]: placeholder to initialize the environment
 if __name__ == "__main__":
-    # Initialize environment
-    test = fire_environment()
-
-    # Initialize a land cell
-    #another_test = land_cell()
-    #print(another_test.fuel)
-
-    # Initialize states and deplete fuel
-    #states = np.array([[1, 2, 3], [4, 5, 6]])
-    #test.deplete_fuel(states)
+    test = FireEnvironment()

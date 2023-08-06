@@ -17,3 +17,10 @@ Next.js:
 cd frontend
 npm run dev
 ```
+
+## Tests
+
+We use `pytest` for our backend tests. To run our tests, run:
+```
+python3 -m pytest
+```
