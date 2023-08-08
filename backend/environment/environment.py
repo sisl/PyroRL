@@ -12,10 +12,10 @@ class LandCell:
     fuel: float
     populated: bool
 
-    def __init__(self, fuel):
+    def __init__(self, fire, fuel, populated):
+        self.fire = fire
         self.fuel = fuel
-        self.fire = False
-        self.populated = False
+        self.populated = populated
 
 class EvacuationPath:
     '''
@@ -25,8 +25,10 @@ class EvacuationPath:
     evacuation_time: int
     active: bool
 
-    def __init__(self):
-        self.active = True
+    def __init__(self, path_locations, evacuation_time, active):
+        self.path_locations = path_locations
+        self.evacuation_time = evacuation_time
+        self.active = active 
 
 class PopulatedArea:
     '''
@@ -39,9 +41,13 @@ class PopulatedArea:
     available_paths: np.array([])
     current_path: EvacuationPath
 
-    def __init__(self):
-        self.evacuating = False
-        self.current_path = None
+    def __init__(self, i, j, evacuating, remaining_time, available_paths, current_path):
+        self.i = i
+        self.j = j
+        self.evacuating = evacuating
+        self.remaining_time = remaining_time
+        self.available_paths = available_paths
+        self.current_path = current_path
 
 # [TO-DO]: currently making this return stuff, so can be useful in front-end work?
 # [TO-DO]: abstract 'np.nditer' calls to one-liner helper function?
