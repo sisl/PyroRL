@@ -103,9 +103,9 @@ class FireEnvironment:
     '''
     def get_state_utility(self, state, action_space):
         # Helper function to calculate entire reward
-        reward = 0
         def calculate_reward(a: PopulatedArea):
             # If populated area is on fire and not evacuated, incur -100 reward
+            reward = 0
             if (a.remaining_time and state[a.i][a.j].fire):
                 reward -= 100
                 a.remaining_time = 0
@@ -114,10 +114,10 @@ class FireEnvironment:
             # Else, if current populated area is not evacuating, add 1 reward
             elif ((not a.evacuating) and a.remaining_time):
                 reward += 1
+            return reward
 
         # Vectorize operation and return the reward
-        np.vectorize(calculate_reward)(action_space)
-        return reward
+        return np.sum(np.vectorize(calculate_reward)(action_space))
 
 # [TO-DO]: placeholder to initialize the environment
 if __name__ == "__main__":

@@ -82,3 +82,12 @@ def test_deplete_fuel():
             assert old_state[i, j].fuel - 2 <= new_state[i, j].fuel
         else:
             assert old_state[i, j].fuel == new_state[i, j].fuel
+
+'''
+Corresponding to get_state_utility()
+'''
+def test_get_state_utility():
+    # Create dummy variables and run state utility function
+    fire_env, state, _, _, action_space = dummy_environment()
+    reward = fire_env.get_state_utility(state, action_space)
+    assert reward == 2
