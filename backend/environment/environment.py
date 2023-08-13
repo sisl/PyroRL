@@ -1,8 +1,10 @@
 '''
 Environment for Wildfire Spread
 '''
+import copy
 import math
 import numpy as np
+from scipy.stats import bernoulli
 
 class LandCell:
     '''
@@ -61,6 +63,12 @@ class FireEnvironment:
         print("Initialized the environment")
 
     '''
+    Helper function to calculate distance
+    '''
+    def calculate_distance(self, x_one, y_one, x_two, y_two):
+        return math.sqrt(((x_one - x_two) ** 2) + ((y_one - y_two) ** 2) ** 2)
+
+    '''
     Deplete the fuel and check across all states
     '''
     def deplete_fuel(self, state):
@@ -75,6 +83,39 @@ class FireEnvironment:
         # Vectorize operation
         return np.vectorize(edit_cell)(state)
 
+    '''
+    At each point in the grid world, determine if there will be a fire by looking 
+    at the amount of fuel and the surrounding states.
+    '''
+    def sample_next_state(self, state, distance_constant, pathed_areas, evacuation_paths):
+        # Set constants
+        new_state = copy.deepcopy(state)
+        observation_distance = 2
+
+        # Not vectorized -- figure out how to do it
+        for i in range(state.shape[0]):
+            for j in range(state.shape[1]):
+                cell = state[i][j]
+
+                # Use SISL paper to calculate probability of there being a fire
+                probability = 1
+                for n_i in range(max(0, i - observation_distance), min(state.shape[0], i + observation_distance)):
+                    for n_j in range(max(0, j - observation_distance), min(state.shape[1], j + observation_distance)):
+                        if (i != n_i and j != n_j and state[n_i][n_j].fire):
+                            probability *= 1 - (distance_constant * ((1 / self.calculate_distance(i, j, n_i, n_j)) ** 2))
+
+                # Calculate final probability using a Bernoulli distribution
+                probability = 1 - probability
+                new_state[i][j].fire = bernoulli.rvs(probability, size=1)
+
+                # See if a newly fire area is part of a path
+                if (new_state[i][j].fire and i in pathed_areas and j in pathed_areas[i]):
+                    index = pathed_areas[i][j]
+                    evacuation_paths[index].active = False
+        
+        return new_state
+
+        
     '''
     Updating the action space based on current state of the wildfire
     [TO-DO]: Line in this function about returning the numpy representation, 
@@ -127,7 +168,11 @@ class FireEnvironment:
     def take_action(self, action, action_space):
         # Only take action if we're doing something
         i, j = action[0], action[1]
-        if (i != 1 and action_space[i].remaining_time and not action_space[i].evacuating and action_space[i].available_paths[j].active):
+        if (i != 1 and action_space[i].remaining_time 
+            and not action_space[i].evacuating 
+            and action_space[i].available_paths[j].active):
+
+            # Update action space path and evacuation
             action_space[i].current_path = action_space[i].available_paths[j]
             action_space[i].evacuating = True
             action_space[i].remaining_time = action_space[i].current_path.evacuation_time
