@@ -3,9 +3,32 @@ Environment for Wildfire Spread
 '''
 import copy
 import math
+from os import stat
 import numpy as np
 from scipy.stats import bernoulli
 
+class FireWorld:
+
+    # order of state space is fire?, fuel, populated?, evacuating?, path?
+    def __init__(self): # later we will have rows and cols that the user can enter when creating the world
+        self.state_space = np.zeros([5, 10, 10]) # rows and cols would go where the 10, 10 values are
+        populated_areas = np.array([[1,2],[4,8], [6,4], [8, 7]])
+        self.state_space[2].ravel()[np.ravel_multi_index(populated_areas.T, self.state_space[2].shape)] = 1 # set the populated areas
+        one_path_cells = np.array([[1,0],[1,1], [2,2], [3,2],[4,2],[4,1],[4,0],[2,9],[2,8],[3,8],[5,8],[6,9],[6,7],[7,7],[8,6],[9,5],[7,5],[7,4]])
+        two_path_cells = np.array([[8,5],[6,8]])
+
+        # setting the paths
+        self.state_space[4].ravel()[np.ravel_multi_index(one_path_cells.T, self.state_space[4].shape)] = 1 
+        self.state_space[4].ravel()[np.ravel_multi_index(two_path_cells.T, self.state_space[4].shape)] = 2
+
+
+if __name__ == "__main__":
+    test = FireWorld()
+    print(test.state_space)
+
+
+# This is the old code that is being used as a base to start building off of
+"""
 class LandCell:
     '''
     Data structure to represent a cell of land
@@ -182,3 +205,4 @@ class FireEnvironment:
 # [TO-DO]: placeholder to initialize the environment
 if __name__ == "__main__":
     test = FireEnvironment()
+"""
