@@ -56,14 +56,3 @@ class FireWorld:
         on_fire_indices = np.transpose(np.nonzero(path_cells_on_fire))
         for path in on_fire_indices:
             location = np.where(self.paths_list==path)
-
-if __name__ == "__main__":
-    test = FireWorld()
-    # Constructor
-    print(test.state_space)
-    print("------")
-
-    # Potential other constructor? To make code more generalizable
-    populated_areas = np.array([[1,2],[4,8], [6,4], [8, 7]])
-    paths = np.array([[[1,0],[1,1]], [[2,2],[3,2],[4,2],[4,1],[4,0]], [[2,9],[2,8],[3,8]], [[5,8],[6,8],[6,9]], [[7,7], [6,7], [6,8], [6,9]], [[8,6], [8,5], [9,5]], [[8,5], [9,5], [7,5],[7,4]]], dtype=object)
-    test.sample_constructor(10, 10, populated_areas, paths)
