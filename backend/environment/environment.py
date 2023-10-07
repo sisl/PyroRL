@@ -9,6 +9,10 @@ from scipy.stats import bernoulli
 from collections import defaultdict
 
 class FireWorld:
+    """
+    We represent the world as a 5 by n by m tensor. n by m is the size of the grid world,
+    while the 5 represents each of the following: [fire, fuel, populated, evacuating, paths]
+    """
     paths_list: list
 
     def sample_constructor(self, n, m, populated_areas, paths):
@@ -46,7 +50,7 @@ class FireWorld:
         self.state_space[4].ravel()[np.ravel_multi_index(two_path_cells.T, self.state_space[4].shape)] = 2
 
         # hard code all the different paths
-        self.paths_list = np.array([[[1,0],[1,1]], [[2,2],[3,2],[4,2],[4,1],[4,0]], [[2,9],[2,8],[3,8]], [[5,8],[6,8],[6,9]], [[7,7], [6,7], [6,8], [6,9]], [[8,6], [8,5], [9,5]], [[8,5], [9,5], [7,5],[7,4]]])
+        self.paths_list = np.array([[[1,0],[1,1]], [[2,2],[3,2],[4,2],[4,1],[4,0]], [[2,9],[2,8],[3,8]], [[5,8],[6,8],[6,9]], [[7,7], [6,7], [6,8], [6,9]], [[8,6], [8,5], [9,5]], [[8,5], [9,5], [7,5],[7,4]]], dtype=object)
 
         # Note: We'll also need to be able to denote which path is associated with each pop center (probably a list of lists, but do this later)
     
@@ -56,3 +60,19 @@ class FireWorld:
         on_fire_indices = np.transpose(np.nonzero(path_cells_on_fire))
         for path in on_fire_indices:
             location = np.where(self.paths_list==path)
+
+    def get_state_utility(self):
+        """
+        Get the total amount of utility given a current state.
+        """
+        # Get which populated areas are on fire and evacuating
+        reward = 0
+        populated = np.where(self.state_space[2] == 1)
+        fire = self.state_space[0][populated]
+        evacuating = self.state_space[3][populated]
+
+        # Update reward
+        reward -= 100 * fire.sum()
+        reward += len((np.where(fire + evacuating == 0))[0])
+        return reward
+        

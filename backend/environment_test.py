@@ -19,3 +19,4 @@ def dummy_environment():
 
 def test_world():
     test_world = dummy_environment()
+    test_world.get_state_utility()

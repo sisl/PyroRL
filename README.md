@@ -1,26 +1,10 @@
-# Wildfire Evacuation Environment
+# Wildfire Evacuation RL Gym Environment
 
-Remaking our wildfire evacuation environment to be a full-stack web application.
-
-## To Run
-
-Flask:
-
-```
-cd backend
-python3 app.py
-```
-
-Next.js:
-
-```
-cd frontend
-npm run dev
-```
+An RL gym environment for wildfire evacuation.
 
 ## Tests
 
-We use `pytest` for our backend tests. To run our tests, run:
+We use `pytest` for our backend tests. To run our tests, run the following command from the outermost folder:
 ```
-python3 -m pytest
+python3 -m pytest -s
 ```
