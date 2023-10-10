@@ -1,17 +1,19 @@
-'''
+"""
 Environment for Wildfire Spread
-'''
+"""
+from collections import namedtuple
 import copy
 from importlib.resources import path
+import itertools
+import numpy as np
+from os import stat
 from pickle import POP
 import random
-from os import stat
-import numpy as np
 from scipy.stats import bernoulli
-import itertools
 
-from collections import namedtuple
-
+"""
+Indices corresponding to each layer of state
+"""
 FIRE_INDEX = 0
 FUEL_INDEX = 1
 POPULATED_INDEX = 2
@@ -97,7 +99,7 @@ class FireWorld:
                 fuel_levels = fuels[on_fire]
 
                 # Calculate distances and remove the original pair
-                (n_rows, n_cols) = np.where(np.isin(self.state_space[FUEL_INDEX], fuel_levels)) # np.where(self.state_space[FUEL_INDEX] == fuel_levels)
+                (n_rows, n_cols) = np.where(np.isin(self.state_space[FUEL_INDEX], fuel_levels))
                 distances = np.sqrt(((n_rows - pair[0]) ** 2) + ((n_cols - pair[1]) ** 2) ** 2)
                 final_distances = distances[np.nonzero(distances)[0]]
                 
