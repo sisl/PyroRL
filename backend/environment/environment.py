@@ -3,13 +3,12 @@ Environment for Wildfire Spread
 '''
 import copy
 from importlib.resources import path
-import math
 from pickle import POP
 import random
 from os import stat
 import numpy as np
 from scipy.stats import bernoulli
-from collections import defaultdict
+import itertools
 
 from collections import namedtuple
 
@@ -61,6 +60,7 @@ class FireWorld:
             # not been destroyed by a fire)
             self.paths.append([np.zeros((num_rows, num_cols)), True])
             self.paths[-1][0][path_rows, path_cols] += 1
+        
         """
         self.paths = np.zeros((paths.size, num_rows, num_cols))
         index = 0 
@@ -76,8 +76,49 @@ class FireWorld:
 
         # Note: We'll also need to be able to denote which path is associated with each pop center (probably a list of lists, but do this later)
     
+    def sample_next_state(self):
+        # First, get all of the indices
+        new_state = copy.deepcopy(self.state_space)
+        (rows, cols) = new_state[FIRE_INDEX].shape
+        indices = list(itertools.product(range(rows), range(cols)))
+
+        # Find all neighbors within observation distance
+        observation_distance = 2
+        distance_constant = 0.094
+        for pair in indices:
+            row_range = list(range(max(0, pair[0] - observation_distance), min(rows, pair[0] + observation_distance) + 1))
+            col_range = list(range(max(0, pair[1] - observation_distance), min(cols, pair[1] + observation_distance) + 1))
+            neighbors = self.state_space[FIRE_INDEX][row_range[0]:row_range[-1] + 1, col_range[0]:col_range[-1] + 1]
+
+            # Get fuel levels for all on fire indices
+            on_fire = np.where(neighbors > 0)
+            if (on_fire[0].size):
+                fuels = self.state_space[FUEL_INDEX][row_range[0]:row_range[-1] + 1, col_range[0]:col_range[-1] + 1]
+                fuel_levels = fuels[on_fire]
+
+                # Calculate distances and remove the original pair
+                (n_rows, n_cols) = np.where(np.isin(self.state_space[FUEL_INDEX], fuel_levels)) # np.where(self.state_space[FUEL_INDEX] == fuel_levels)
+                distances = np.sqrt(((n_rows - pair[0]) ** 2) + ((n_cols - pair[1]) ** 2) ** 2)
+                final_distances = distances[np.nonzero(distances)[0]]
+                
+                # Update cell to be on fire or not
+                if (final_distances.size):
+                    probabilities = 1 - (distance_constant * ((1 / final_distances) ** 2))
+                    probability = 1 - np.product(probabilities)
+                    new_state[FIRE_INDEX][pair[0]][pair[1]] = bernoulli.rvs(probability, size=1)
+
+                    # Remove a path as being usable
+                    for i in range(len(self.paths)):
+                        if (self.paths[i][0][pair[0]][pair[1]]):
+                            self.paths[i][1] = False
+        
+        # Update state
+        self.state_space = new_state
 
     def remove_paths(self):
+        """
+        Remove paths that been burned down by a fire.
+        """
         for i in range(len(self.paths)):
             if self.paths[i][1] and np.sum(np.logical_and(self.state_space[FIRE_INDEX], self.paths[i][0])) > 0:
                 # decrement the count for the paths in the state space
