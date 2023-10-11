@@ -10,6 +10,9 @@ from os import stat
 from pickle import POP
 import random
 from scipy.stats import bernoulli
+import torch
+
+from environment.environment_constant import fire_mask
 
 """
 Indices corresponding to each layer of state
@@ -78,6 +81,35 @@ class FireWorld:
 
         # Note: We'll also need to be able to denote which path is associated with each pop center (probably a list of lists, but do this later)
     
+    def sample_fire_propogation(self):
+        # Drops fuel level of enflamed cells
+        self.state_space[FUEL_INDEX,self.state_space[0,:] == 1] -= 1
+        self.state_space[FUEL_INDEX,self.state_space[1,:] < 0] = 0
+
+        #Extinguishes cells that have run out of fuel
+        self.state_space[FIRE_INDEX,self.state_space[FUEL_INDEX,:] <= 0] -= 1
+
+        # Runs kernel of neighborhing cells where each row corresponds to the neighborhood of a cell
+        torch_rep = torch.tensor(self.state_space[FIRE_INDEX]).unsqueeze(0)
+        y = torch.nn.Unfold((5,5), dilation = 1, padding = 2)
+        z = y(torch_rep)
+
+        # the relative importance of each neighboring cell is weighted
+        z = z * fire_mask
+
+        # Unenflamed cells are set to 1 to eliminate their role to the fire spread equation
+        z[z == 0] = 1
+        z = z.prod(dim = 0)
+        z = 1 - z.reshape(self.state_space[FIRE_INDEX].shape)
+
+        # from the probability of an ignition in z, new fire locations are randomly generated
+        prob_mask = torch.rand_like(z)
+        new_fire = (z < prob_mask).float()
+
+
+        # These new fire locations are added to the state
+        self.state_space[FIRE_INDEX] = torch.max(new_fire, self.state_space[FIRE_INDEX])
+
     def sample_next_state(self):
         # First, get all of the indices
         new_state = copy.deepcopy(self.state_space)
