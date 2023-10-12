@@ -18,8 +18,10 @@ def dummy_environment():
 
 def test_setup():
     """
-    Test to set up the grid world.
+    Test to set up the grid world, try running simple test.
     """
     test_world = dummy_environment()
-    test_world.get_state_utility()
-    test_world.sample_next_state()    
+    for i in range(200):
+        test_world.advance_to_next_timestep()
+        reward = test_world.get_state_utility()
+        print(reward)

@@ -30,7 +30,7 @@ class FireWorld:
     """
 
     # order of state space is fire?, fuel, populated_areas?, evacuating?, paths
-    def __init__(self, num_rows, num_cols, populated_areas_areas, paths, custom_fire_placement = False, num_fire_cells = 2, custom_fire_locations = None):
+    def __init__(self, num_rows, num_cols, populated_areas, paths, custom_fire_placement = False, num_fire_cells = 2, custom_fire_locations = None):
         # Define the state space
         self.reward = 0
         self.state_space = np.zeros([5, num_rows, num_cols])
@@ -50,8 +50,8 @@ class FireWorld:
         self.state_space[FUEL_INDEX] = np.random.normal(8.5,3,num_values).reshape((num_rows,num_cols))
 
         # initialize the populated_areas areas 
-        pop_rows = populated_areas_areas[:,0]
-        pop_cols = populated_areas_areas[:,1]
+        pop_rows = populated_areas[:,0]
+        pop_cols = populated_areas[:,1]
         self.state_space[POPULATED_INDEX, pop_rows, pop_cols] = 1
 
         # initialize the paths
@@ -185,28 +185,17 @@ class FireWorld:
         evacuating = self.state_space[EVACUATING_INDEX][populated_areas]
 
         # Mark enflamed areas as no longer populated or evacuating
-        enflamed_populated_areas = np.where(self.state_space[FIRE_INDEX][populated_areas] == 1)
+        enflamed_populated_areas = np.where(self.state_space[FIRE_INDEX][populated_areas] == 1)[0]
+        enflamed_rows = populated_areas[0][enflamed_populated_areas]
+        enflamed_cols = populated_areas[1][enflamed_populated_areas]        
 
-        print(self.state_space[FIRE_INDEX])
-        print(self.state_space[POPULATED_INDEX])
-
-        print(populated_areas)
-        print(enflamed_populated_areas)
-
-        # Make this work properly
-        self.state_space[POPULATED_INDEX][populated_areas[enflamed_populated_areas]] = 0
-        self.state_space[EVACUATING_INDEX][populated_areas[enflamed_populated_areas]] = 0
-
-        print(self.state_space[FIRE_INDEX])
-        print(self.state_space[POPULATED_INDEX])
+        # Depopulate enflamed areas and remove evacuations
+        self.state_space[POPULATED_INDEX, enflamed_rows, enflamed_cols]= 0
+        self.state_space[EVACUATING_INDEX, enflamed_rows, enflamed_cols] = 0
 
         # Update reward
-        # self.reward -= 100 * fire.sum()
-        self.reward -= 100 * len(enflamed_populated_areas[0])
+        self.reward -= 100 * len(enflamed_populated_areas)
         self.reward += len((np.where(fire + evacuating == 0))[0])
-        print('yay')
-        quit()
-
 
     def get_state_utility(self):
         """
