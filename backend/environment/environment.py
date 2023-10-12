@@ -32,6 +32,7 @@ class FireWorld:
     # order of state space is fire?, fuel, populated_areas?, evacuating?, paths
     def __init__(self, num_rows, num_cols, populated_areas_areas, paths, custom_fire_placement = False, num_fire_cells = 2, custom_fire_locations = None):
         # Define the state space
+        self.reward = 0
         self.state_space = np.zeros([5, num_rows, num_cols])
 
         # initialize the fire cells
@@ -83,11 +84,13 @@ class FireWorld:
     
     def sample_fire_propogation(self):
         # Drops fuel level of enflamed cells
-        self.state_space[FUEL_INDEX,self.state_space[0,:] == 1] -= 1
-        self.state_space[FUEL_INDEX,self.state_space[1,:] < 0] = 0
+        self.state_space[FUEL_INDEX,self.state_space[FIRE_INDEX] == 1] -= 1
+        self.state_space[FUEL_INDEX,self.state_space[FUEL_INDEX] < 0] = 0
+        # self.state_space[FUEL_INDEX] = np.max(self.state_space[FUEL_INDEX], np.zeros(self.state_space[FUEL_INDEX].shape))
+
 
         #Extinguishes cells that have run out of fuel
-        self.state_space[FIRE_INDEX,self.state_space[FUEL_INDEX,:] <= 0] -= 1
+        self.state_space[FIRE_INDEX,self.state_space[FUEL_INDEX,:] <= 0] = 0
 
         # Runs kernel of neighborhing cells where each row corresponds to the neighborhood of a cell
         torch_rep = torch.tensor(self.state_space[FIRE_INDEX]).unsqueeze(0)
@@ -104,11 +107,11 @@ class FireWorld:
 
         # from the probability of an ignition in z, new fire locations are randomly generated
         prob_mask = torch.rand_like(z)
-        new_fire = (z < prob_mask).float()
+        new_fire = (z > prob_mask).float()
 
 
         # These new fire locations are added to the state
-        self.state_space[FIRE_INDEX] = torch.max(new_fire, self.state_space[FIRE_INDEX])
+        self.state_space[FIRE_INDEX] = np.maximum(np.array(new_fire), self.state_space[FIRE_INDEX])
 
     def sample_next_state(self):
         # First, get all of the indices
@@ -160,17 +163,55 @@ class FireWorld:
                 # remove the path
                 self.paths[i][1] = False
 
-    def get_state_utility(self):
-        """
-        Get the total amount of utility given a current state.
-        """
+    def advance_to_next_timestep(self):
+
+        # Advance fire forward one timestep
+        self.sample_fire_propogation()
+
+        # Update paths
+        self.remove_paths()
+
+        # Accumulate reward and document enflamed areas
+        self.accumulate_reward()
+
+
+
+    # Finish accumulate_reward such that populated_index and evacuating_index are set to zero in as efficient a manner as possible
+    # Here's my partial work
+    def accumulate_reward(self):
         # Get which populated_areas areas are on fire and evacuating
-        reward = 0
         populated_areas = np.where(self.state_space[POPULATED_INDEX] == 1)
         fire = self.state_space[FIRE_INDEX][populated_areas]
         evacuating = self.state_space[EVACUATING_INDEX][populated_areas]
 
+        # Mark enflamed areas as no longer populated or evacuating
+        enflamed_populated_areas = np.where(self.state_space[FIRE_INDEX][populated_areas] == 1)
+
+        print(self.state_space[FIRE_INDEX])
+        print(self.state_space[POPULATED_INDEX])
+
+        print(populated_areas)
+        print(enflamed_populated_areas)
+
+        # Make this work properly
+        self.state_space[POPULATED_INDEX][populated_areas[enflamed_populated_areas]] = 0
+        self.state_space[EVACUATING_INDEX][populated_areas[enflamed_populated_areas]] = 0
+
+        print(self.state_space[FIRE_INDEX])
+        print(self.state_space[POPULATED_INDEX])
+
         # Update reward
-        reward -= 100 * fire.sum()
-        reward += len((np.where(fire + evacuating == 0))[0])
-        return reward
+        # self.reward -= 100 * fire.sum()
+        self.reward -= 100 * len(enflamed_populated_areas[0])
+        self.reward += len((np.where(fire + evacuating == 0))[0])
+        print('yay')
+        quit()
+
+
+    def get_state_utility(self):
+        """
+        Get the total amount of utility given a current state.
+        """
+        present_reward = self.reward
+        self.reward = 0
+        return present_reward
