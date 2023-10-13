@@ -30,10 +30,29 @@ class FireWorld:
     """
 
     # order of state space is fire?, fuel, populated_areas?, evacuating?, paths
-    def __init__(self, num_rows, num_cols, populated_areas, paths, custom_fire_placement = False, num_fire_cells = 2, custom_fire_locations = None):
+
+    # Reminder: we want to remove custom_fire_placement eventually (because we can just use the None from custom_fire_locations)
+    def __init__(self, num_rows, num_cols, populated_areas, paths, paths_to_pops, actions,action_to_pop_and_path, custom_fire_placement = False, num_fire_cells = 2, custom_fire_locations = None):
         # Define the state space
         self.reward = 0
         self.state_space = np.zeros([5, num_rows, num_cols])
+
+        #remember which paths are associated with each population center
+        self.paths_to_pops = paths_to_pops #path index: list of pop x,y indices [[x,y],[x,y],...]
+
+        # remember which path an evacuating area chose to take
+        self.evacuating_paths = {} # path_index : list of pop x,y indices that are evacuating [[x,y],[x,y],...]
+
+        # state to know how much timestamps are left for the evacuating areas
+        self.evacuating_timestamps = np.full((num_rows, num_cols), np.inf)
+
+        #initialize self.actions
+        self.actions = actions
+
+        # we want to remember which action index corresponds to which population center
+        # and which path (because we just provide an array like [1,2,3,4,5,6,7]) which
+        # would each be mapped to a given population area taking a given path
+        self.action_to_pop_and_path = action_to_pop_and_path # action index: list of pop x,y index and path index [[x,y],path_index]
 
         # initialize the fire cells
         if custom_fire_placement:
@@ -66,21 +85,7 @@ class FireWorld:
             # not been destroyed by a fire)
             self.paths.append([np.zeros((num_rows, num_cols)), True])
             self.paths[-1][0][path_rows, path_cols] += 1
-        
-        """
-        self.paths = np.zeros((paths.size, num_rows, num_cols))
-        index = 0 
-        for path in paths: #right now paths is different from self.paths but we can change this later if needed
-            path_array = np.array(path)
-            path_rows = path_array[:,0]
-            path_cols = path_array[:,1]
-            self.state_space[4,path_rows,path_cols] += 1
 
-            self.paths[index, path_rows, path_cols] += 1
-            index += 1
-        """
-
-        # Note: We'll also need to be able to denote which path is associated with each pop center (probably a list of lists, but do this later)
     
     def sample_fire_propogation(self):
         # Drops fuel level of enflamed cells
@@ -152,16 +157,63 @@ class FireWorld:
         # Update state
         self.state_space = new_state
 
-    def remove_paths(self):
+    # Note to self: make sure to update evacuation timestep state
+    def update_paths_and_evactuations(self):
         """
-        Remove paths that been burned down by a fire.
+        Remove paths that been burned down by a fire. 
+        Also stops evacuating any areas that were taking a burned down path. 
+        Also decrements the evacuation timestamps
         """
+        self.state_space[FIRE_INDEX][1,1] = 1
         for i in range(len(self.paths)):
+            # check if we need to remove a path
             if self.paths[i][1] and np.sum(np.logical_and(self.state_space[FIRE_INDEX], self.paths[i][0])) > 0:
                 # decrement the count for the paths in the state space
                 self.state_space[PATHS_INDEX] -= self.paths[i][0]
                 # remove the path
                 self.paths[i][1] = False
+
+                # stop evacuating an area if it was taking the removed path
+                if i in self.evacuating_paths:
+                    pop_centers = np.array(self.evacuating_paths[i])
+                    pop_rows = pop_centers[:,0]
+                    pop_cols = pop_centers[:,1]
+                    self.evacuating_timestamps[pop_rows,pop_cols] = np.inf
+                    self.state_space[EVACUATING_INDEX, pop_rows, pop_cols] = 0
+                    del self.evacuating_paths[i]
+            elif i in self.evacuating_paths: # we need to decrement the evacuating paths timestep
+
+                # for the below, this code works for if multiple population centers are taking the same path and 
+                # finish at the same time, but if we have it so that two population centers can't take the same 
+                # path it could probably be simplified
+                pop_centers = np.array(self.evacuating_paths[i])
+                pop_rows = pop_centers[:,0]
+                pop_cols = pop_centers[:,1]
+                self.evacuating_timestamps[pop_rows,pop_cols] -= 1
+                done_evacuating = np.where(self.evacuating_timestamps == 0)
+                self.state_space[EVACUATING_INDEX, done_evacuating] = 0
+                self.state_space[POPULATED_INDEX, done_evacuating] = 0
+
+                # the forbidden for loop (maybe think of a way to do differently later)
+                # note that right now it is going to be vastly often the case that two 
+                # population cases don't finish evacuating along the same path at the same 
+                # time right now, so this is an extremely rare edge case, meaning that most often
+                # this for loop will run for a single iteration
+                done_evacuating = np.array([done_evacuating[0],done_evacuating[1]])
+                done_evacuating = np.transpose(done_evacuating)
+                for j in range(done_evacuating.shape[0]):
+                    update_row = done_evacuating[j,0]
+                    update_col = done_evacuating[j,1]
+                    self.evacuating_paths[i].remove(list(done_evacuating[j]))
+
+                    # this population center is done evacuating, so we can set its timestamp back to infinity
+                    # (this is important so that we don't try to remove this from self.evacuating paths twice - 
+                    # was causing a bug)
+                    self.evacuating_timestamps[update_row, update_col] = np.inf
+
+                # no more population centers are using this path, so we delete it
+                if len(self.evacuating_paths[i]) == 0:
+                    del self.evacuating_paths[i]
 
     def advance_to_next_timestep(self):
 
@@ -179,6 +231,7 @@ class FireWorld:
     # Finish accumulate_reward such that populated_index and evacuating_index are set to zero in as efficient a manner as possible
     # Here's my partial work
     def accumulate_reward(self):
+
         # Get which populated_areas areas are on fire and evacuating
         populated_areas = np.where(self.state_space[POPULATED_INDEX] == 1)
         fire = self.state_space[FIRE_INDEX][populated_areas]
@@ -204,3 +257,25 @@ class FireWorld:
         present_reward = self.reward
         self.reward = 0
         return present_reward
+    
+    def get_actions(self):
+        return self.actions
+
+    def set_action(self, action):
+        if self.action_to_pop_and_path[action]: # could be the case that we do nothing and it's none
+            pop_cell, path_index = self.action_to_pop_and_path[action]
+            pop_cell_row = pop_cell[0]
+            pop_cell_col = pop_cell[1]
+            #make sure that the path chosen and the populated cell haven't burned down and it's not already evacuating
+            if (self.paths[path_index][1] and self.state_space[POPULATED_INDEX,pop_cell_row, pop_cell_col] == 1 
+                and self.evacuating_timestamps[pop_cell_row, pop_cell_col] == np.inf):
+                if path_index in self.evacuating_paths: # note: we need to add a test for this case at some point (two pop centers choosing to take the same path)
+                    self.evacuating_paths[path_index].append(pop_cell)
+                else:
+                    self.evacuating_paths[path_index] = [pop_cell]
+                self.state_space[EVACUATING_INDEX,pop_cell_row, pop_cell_col] = 1
+                self.evacuating_timestamps[pop_cell_row, pop_cell_col] = 10
+
+
+
+
