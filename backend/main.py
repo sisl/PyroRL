@@ -65,6 +65,7 @@ if __name__ == "__main__":
     # Create the environment and test loop
     env = WildfireEvacuationEnv(num_rows, num_cols, populated_areas, paths, paths_to_pops)
     for _ in range(10):
+
         action = env.action_space.sample()
         observation, reward, terminated, truncated, info = env.step(action)
         print(reward)
