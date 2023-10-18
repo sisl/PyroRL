@@ -37,16 +37,22 @@ class FireWorld:
         # Define the state and action space
         self.reward = 0
         self.state_space = np.zeros([5, num_rows, num_cols])
-        self.actions = list(np.arange(len(paths) + 1))
+        self.actions = list(np.arange(len(paths) + 1)) # extra action for doing nothing
 
         # Associate paths with populated areas and actions
-        self.paths_to_pops = paths_to_pops
+        # Note: there seems to be an error that keeps popping up where this dictionary is not
+        # getting properly created. Would investigate...
+        self.paths_to_pops = paths_to_pops # path index: list of pop x,y indices [[x,y],[x,y],...]
+
+        # We want to remember which action index corresponds to which population center
+        # and which path (because we just provide an array like [1,2,3,4,5,6,7]) which
+        # would each be mapped to a given population area taking a given path
         self.action_to_pop_and_path = { self.actions[-1] : None}
         for key in self.paths_to_pops:
-            self.action_to_pop_and_path[key] = (paths_to_pops[key], key)
+            self.action_to_pop_and_path[key] = (paths_to_pops[key], key) # action index: list of pop x,y index and path index [[x,y],path_index]
 
         # State for the evacuation of populated areas
-        self.evacuating_paths = {}
+        self.evacuating_paths = {} # path_index : list of pop x,y indices that are evacuating [[x,y],[x,y],...]
         self.evacuating_timestamps = np.full((num_rows, num_cols), np.inf)
 
         # Initialize placement of fire cells
@@ -88,7 +94,7 @@ class FireWorld:
         self.state_space[FUEL_INDEX,self.state_space[FIRE_INDEX] == 1] -= 1
         self.state_space[FUEL_INDEX,self.state_space[FUEL_INDEX] < 0] = 0
 
-        #Extinguishes cells that have run out of fuel
+        # Extinguishes cells that have run out of fuel
         self.state_space[FIRE_INDEX,self.state_space[FUEL_INDEX,:] <= 0] = 0
 
         # Runs kernel of neighborhing cells where each row corresponds to the neighborhood of a cell
@@ -96,7 +102,7 @@ class FireWorld:
         y = torch.nn.Unfold((5,5), dilation = 1, padding = 2)
         z = y(torch_rep)
 
-        # the relative importance of each neighboring cell is weighted
+        # The relative importance of each neighboring cell is weighted
         z = z * fire_mask
 
         # Unenflamed cells are set to 1 to eliminate their role to the fire spread equation
@@ -104,7 +110,7 @@ class FireWorld:
         z = z.prod(dim = 0)
         z = 1 - z.reshape(self.state_space[FIRE_INDEX].shape)
 
-        # from the probability of an ignition in z, new fire locations are randomly generated
+        # From the probability of an ignition in z, new fire locations are randomly generated
         prob_mask = torch.rand_like(z)
         new_fire = (z > prob_mask).float()
 
@@ -115,8 +121,8 @@ class FireWorld:
     def update_paths_and_evactuations(self):
         """
         Performs three functions:
-        1. Remove paths that been burned down by a fire.
-        2. Also stops evacuating any areas that were taking a burned down path.
+        1. Remove paths that been burned down by a fire
+        2. Also stops evacuating any areas that were taking a burned down path
         3. Also decrements the evacuation timestamps
         """
         self.state_space[FIRE_INDEX][1,1] = 1
@@ -220,9 +226,7 @@ class FireWorld:
         Allow the agent to take an action within the action space.
         """
         # Check that there is an action to take
-        if self.action_to_pop_and_path[action]:
-            print(self.action_to_pop_and_path)
-            print(action)
+        if self.action_to_pop_and_path[action] and len(self.action_to_pop_and_path[action][0]) > 0:
             pop_cell, path_index = self.action_to_pop_and_path[action]
             pop_cell_row, pop_cell_col = pop_cell[0][0], pop_cell[0][1]
 
