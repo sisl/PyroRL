@@ -86,6 +86,9 @@ class FireWorld:
             self.paths.append([np.zeros((num_rows, num_cols)), True])
             self.paths[-1][0][path_rows, path_cols] += 1
 
+        # Set the timestep
+        self.time_step = 0
+
     def sample_fire_propogation(self):
         """
         Sample the next state of the wildfire model.
@@ -184,6 +187,7 @@ class FireWorld:
         self.sample_fire_propogation()
         self.update_paths_and_evactuations()
         self.accumulate_reward()
+        self.time_step += 1
 
     def accumulate_reward(self):
         """
@@ -207,20 +211,6 @@ class FireWorld:
         self.reward -= 100 * len(enflamed_populated_areas)
         self.reward += len((np.where(fire + evacuating == 0))[0])
 
-    def get_state_utility(self):
-        """
-        Get the total amount of utility given a current state.
-        """
-        present_reward = self.reward
-        self.reward = 0
-        return present_reward
-
-    def get_actions(self):
-        """
-        Get the set of actions available to the agent.
-        """
-        return self.actions
-
     def set_action(self, action):
         """
         Allow the agent to take an action within the action space.
@@ -242,3 +232,29 @@ class FireWorld:
                     self.evacuating_paths[path_index] = [pop_cell]
                 self.state_space[EVACUATING_INDEX,pop_cell_row, pop_cell_col] = 1
                 self.evacuating_timestamps[pop_cell_row, pop_cell_col] = 10
+
+    def get_state_utility(self):
+        """
+        Get the total amount of utility given a current state.
+        """
+        present_reward = self.reward
+        self.reward = 0
+        return present_reward
+
+    def get_actions(self):
+        """
+        Get the set of actions available to the agent.
+        """
+        return self.actions
+
+    def get_state(self):
+        """
+        Get the state space of the current configuration of the gridworld.
+        """
+        return self.state_space
+
+    def get_terminated(self):
+        """
+        Get the status of the simulation.
+        """
+        return ( self.time_step >= 100 )
