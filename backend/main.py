@@ -7,13 +7,8 @@ from gymnasium import spaces
 import numpy as np
 import pygame
 
-# Grid Constants
+# Constants for visualization
 WIDTH, HEIGHT = 475, 475
-GRID_SIZE = 10
-GRID_WIDTH = WIDTH // GRID_SIZE
-GRID_HEIGHT = HEIGHT // GRID_SIZE
-
-# Color Constants
 FIRE_COLOR = pygame.Color("#ef476f")
 POPULATED_COLOR = pygame.Color("#073b4c")
 EVACUATING_COLOR = pygame.Color("#118ab2")
@@ -37,6 +32,10 @@ class WildfireEvacuationEnv(gym.Env):
         observations = self.fire_env.get_state()
         self.observation_space = spaces.Box(low=0, high=200, shape = observations.shape, dtype=np.float64)
 
+        # Set up grid constants
+        self.grid_width = WIDTH // num_rows
+        self.grid_height = HEIGHT // num_cols
+
     def reset(self):
         """
         Reset the environment to its initial state.
@@ -59,6 +58,42 @@ class WildfireEvacuationEnv(gym.Env):
         terminated = self.fire_env.get_terminated()
         return observations, rewards, terminated, False, { "" : "" }
 
+    def render_hf(self, screen, font):
+        """
+        Set up header and footer
+        """
+        # Set title of the screen
+        timestep = self.fire_env.get_timestep()
+        text = font.render("Timestep #: " + str(timestep), True, (0, 0, 0))
+        screen.blit(text, (50, 25))
+
+        # Grass component
+        text = font.render("Grass", True, (0, 0, 0))
+        screen.blit(text, (115, 587))
+        pygame.draw.rect(screen, GRASS_COLOR, (50, 575, 50, 50))
+
+        # Fire component
+        text = font.render("Fire", True, (0, 0, 0))
+        screen.blit(text, (115, 672))
+        pygame.draw.rect(screen, FIRE_COLOR, (50, 650, 50, 50))
+
+        # Populated component
+        text = font.render("Populated", True, (0, 0, 0))
+        screen.blit(text, (290, 587))
+        pygame.draw.rect(screen, POPULATED_COLOR, (225, 575, 50, 50))
+
+        # Evacuating component
+        text = font.render("Evacuating", True, (0, 0, 0))
+        screen.blit(text, (290, 672))
+        pygame.draw.rect(screen, EVACUATING_COLOR, (225, 650, 50, 50))
+
+        # Path component
+        text = font.render("Path", True, (0, 0, 0))
+        screen.blit(text, (465, 587))
+        pygame.draw.rect(screen, PATH_COLOR, (400, 575, 50, 50))
+
+        return screen
+
     def render(self):
         """
         Render the environment (to-do)
@@ -68,12 +103,13 @@ class WildfireEvacuationEnv(gym.Env):
 
         # Set up pygame and font
         pygame.init()
+        screen = pygame.display.set_mode([600, 725])
         font = pygame.font.Font(None, 25)
 
         # Set screen details
-        screen = pygame.display.set_mode([600, 725])
         screen.fill((255, 255, 255))
         pygame.display.set_caption("Wildfire Evacuation RL Gym Environment")
+        screen = self.render_hf(screen, font)
 
         # Running the loop!
         running = True
@@ -82,42 +118,6 @@ class WildfireEvacuationEnv(gym.Env):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-
-            """
-            Title
-            """
-            timestep = self.fire_env.get_timestep()
-            text = font.render("Timestep #: " + str(timestep), True, (0, 0, 0))
-            screen.blit(text, (50, 25))
-
-            """
-            Footer
-            """
-
-            # Grass component
-            text = font.render("Grass", True, (0, 0, 0))
-            screen.blit(text, (115, 587))
-            pygame.draw.rect(screen, GRASS_COLOR, (50, 575, 50, 50))
-
-            # Fire component
-            text = font.render("Fire", True, (0, 0, 0))
-            screen.blit(text, (115, 672))
-            pygame.draw.rect(screen, FIRE_COLOR, (50, 650, 50, 50))
-
-            # Populated component
-            text = font.render("Populated", True, (0, 0, 0))
-            screen.blit(text, (290, 587))
-            pygame.draw.rect(screen, POPULATED_COLOR, (225, 575, 50, 50))
-
-            # Evacuating component
-            text = font.render("Evacuating", True, (0, 0, 0))
-            screen.blit(text, (290, 672))
-            pygame.draw.rect(screen, EVACUATING_COLOR, (225, 650, 50, 50))
-
-            # Path component
-            text = font.render("Path", True, (0, 0, 0))
-            screen.blit(text, (465, 587))
-            pygame.draw.rect(screen, PATH_COLOR, (400, 575, 50, 50))
 
             # Iterate through all of the squares
             # Note: try to vectorize?
@@ -136,8 +136,7 @@ class WildfireEvacuationEnv(gym.Env):
                         color = PATH_COLOR
 
                     # Draw the square
-                    # Note: make these constants somehow
-                    square_rect = pygame.Rect(50 + x * (GRID_WIDTH + 2), 50 + y * (GRID_HEIGHT + 2), GRID_WIDTH, GRID_HEIGHT)
+                    square_rect = pygame.Rect(50 + x * (self.grid_width + 2), 50 + y * (self.grid_height + 2), self.grid_width, self.grid_height)
                     pygame.draw.rect(screen, color, square_rect)
 
             # Render and then quit outside
