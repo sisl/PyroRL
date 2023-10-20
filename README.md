@@ -4,7 +4,7 @@ An RL gym environment for wildfire evacuation.
 
 ## How To Use
 
-See the following example:
+To use our wildfire evacuation environment, define the dimensions of your grid, where the populated areas are, the paths, and which populated areas can use which path. See an example below.
 
 ```python
 # Set up parameters
@@ -19,8 +19,13 @@ for _ in range(10):
 
     action = env.action_space.sample()
     observation, reward, terminated, truncated, info = env.step(action)
+    env.render()
     print(reward)
 ```
+
+Rendering the environment will reveal the following visualization:
+
+![Wildfire Environment Example](imgs/viz_example.png)
 
 ## Set-Up
 

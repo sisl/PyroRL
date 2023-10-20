@@ -247,6 +247,12 @@ class FireWorld:
         """
         return self.actions
 
+    def get_timestep(self):
+        """
+        Get current timestep of simulation
+        """
+        return self.time_step
+
     def get_state(self):
         """
         Get the state space of the current configuration of the gridworld.
