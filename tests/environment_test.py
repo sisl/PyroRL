@@ -1,7 +1,8 @@
 """
 Unit tests for each of the functions in environment.py
 """
-from wildfire_evac.wildfire_evac.envs.environment.environment import *
+import sys
+from wildfire_evac.envs.environment.environment import *
 import numpy as np
 import random
 

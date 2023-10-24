@@ -1,7 +1,7 @@
 """
 OpenAI Gym Environment Wrapper Class
 """
-from environment.environment import *
+from wildfire_evac.envs.environment.environment import *
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
@@ -36,13 +36,13 @@ class WildfireEvacuationEnv(gym.Env):
         self.grid_width = WIDTH // num_rows
         self.grid_height = HEIGHT // num_cols
 
-    def reset(self):
+    def reset(self, seed = None, options = None):
         """
         Reset the environment to its initial state.
         """
         self.fire_env = self.saved_fire_env
         state_space = self.fire_env.get_state()
-        return state_space, { "" : "" }
+        return state_space, { "": "" }
 
     def step(self, action):
         """
@@ -142,22 +142,3 @@ class WildfireEvacuationEnv(gym.Env):
             # Render and then quit outside
             pygame.display.flip()
         pygame.quit()
-
-if __name__ == "__main__":
-    """
-    Run basic environment.
-    """
-    # Set up parameters
-    num_rows, num_cols = 10, 10
-    populated_areas = np.array([[1,2],[4,8], [6,4], [8, 7]])
-    paths = np.array([[[1,0],[1,1]], [[2,2],[3,2],[4,2],[4,1],[4,0]], [[2,9],[2,8],[3,8]], [[5,8],[6,8],[6,9]], [[7,7], [6,7], [6,8], [6,9]], [[8,6], [8,5], [9,5]], [[8,5], [9,5], [7,5],[7,4]]], dtype=object)
-    paths_to_pops = {0:[[1,2]], 1:[[1,2]], 2: [[4,8]], 3:[[4,8]], 4:[[8, 7]], 5:[[8, 7]], 6:[[6,4]]}
-
-    # Create the environment and test loop
-    env = WildfireEvacuationEnv(num_rows, num_cols, populated_areas, paths, paths_to_pops)
-    for _ in range(10):
-
-        action = env.action_space.sample()
-        observation, reward, terminated, truncated, info = env.step(action)
-        env.render()
-        print(reward)
