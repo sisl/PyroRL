@@ -12,7 +12,7 @@ import random
 from scipy.stats import bernoulli
 import torch
 
-from environment.environment_constant import fire_mask
+from .environment_constant import fire_mask
 
 """
 Indices corresponding to each layer of state
