@@ -3,4 +3,6 @@ __pycache__
 frontend/
 .DS_Store
 env/
-wildfire_evac/wildfire_evac.egg-info
+wildfire_evac/wildfire_evac.egg-info/
+wildfire_evac/.pypirc
+wildfire_evac/dist/
