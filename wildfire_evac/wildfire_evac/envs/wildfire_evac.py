@@ -20,9 +20,13 @@ class WildfireEvacuationEnv(gym.Env):
         """
         Set up the basic environment and its parameters.
         """
-        # Set up wildfire environment (and save extra copy)
+        # Save parameters and set up environment
+        self.num_rows = num_rows
+        self.num_cols = num_cols
+        self.populated_areas = populated_areas
+        self.paths = paths
+        self.paths_to_pops = paths_to_pops
         self.fire_env = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
-        self.saved_fire_env = self.fire_env
 
         # Set up action space
         actions = self.fire_env.get_actions()
@@ -40,7 +44,7 @@ class WildfireEvacuationEnv(gym.Env):
         """
         Reset the environment to its initial state.
         """
-        self.fire_env = self.saved_fire_env
+        self.fire_env = FireWorld(self.num_rows, self.num_cols, self.populated_areas, self.paths, self.paths_to_pops)
         state_space = self.fire_env.get_state()
         return state_space, { "": "" }
 
