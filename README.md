@@ -7,7 +7,7 @@ An RL gym environment for wildfire evacuation.
 First, install our package:
 
 ```python
-pip install wildfire-evac==0.0.1
+pip install wildfire-evac
 ```
 
 To use our wildfire evacuation environment, define the dimensions of your grid, where the populated areas are, the paths, and which populated areas can use which path. See an example below.
