@@ -13,3 +13,6 @@ wildfire_evac/build/
 
 # Created when training a policy
 sample_baseline.zip
+
+# Documentation
+docs/site/

@@ -1,6 +1,6 @@
 # Wildfire Evacuation RL Gym Environment
 
-A new reinforcement learning OpenAI Gym environment built for the simulation of wildfire evacuation. Check out the [docs](https://docs.google.com/document/d/1IpA1HS6_81OnfwQktYsEsL9z5eDfbmcg-3HQZxJtLYs/edit?usp=sharing).
+A new reinforcement learning OpenAI Gym environment built for the simulation of wildfire evacuation. Check out the [docs](https://wildfire-evac.surge.sh/).
 
 ## How To Use
 

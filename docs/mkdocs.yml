@@ -1,0 +1,8 @@
+site_name: Wildfire Evacuation RL Gym Environment
+site_url: https://example.com/
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - How It Works: how-it-works.md
+  - Reference: reference.md
+theme: readthedocs

@@ -1,0 +1,89 @@
+# Quickstart
+
+## Basic Usage
+
+First, download our Python package:
+
+```bash
+pip install wildfire-evac
+```
+
+To use our environment, you need to define five parameters:
+
+- `num_rows` and `num_cols` – these two integers define a (`num_rows`, `num_cols`) grid world
+- `populated_areas` – an array of `[x, y]` coordinates that indicate the location of the populated areas
+- `paths` – an array of paths. Each path is an array of `[x, y]` coordinates that indicate each square in a path
+- `paths_to_pops` – a dictionary that maps paths to which populated areas can use those paths. The keys are integers that represent the index of the path in the `paths` array. The values are arrays of integers that represent the populated area in the `populated_areas` array.
+
+You can see an example below:
+
+```python
+num_rows, num_cols = 10, 10
+populated_areas = np.array([[1,2],[4,8], [6,4], [8, 7]])
+paths = np.array([[[1,0],[1,1]], [[2,2],[3,2],[4,2],[4,1],[4,0]], [[2,9],[2,8],[3,8]], [[5,8],[6,8],[6,9]], [[7,7], [6,7], [6,8], [6,9]], [[8,6], [8,5], [9,5]], [[8,5], [9,5], [7,5],[7,4]]], dtype=object)
+paths_to_pops = {0:[[1,2]], 1:[[1,2]], 2: [[4,8]], 3:[[4,8]], 4:[[8, 7]], 5:[[8, 7]], 6:[[6,4]]}
+```
+
+Using these parameters, you can then define them as kwargs and use gymnasium.make to create the environment:
+
+```python
+kwargs = {
+        'num_rows': num_rows,
+        'num_cols': num_cols,
+        'populated_areas': populated_areas,
+        'paths': paths,
+        'paths_to_pops': paths_to_pops
+    }
+env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
+```
+
+The wildfire environment has the following action and state/observation space:
+
+- action_space: `[0, number of paths]`
+- observation_space: `(5, num_rows, num_cols)` tensor, where every value in each dimension is between `[0, 200]`
+
+Now, with all of this information, we can create a loop that samples an action from the action space, takes a step with the action, and renders the environment:
+
+```python
+env.reset()
+for _ in range(10):
+
+    # Take action and observation
+    action = env.action_space.sample()
+    observation, reward, terminated, truncated, info = env.step(action)
+
+    # Render environment and print reward
+    env.render()
+    print("Reward: " + str(reward))
+```
+
+An example of the visualization rendered can be found in the `imgs` folder.
+
+## Use with Stable Baselines 3
+
+[Stable Baselines 3](https://stable-baselines3.readthedocs.io/en/master/) is a popular library for reinforcement learning algorithms. You can use Stable Baseline algorithms to find optimal policies for the wildfire evacuation problem. Given that our environment conforms to the `gymnasium` specification, training a model is no different than with other environments:
+
+```python
+# Train a model and delete
+model = DQN("MlpPolicy", env, verbose=1)
+model.learn(total_timesteps=1000, log_interval=4)
+model.save("sample_baseline")
+del model
+```
+
+The same is true for using the model during evaluation:
+
+```python
+# Load and reset the environment
+model = DQN.load("sample_baseline")
+obs, info = env.reset()
+
+# Run a simple loop of the environment
+for _ in range(10):
+    action, _states = model.predict(obs, deterministic=True)
+    observation, reward, terminated, truncated, info = env.step(int(action))
+
+    # Render environment and print reward
+    env.render()
+    print("Reward: " + str(reward))
+```
