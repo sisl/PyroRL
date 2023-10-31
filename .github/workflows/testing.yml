@@ -10,7 +10,8 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - run: python -c "import sys; print(sys.version)"
+      - run: python -m pip install –-user –-upgrade setuptools wheel
       - run: cd ${{ github.workspace }}
-      - run: ls
       - run: cd wildfire_evac
+      - run: python setup.py sdist
+      - run: python -m pip install -e .
