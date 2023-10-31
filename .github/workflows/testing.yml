@@ -5,4 +5,9 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Testing this initial command"
+      - run: echo "Start automated building and testing!"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: python -c "import sys; print(sys.version)"
