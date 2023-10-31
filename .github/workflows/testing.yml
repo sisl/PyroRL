@@ -11,3 +11,6 @@ jobs:
         with:
           python-version: '3.9'
       - run: python -c "import sys; print(sys.version)"
+      - run: cd ${{ github.workspace }}
+      - run: ls
+      - run: cd wildfire_evac
