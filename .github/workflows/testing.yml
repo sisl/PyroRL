@@ -12,7 +12,8 @@ jobs:
           python-version: '3.9'
       - run: python -m pip install setuptools wheel
       - run: cd ${{ github.workspace }}
-      - run: python wildfire_evac/setup.py sdist
+      - run: python wildfire_evac/setup.py sdist -d wildfire_evac/dist
+      - run: pip install -e wildfire_evac
       #- run: cd ${{ github.workspace }}
       #- run: cd wildfire_evac
       #- run: ls
