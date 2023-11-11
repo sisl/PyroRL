@@ -4,7 +4,6 @@ __pycache__
 frontend/
 .DS_Store
 env/
-.coverage
 
 # Elements associated with publishing as a package
 wildfire_evac/wildfire_evac.egg-info/
@@ -17,3 +16,9 @@ sample_baseline.zip
 
 # Documentation
 docs/site/
+
+# Code coverage reports
+.coverage
+
+# Creating a GIF for the visualization
+grid_screenshots/
