@@ -18,9 +18,11 @@ jobs:
       - name: Install package locally
         run: pip install -e wildfire_evac
       - name: Install pytest for testing
-        run: python -m pip install pytest
+        run: python -m pip install pytest pytest-cov
       - name: Run tests
         run: python -m pytest -s
+      - name: Generate code coverage file
+        run: python -m pytest --cov .
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:

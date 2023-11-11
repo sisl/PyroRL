@@ -1,9 +1,10 @@
-# Standard elements to receive
+# Standard elements to remove
 __pycache__
 .pytest_cache
 frontend/
 .DS_Store
 env/
+.coverage
 
 # Elements associated with publishing as a package
 wildfire_evac/wildfire_evac.egg-info/
