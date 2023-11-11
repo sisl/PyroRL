@@ -6,11 +6,11 @@ with open("README.md", "r") as f:
 
 setup(
     name="wildfire_evac",
-    version="0.0.14",
+    version="0.0.15",
     author='Celtics Big 3',
     author_email='clpondoc@stanford.edu',
     description='An RL OpenAI Gym Environment for Wildfire Evacuation',
-    url='https://github.com/cpondoc/wildfire',
+    url='https://github.com/sisl/wildfire',
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
@@ -19,5 +19,5 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    install_requires = ["numpy", "scipy", "torch", "gymnasium", "pygame"]
+    install_requires = ["numpy", "scipy", "torch", "gymnasium", "pygame", "imageio"]
 )
