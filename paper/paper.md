@@ -23,19 +23,20 @@ affiliations:
  - name: Department of Aeronautics and Astronautics, Stanford University
    index: 2
 date: 13 November 2023
+bibliography: paper.bib
 ---
 
 # Summary
 
-One of the main effects of climate change today is the increased frequency and intensity of wildfires. This reality has led to increased research in wildfire response, particularly with reinforcement learning (RL). However, while much effort has centered around modeling wildfire spread or surveillance, there is a lack of work around wildfire evacuation. To this end, we present Wildfire-Evac, a new RL environment for wildfire evacuation. The environment, which builds upon the Gymnasium API standard (Towers 2023), simulates evacuating populated areas through paths from a grid world lit by wildfires. We aim for our work to be the basis of new strategies for wildfire evacuation based on RL methods.
+One of the main effects of climate change today is the increased frequency and intensity of wildfires. This reality has led to increased research in wildfire response, particularly with reinforcement learning (RL). However, while much effort has centered around modeling wildfire spread or surveillance, there is a lack of work around wildfire evacuation. To this end, we present Wildfire-Evac, a new RL environment for wildfire evacuation. The environment, which builds upon the Gymnasium API standard [@towers_gymnasium_2023], simulates evacuating populated areas through paths from a grid world lit by wildfires. We aim for our work to be the basis of new strategies for wildfire evacuation based on RL methods.
 
 # Statement of Need
 
-There has been significant traction in the use of algorithmic and computational methods to study wildfires. In particular, reinforcement learning -- a subdomain of artificial intelligence (AI) where models learn through interaction with their environment -- has seen much interest from researchers. There have been two prominent areas in reinforcement learning based wildfire research. The first, while not directly related to reinforcement learning, is modeling the spread of wildfires. Traditionally, modeling was predominantly done using physics-based methods (Rothermel 1972, Andrews 1986). However, newer methods are more data-driven, enabling the use of a higher diversity of features (Joseph 2019, Singla 2021).
+There has been significant traction in the use of algorithmic and computational methods to study wildfires. In particular, reinforcement learning -- a subdomain of artificial intelligence (AI) where models learn through interaction with their environment -- has seen much interest from researchers. There have been two prominent areas in reinforcement learning based wildfire research. The first, while not directly related to reinforcement learning, is modeling the spread of wildfires. Traditionally, modeling was predominantly done using physics-based methods [@rothermel1972mathematical; @andrews1986behave]. However, newer methods are more data-driven, enabling the use of a higher diversity of features [@joseph2019spatiotemporal; @diao2020uncertainty].
 
-As better models of wildfire spread are developed, researchers have now been able to focus on the second prominent area of research: wildfire surveillance and monitoring. While various forms of machine learning (ML), such as computer vision (Subramanian 2017), have been used to solve this task, the most popular method by far has been to employ reinforcement learning (Julian 2019, Altamimi 2022, Viseras 2021).
+As better models of wildfire spread are developed, researchers have now been able to focus on the second prominent area of research: wildfire surveillance and monitoring. While various forms of machine learning (ML), such as computer vision [@ganapathi2018using], have been used to solve this task, the most popular method by far has been to employ reinforcement learning [@julian2019distributed; @altamimi2022large; @viseras2021wildfire].
 
-As wildfires continue to be prevalent as a result of climate change, there has been newfound emphasis on the evacuation process (McCaffrey 2018). However, there exists no significant literature on the application of computational methods to model and simulate evacuation. Subsequently, while there has been much work around open-source environments for modeling wildfire spread and surveillance (https://github.com/sahandrez/gym_forestfire, https://github.com/elbecerrasoto/gym-cellular-automata), none exist for the task of evacuation. Thus, we believe that by creating a generalizable environment for reinforcement learning, we can encourage more research -- through a new lens -- in the realm of wildfire evacuation.
+As wildfires continue to be prevalent as a result of climate change, there has been newfound emphasis on the evacuation process [@mccaffrey2018should]. However, there exists no significant literature on the application of computational methods to model and simulate evacuation. Subsequently, while there has been much work around open-source environments for modeling wildfire spread and surveillance [@cellular_automata; @forest_fire], none exist for the task of evacuation. Thus, we believe that by creating a generalizable environment for reinforcement learning, we can encourage more research -- through a new lens -- in the realm of wildfire evacuation.
 
 # Methods
 
@@ -58,11 +59,11 @@ Researchers can thus model the problem as a fully observable Markov Decision Pro
     - `2 = POPULATED_INDEX` – whether or not a square is a populated area or not
     - `3 = EVACUATING_INDEX` – whether or not a square is evacuating or not
     - `4 = PATHS_INDEX` – the number of paths a square is a part of
-- Action Space: whether or not to evacuate. If evacuating, the action taker must chooe a specific populated area to evacuate, as well as a path to evacuate from.
+- Action Space: whether or not to evacuate. If evacuating, the action taker must choose a specific populated area to evacuate, as well as a path to evacuate from.
 - Transition Model: determined by the stochastic nature of the wildfire implementation, which we describe below
 - Reward Model: +1 for every populated area that has not evacuated and isn't burned down, and -100 if a populated area is burned down
 
-Finally, our stochastic wildfire model is taken from Julian, et. al (2018):
+Finally, our stochastic wildfire model is taken from Julian, et. al [@julian2018autonomous]:
 
 - *Fuel*: Each fire cell has an initial fuel level $\sim \mathcal{N}(8.5,\,3)$
     - A cell currently on fire has its fuel levels drop by $1$ after each time step until it runs out of fuel
