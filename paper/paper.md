@@ -23,7 +23,6 @@ affiliations:
  - name: Department of Aeronautics and Astronautics, Stanford University
    index: 2
 date: 13 November 2023
-bibliography: paper.bib
 ---
 
 # Summary

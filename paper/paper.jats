@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.2 20190208//EN"
+                  "JATS-publishing1.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.2" article-type="other">
+<front>
+<journal-meta>
+<journal-id></journal-id>
+<journal-title-group>
+<journal-title>Journal of Open Source Software</journal-title>
+<abbrev-journal-title>JOSS</abbrev-journal-title>
+</journal-title-group>
+<issn publication-format="electronic">2475-9066</issn>
+<publisher>
+<publisher-name>Open Journals</publisher-name>
+</publisher>
+</journal-meta>
+<article-meta>
+<article-id pub-id-type="publisher-id">0</article-id>
+<article-id pub-id-type="doi">N/A</article-id>
+<title-group>
+<article-title>Wildfire-Evac: A Reinforcement Learning Environment for
+Wildfire Evacuation</article-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author" equal-contrib="yes">
+<name>
+<surname>Guman</surname>
+<given-names>Joseph</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+</contrib>
+<contrib contrib-type="author" equal-contrib="yes">
+<name>
+<surname>O’Brien</surname>
+<given-names>Joseph</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+</contrib>
+<contrib contrib-type="author" equal-contrib="yes">
+<name>
+<surname>Pondoc</surname>
+<given-names>Christopher</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+</contrib>
+<contrib contrib-type="author">
+<name>
+<surname>Kochenderfer</surname>
+<given-names>Mykel</given-names>
+</name>
+<xref ref-type="aff" rid="aff-2"/>
+</contrib>
+<aff id="aff-1">
+<institution-wrap>
+<institution>Department of Computer Science, Stanford
+University</institution>
+</institution-wrap>
+</aff>
+<aff id="aff-2">
+<institution-wrap>
+<institution>Department of Aeronautics and Astronautics, Stanford
+University</institution>
+</institution-wrap>
+</aff>
+</contrib-group>
+<pub-date date-type="pub" publication-format="electronic" iso-8601-date="2023-11-13">
+<day>13</day>
+<month>11</month>
+<year>2023</year>
+</pub-date>
+<volume>¿VOL?</volume>
+<issue>¿ISSUE?</issue>
+<fpage>¿PAGE?</fpage>
+<permissions>
+<copyright-statement>Authors of papers retain copyright and release the
+work under a Creative Commons Attribution 4.0 International License (CC
+BY 4.0)</copyright-statement>
+<copyright-year>2022</copyright-year>
+<copyright-holder>The article authors</copyright-holder>
+<license license-type="open-access" xlink:href="https://creativecommons.org/licenses/by/4.0/">
+<license-p>Authors of papers retain copyright and release the work under
+a Creative Commons Attribution 4.0 International License (CC BY
+4.0)</license-p>
+</license>
+</permissions>
+<kwd-group kwd-group-type="author">
+<kwd>python</kwd>
+<kwd>gymanisum</kwd>
+<kwd>rl</kwd>
+<kwd>wildfire</kwd>
+</kwd-group>
+</article-meta>
+</front>
+<body>
+<sec id="summary">
+  <title>Summary</title>
+  <p>One of the main effects of climate change today is the increased
+  frequency and intensity of wildfires. This reality has led to
+  increased research in wildfire response, particularly with
+  reinforcement learning (RL). However, while much effort has centered
+  around modeling wildfire spread or surveillance, there is a lack of
+  work around wildfire evacuation. To this end, we present
+  Wildfire-Evac, a new RL environment for wildfire evacuation. The
+  environment, which builds upon the Gymnasium API standard (Towers
+  2023), simulates evacuating populated areas through paths from a grid
+  world lit by wildfires. We aim for our work to be the basis of new
+  strategies for wildfire evacuation based on RL methods.</p>
+</sec>
+<sec id="statement-of-need">
+  <title>Statement of Need</title>
+  <p>There has been significant traction in the use of algorithmic and
+  computational methods to study wildfires. In particular, reinforcement
+  learning – a subdomain of artificial intelligence (AI) where models
+  learn through interaction with their environment – has seen much
+  interest from researchers. There have been two prominent areas in
+  reinforcement learning based wildfire research. The first, while not
+  directly related to reinforcement learning, is modeling the spread of
+  wildfires. Traditionally, modeling was predominantly done using
+  physics-based methods (Rothermel 1972, Andrews 1986). However, newer
+  methods are more data-driven, enabling the use of a higher diversity
+  of features (Joseph 2019, Singla 2021).</p>
+  <p>As better models of wildfire spread are developed, researchers have
+  now been able to focus on the second prominent area of research:
+  wildfire surveillance and monitoring. While various forms of machine
+  learning (ML), such as computer vision (Subramanian 2017), have been
+  used to solve this task, the most popular method by far has been to
+  employ reinforcement learning (Julian 2019, Altamimi 2022, Viseras
+  2021).</p>
+  <p>As wildfires continue to be prevalent as a result of climate
+  change, there has been newfound emphasis on the evacuation process
+  (McCaffrey 2018). However, there exists no significant literature on
+  the application of computational methods to model and simulate
+  evacuation. Subsequently, while there has been much work around
+  open-source environments for modeling wildfire spread and surveillance
+  (https://github.com/sahandrez/gym_forestfire,
+  https://github.com/elbecerrasoto/gym-cellular-automata), none exist
+  for the task of evacuation. Thus, we believe that by creating a
+  generalizable environment for reinforcement learning, we can encourage
+  more research – through a new lens – in the realm of wildfire
+  evacuation.</p>
+</sec>
+<sec id="methods">
+  <title>Methods</title>
+  <p>Our environment for wildfire evacuation builds upon the Gymnasium
+  API standard. This standard has functions to help the user
+  <monospace>step</monospace> through a single time frame of the
+  environment, <monospace>reset</monospace> the environment back to its
+  original state, and <monospace>render</monospace> the environment to
+  the user.</p>
+  <p>Under the hood, the environment is a gridworld, with dimensions
+  that the user can specify. Each cell in the grid is one of the
+  following:</p>
+  <list list-type="bullet">
+    <list-item>
+      <p>Normal terrain</p>
+    </list-item>
+    <list-item>
+      <p>A populated area</p>
+    </list-item>
+    <list-item>
+      <p>A fire cell</p>
+    </list-item>
+    <list-item>
+      <p>Part of an evacuation path</p>
+    </list-item>
+  </list>
+  <p>The task at hand is to evacuate all of the populated areas through
+  paths before they are burned down. Akin to how evacuation would occur
+  in real life, the action taker oversees the entire site. Furthermore,
+  the amount of time to evacuate a populated area is proportional to the
+  number of grid squares in the path.</p>
+  <p>Researchers can thus model the problem as a fully observable Markov
+  Decision Process (MDP):</p>
+  <list list-type="bullet">
+    <list-item>
+      <p>State Space: each possible configuration of the grid.
+      Internally, this is represented as a
+      <inline-formula><alternatives>
+      <tex-math><![CDATA[5]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mn>5</mml:mn></mml:math></alternatives></inline-formula>
+      by <inline-formula><alternatives>
+      <tex-math><![CDATA[m]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>m</mml:mi></mml:math></alternatives></inline-formula>
+      by <inline-formula><alternatives>
+      <tex-math><![CDATA[n]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>n</mml:mi></mml:math></alternatives></inline-formula>
+      tensor, where <inline-formula><alternatives>
+      <tex-math><![CDATA[m]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>m</mml:mi></mml:math></alternatives></inline-formula>
+      and <inline-formula><alternatives>
+      <tex-math><![CDATA[n]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>n</mml:mi></mml:math></alternatives></inline-formula>
+      represent the number of rows and columns of the grid world,
+      respectively. Each of the <inline-formula><alternatives>
+      <tex-math><![CDATA[5]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mn>5</mml:mn></mml:math></alternatives></inline-formula>
+      indices corresponds to a specific attribute:</p>
+      <list list-type="bullet">
+        <list-item>
+          <p><monospace>0 = FIRE_INDEX</monospace> – whether or not a
+          square in the grid world is on fire or not</p>
+        </list-item>
+        <list-item>
+          <p><monospace>1 = FUEL_INDEX</monospace> – the amount of fuel
+          in the square, which is used to determine if an area will be
+          enflamed or not</p>
+        </list-item>
+        <list-item>
+          <p><monospace>2 = POPULATED_INDEX</monospace> – whether or not
+          a square is a populated area or not</p>
+        </list-item>
+        <list-item>
+          <p><monospace>3 = EVACUATING_INDEX</monospace> – whether or
+          not a square is evacuating or not</p>
+        </list-item>
+        <list-item>
+          <p><monospace>4 = PATHS_INDEX</monospace> – the number of
+          paths a square is a part of</p>
+        </list-item>
+      </list>
+    </list-item>
+    <list-item>
+      <p>Action Space: whether or not to evacuate. If evacuating, the
+      action taker must chooe a specific populated area to evacuate, as
+      well as a path to evacuate from.</p>
+    </list-item>
+    <list-item>
+      <p>Transition Model: determined by the stochastic nature of the
+      wildfire implementation, which we describe below</p>
+    </list-item>
+    <list-item>
+      <p>Reward Model: +1 for every populated area that has not
+      evacuated and isn’t burned down, and -100 if a populated area is
+      burned down</p>
+    </list-item>
+  </list>
+  <p>Finally, our stochastic wildfire model is taken from Julian, et. al
+  (2018):</p>
+  <list list-type="bullet">
+    <list-item>
+      <p><italic>Fuel</italic>: Each fire cell has an initial fuel level
+      <inline-formula><alternatives>
+      <tex-math><![CDATA[\sim \mathcal{N}(8.5,\,3)]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mo>∼</mml:mo><mml:mi>𝒩</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mn>8.5</mml:mn><mml:mo>,</mml:mo><mml:mspace width="0.167em"></mml:mspace><mml:mn>3</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula></p>
+      <list list-type="bullet">
+        <list-item>
+          <p>A cell currently on fire has its fuel levels drop by
+          <inline-formula><alternatives>
+          <tex-math><![CDATA[1]]></tex-math>
+          <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mn>1</mml:mn></mml:math></alternatives></inline-formula>
+          after each time step until it runs out of fuel</p>
+        </list-item>
+      </list>
+    </list-item>
+    <list-item>
+      <p><italic>Fire Spread</italic>: We define the spread of the fire
+      by the following equation: <inline-formula><alternatives>
+      <tex-math><![CDATA[p(s)=1-\Pi_{s'}(1-.094 \cdot d(s,s') \cdot B(s'))]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>p</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>s</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>=</mml:mo><mml:mn>1</mml:mn><mml:mo>−</mml:mo><mml:msub><mml:mi>Π</mml:mi><mml:mrow><mml:mi>s</mml:mi><mml:mi>′</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mn>1</mml:mn><mml:mo>−</mml:mo><mml:mn>.094</mml:mn><mml:mo>⋅</mml:mo><mml:mi>d</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>s</mml:mi><mml:mo>,</mml:mo><mml:mi>s</mml:mi><mml:mi>′</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>⋅</mml:mo><mml:mi>B</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>s</mml:mi><mml:mi>′</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula></p>
+      <list list-type="bullet">
+        <list-item>
+          <p><inline-formula><alternatives>
+          <tex-math><![CDATA[p(s)]]></tex-math>
+          <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>p</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>s</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>
+          represents the probability of non-inflamed cell
+          <inline-formula><alternatives>
+          <tex-math><![CDATA[s]]></tex-math>
+          <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>s</mml:mi></mml:math></alternatives></inline-formula>
+          alighting</p>
+        </list-item>
+        <list-item>
+          <p><inline-formula><alternatives>
+          <tex-math><![CDATA[s']]></tex-math>
+          <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>s</mml:mi><mml:mi>′</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>
+          represents an adjacent cell</p>
+        </list-item>
+        <list-item>
+          <p><inline-formula><alternatives>
+          <tex-math><![CDATA[d(s,s')]]></tex-math>
+          <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>d</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>s</mml:mi><mml:mo>,</mml:mo><mml:mi>s</mml:mi><mml:mi>′</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>
+          is the <inline-formula><alternatives>
+          <tex-math><![CDATA[L2]]></tex-math>
+          <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>L</mml:mi><mml:mn>2</mml:mn></mml:mrow></mml:math></alternatives></inline-formula>
+          distance between cells</p>
+        </list-item>
+        <list-item>
+          <p><inline-formula><alternatives>
+          <tex-math><![CDATA[B(s)]]></tex-math>
+          <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>B</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>s</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>
+          is a boolean to check if cell is currently on fire</p>
+        </list-item>
+      </list>
+    </list-item>
+  </list>
+</sec>
+<sec id="features">
+  <title>Features</title>
+  <p>Firstly, users have a lot of control over the configuration of
+  their environments. Specifically: users can set the dimensions of the
+  grid world, the locations of populated areas and paths, and even
+  manually place where the fire is at initially. Of course, if users
+  just want to get a feel for the package, they can also select from our
+  library of example environments – which range in size – or even have
+  the program dynamically generate environments for them. We also offer
+  examples of how to use popular RL libraries with our environment, such
+  as Stable Baselines 3 (cite).</p>
+  <p>In addition, users can view visualizations of the environment by
+  calling the <monospace>render</monospace> function of the Gymnasium
+  environment object. At the end of a executing a set of actions on the
+  environment, the user can also call
+  <monospace>generate_gif</monospace>, which stitches together all of
+  the images rendered by the user into a single GIF to view.</p>
+</sec>
+</body>
+<back>
+</back>
+</article>
