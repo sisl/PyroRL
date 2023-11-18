@@ -42,6 +42,8 @@ As wildfires continue to be prevalent as a result of climate change, there has b
 
 Our environment for wildfire evacuation builds upon the Gymnasium API standard. This standard has functions to help the user `step` through a single time frame of the environment, `reset` the environment back to its original state, and `render` the environment to the user.
 
+## Wildfire Evacuation as a Markov Decision Process
+
 Under the hood, the environment is a gridworld, with dimensions that the user can specify. Each cell in the grid is one of the following:
 
 - Normal terrain
@@ -62,6 +64,8 @@ Researchers can thus model the problem as a fully observable Markov Decision Pro
 - Action Space: whether or not to evacuate. If evacuating, the action taker must choose a specific populated area to evacuate, as well as a path to evacuate from.
 - Transition Model: determined by the stochastic nature of the wildfire implementation, which we describe below
 - Reward Model: +1 for every populated area that has not evacuated and isn't burned down, and -100 if a populated area is burned down
+
+## Modeling the Spread of Wildfires
 
 Finally, our stochastic wildfire model is taken from Julian, et. al [@julian2018autonomous]:
 
