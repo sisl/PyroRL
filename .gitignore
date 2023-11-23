@@ -1,4 +1,4 @@
-# Standard elements to receive
+# Standard elements to remove
 __pycache__
 .pytest_cache
 frontend/
@@ -16,3 +16,9 @@ sample_baseline.zip
 
 # Documentation
 docs/site/
+
+# Code coverage reports
+.coverage
+
+# Creating a GIF for the visualization
+grid_screenshots/

@@ -4,8 +4,11 @@ OpenAI Gym Environment Wrapper Class
 from wildfire_evac.envs.environment.environment import *
 import gymnasium as gym
 from gymnasium import spaces
+import imageio
 import numpy as np
+import os
 import pygame
+import shutil
 
 # Constants for visualization
 WIDTH, HEIGHT = 475, 475
@@ -39,6 +42,10 @@ class WildfireEvacuationEnv(gym.Env):
         # Set up grid constants
         self.grid_width = WIDTH // num_rows
         self.grid_height = HEIGHT // num_cols
+
+        # Create directory to store screenshots
+        if (os.path.exists("grid_screenshots") is False):
+            os.mkdir("grid_screenshots")
 
     def reset(self, seed = None, options = None):
         """
@@ -121,6 +128,8 @@ class WildfireEvacuationEnv(gym.Env):
             # Did the user click the window close button?
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    timestep = self.fire_env.get_timestep()
+                    pygame.image.save(screen, "grid_screenshots/" + str(timestep) + ".png")
                     running = False
 
             # Iterate through all of the squares
@@ -146,3 +155,12 @@ class WildfireEvacuationEnv(gym.Env):
             # Render and then quit outside
             pygame.display.flip()
         pygame.quit()
+
+    def generate_gif(self):
+        """
+        Save run as a GIF.
+        """
+        files = [str(i) for i in range(1, self.fire_env.get_timestep() + 1)]
+        images = [imageio.imread("grid_screenshots/" + f + ".png") for f in files]
+        imageio.mimsave("training.gif", images)
+        shutil.rmtree("grid_screenshots")

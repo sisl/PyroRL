@@ -36,3 +36,6 @@ if __name__ == "__main__":
         # Render environment and print reward
         env.render()
         print("Reward: " + str(reward))
+
+    # Generate the gif
+    env.generate_gif()
