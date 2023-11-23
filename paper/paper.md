@@ -76,6 +76,8 @@ Finally, our stochastic wildfire model is taken from Julian, et. al [@julian2018
     - $s'$ represents an adjacent cell
     - $d(s,s')$ is the $L2$ distance between cells
     - $B(s)$ is a boolean to check if cell is currently on fire
+wind bias example
+- *Wind*: We can add wind bias by modifying the convolution filter. In our working implementation wind speed is linearly scale of how wind affects probability of neighboring cell alighting current cell. linear scale is further scaled for each neighboring cell by cosine similarity of vector between direction to neighboring cell to wind direction.
 
 # Features
 
