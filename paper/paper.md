@@ -55,13 +55,19 @@ The task at hand is to evacuate all of the populated areas through paths before 
 
 Researchers can thus model the problem as a fully observable Markov Decision Process (MDP):
 
-- State Space: each possible configuration of the grid. Internally, this is represented as a $5$ by $m$ by $n$ tensor, where $m$ and $n$ represent the number of rows and columns of the grid world, respectively. Each of the $5$ indices corresponds to a specific attribute:
-    - `0 = FIRE_INDEX` – whether or not a square in the grid world is on fire or not
-    - `1 = FUEL_INDEX` – the amount of fuel in the square, which is used to determine if an area will be enflamed or not
-    - `2 = POPULATED_INDEX` – whether or not a square is a populated area or not
-    - `3 = EVACUATING_INDEX` – whether or not a square is evacuating or not
-    - `4 = PATHS_INDEX` – the number of paths a square is a part of
-- Action Space: whether or not to evacuate. If evacuating, the action taker must choose a specific populated area to evacuate, as well as a path to evacuate from.
+### State Space
+
+Each possible configuration of the grid. Internally, this is represented as a $5$ by $m$ by $n$ tensor, where $m$ and $n$ represent the number of rows and columns of the grid world, respectively. Each of the $5$ indices corresponds to a specific attribute:
+
+- `0 = FIRE_INDEX` – whether or not a square in the grid world is on fire or not
+- `1 = FUEL_INDEX` – the amount of fuel in the square, which is used to determine if an area will be enflamed or not
+- `2 = POPULATED_INDEX` – whether or not a square is a populated area or not
+- `3 = EVACUATING_INDEX` – whether or not a square is evacuating or not
+- `4 = PATHS_INDEX` – the number of paths a square is a part of
+
+### Action Space
+Whether or not to evacuate. If evacuating, the action taker must choose a specific populated area to evacuate, as well as a path to evacuate from.
+
 - Transition Model: determined by the stochastic nature of the wildfire implementation, which we describe below
 - Reward Model: +1 for every populated area that has not evacuated and isn't burned down, and -100 if a populated area is burned down
 
@@ -69,15 +75,24 @@ Researchers can thus model the problem as a fully observable Markov Decision Pro
 
 Finally, our stochastic wildfire model is taken from Julian, et. al [@julian2018autonomous]:
 
-- *Fuel*: Each fire cell has an initial fuel level $\sim \mathcal{N}(8.5,\,3)$
-    - A cell currently on fire has its fuel levels drop by $1$ after each time step until it runs out of fuel
-- *Fire Spread*: We define the spread of the fire by the following equation: $p(s)=1-\Pi_{s'}(1-.094 \cdot d(s,s') \cdot B(s'))$
-    - $p(s)$ represents the probability of non-inflamed cell $s$ alighting
-    - $s'$ represents an adjacent cell
-    - $d(s,s')$ is the $L2$ distance between cells
-    - $B(s)$ is a boolean to check if cell is currently on fire
-wind bias example
-- *Wind*: We can add wind bias by modifying the convolution filter. In our working implementation wind speed is linearly scale of how wind affects probability of neighboring cell alighting current cell. linear scale is further scaled for each neighboring cell by cosine similarity of vector between direction to neighboring cell to wind direction.
+### Fuel
+
+Each fire cell has an initial fuel level $\sim \mathcal{N}(8.5,\,3)$
+
+- A cell currently on fire has its fuel levels drop by $1$ after each time step until it runs out of fuel
+
+### Fire Spread
+
+We define the spread of the fire by the following equation: $p(s)=1-\Pi_{s'}(1-.094 \cdot d(s,s') \cdot B(s'))$
+
+- $p(s)$ represents the probability of non-inflamed cell $s$ alighting
+- $s'$ represents an adjacent cell
+- $d(s,s')$ is the $L2$ distance between cells
+- $B(s)$ is a boolean to check if cell is currently on fire
+
+### Wind
+
+We can add wind bias by modifying the convolution filter. In our working implementation, wind speed is linearly scale of how wind affects probability of neighboring cell alighting current cell. linear scale is further scaled for each neighboring cell by cosine similarity of vector between direction to neighboring cell to wind direction.
 
 # Features
 
