@@ -4,5 +4,6 @@ nav:
   - Home: index.md
   - Quickstart: quickstart.md
   - How It Works: how-it-works.md
+  - Contribution Guide: contribution-guide.md
   - Reference: reference.md
 theme: readthedocs
