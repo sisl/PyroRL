@@ -38,24 +38,8 @@ for _ in range(10):
     print("Reward: " + str(reward))
 ```
 
-For more examples, check out `examples/`.
+For more examples, check out the `examples/` folder.
 
-## Set-Up
+## How to Contribute
 
-To set up our codebase, create a virtual environment and install a local copy of the package.
-
-```bash
-python3 -m venv env
-source env/bin/activate
-cd wildfire_evac/
-pip install .
-```
-
-## Tests
-
-We use `pytest` for our backend tests. To keep the state of our package as small as possible, we don't include `pytest`. Thus, make sure to install the package before running.
-
-```bash
-pip install pytest
-python3 -m pytest -s
-```
+For information on how to contribute, check out our [contribution guide](https://wildfire-evac.surge.sh/contribution-guide/).
