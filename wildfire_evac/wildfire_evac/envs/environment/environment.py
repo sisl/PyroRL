@@ -257,7 +257,9 @@ class FireWorld:
         """
         Get the state space of the current configuration of the gridworld.
         """
-        return self.state_space
+        returned_state = np.copy(self.state_space)
+        returned_state[PATHS_INDEX] = np.clip(returned_state[PATHS_INDEX], 0, 1)
+        return returned_state
 
     def get_terminated(self):
         """

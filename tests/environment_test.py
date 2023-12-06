@@ -21,6 +21,38 @@ def dummy_environment():
     test_world = FireWorld(10, 10, populated_areas, paths, paths_to_pops)
     return test_world
 
+def test_initialization():
+    populated_areas = np.array([[2,2],[4,1]])
+    paths = [[[2,0],[2,1]], [[1,0],[1,1],[2,1],[3,1]]]
+    paths_to_pops = {0:[2,2], 1:[4,1]}
+
+    test_world = FireWorld(5, 5, populated_areas, paths, paths_to_pops)
+    expected_population_array = np.array([
+        [0,0,0,0,0],
+        [0,0,0,0,0],
+        [0,0,1,0,0],
+        [0,0,0,0,0],
+        [0,1,0,0,0]
+    ])
+    expected_path_array = np.array([
+        [0,0,0,0,0],
+        [1,1,0,0,0],
+        [1,2,0,0,0],
+        [0,1,0,0,0],
+        [0,0,0,0,0]
+    ])
+    expected_returned_path_array = np.array([
+        [0,0,0,0,0],
+        [1,1,0,0,0],
+        [1,1,0,0,0],
+        [0,1,0,0,0],
+        [0,0,0,0,0]
+    ])
+    assert np.array_equal(test_world.state_space[POPULATED_INDEX], expected_population_array)
+    assert np.array_equal(test_world.state_space[PATHS_INDEX], expected_path_array)
+    returned_state = test_world.get_state()
+    assert np.array_equal(returned_state[PATHS_INDEX], expected_returned_path_array)
+
 def test_setup():
     """
     Set up grid world and initiate loop of action-taking + updating.
