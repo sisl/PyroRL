@@ -15,7 +15,7 @@ authors:
   - name: Christopher Pondoc
     equal-contrib: true
     affiliation: 1
-  - name: Mykel Kochenderfer
+  - name: Mykel J. Kochenderfer
     affiliation: 2
 affiliations:
  - name: Department of Computer Science, Stanford University
@@ -28,15 +28,15 @@ bibliography: paper.bib
 
 # Summary
 
-One of the main effects of climate change today is the increased frequency and intensity of wildfires. This reality has led to increased research in wildfire response, particularly with reinforcement learning (RL). However, while much effort has centered around modeling wildfire spread or surveillance, there is a lack of work around wildfire evacuation. To this end, we present Wildfire-Evac, a new RL environment for wildfire evacuation. The environment, which builds upon the Gymnasium API standard [@towers_gymnasium_2023], simulates evacuating populated areas through paths from a grid world lit by wildfires. We aim for our work to be the basis of new strategies for wildfire evacuation based on RL methods.
+A major effect of climate change today is the increased frequency and intensity of wildfires. This reality has led to increased research in wildfire response, particularly with reinforcement learning (RL). However, while much effort has centered on modeling wildfire spread or surveillance, there is a lack of work around wildfire evacuation. We present Wildfire-Evac, a new RL environment for wildfire evacuation. The environment, which builds upon the Gymnasium API standard [@towers_gymnasium_2023], simulates evacuating populated areas through paths from a grid world containing wildfires. This work can serve as a basis for new strategies for wildfire evacuation.
 
 # Statement of Need
 
-There has been significant traction in the use of algorithmic and computational methods to study wildfires. In particular, reinforcement learning -- a subdomain of artificial intelligence (AI) where models learn through interaction with their environment -- has seen much interest from researchers. There have been two prominent areas in reinforcement learning based wildfire research. The first, while not directly related to reinforcement learning, is modeling the spread of wildfires. Traditionally, modeling was predominantly done using physics-based methods [@rothermel1972mathematical; @andrews1986behave]. However, newer methods are more data-driven, enabling the use of a higher diversity of features [@joseph2019spatiotemporal; @diao2020uncertainty].
+There has been significant traction in the use of computational methods to study wildfires. In particular, reinforcement learning -- a subdomain of artificial intelligence where models learn through interaction with their environment -- has seen growing interest from researchers. Applying reinforcement learning requires modeling the spread of wildfires. Traditionally, modeling was primarily done using physics-based methods [@rothermel1972mathematical; @andrews1986behave]. However, newer methods are more data-driven, enabling the use of a higher diversity of features [@joseph2019spatiotemporal; @diao2020uncertainty].
 
-As better models of wildfire spread are developed, researchers have now been able to focus on the second prominent area of research: wildfire surveillance and monitoring. While various forms of machine learning (ML), such as computer vision [@ganapathi2018using], have been used to solve this task, the most popular method by far has been to employ reinforcement learning [@julian2019distributed; @altamimi2022large; @viseras2021wildfire].
+Researchers have recently been studying wildfire surveillance and monitoring. While various forms of machine learning (ML), such as computer vision [@ganapathi2018using], have been used to solve this task, the most popular method by far has been to employ reinforcement learning [@julian2019distributed; @altamimi2022large; @viseras2021wildfire].
 
-As wildfires continue to be prevalent as a result of climate change, there has been newfound emphasis on the evacuation process [@mccaffrey2018should]. However, there exists no significant literature on the application of computational methods to model and simulate evacuation. Subsequently, while there has been much work around open-source environments for modeling wildfire spread and surveillance [@cellular_automata; @forest_fire], none exist for the task of evacuation. Thus, we believe that by creating a generalizable environment for reinforcement learning, we can encourage more research -- through a new lens -- in the realm of wildfire evacuation.
+There has also been interest in optimizing the evacuation process [@mccaffrey2018should]. However, there exists no significant literature on the application of computational methods to model and simulate evacuation. Subsequently, while there has been much work around open-source environments for modeling wildfire spread and surveillance [@cellular_automata; @forest_fire], none exist for the task of evacuation. We believe that by creating a generalizable environment for reinforcement learning, we can encourage more research in the realm of wildfire evacuation.
 
 # Methods
 
