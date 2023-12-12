@@ -40,7 +40,7 @@ There has also been interest in optimizing the evacuation process [@mccaffrey201
 
 # Methods
 
-Our environment for wildfire evacuation builds upon the Gymnasium API standard. This standard has functions to help the user `step` through a single time frame of the environment, `reset` the environment back to its original state, and `render` the environment to the user.
+Our environment for wildfire evacuation builds upon the Gymnasium API standard. This standard has functions to help the user `step` through a single discrete time step of the environment, `reset` the environment back to its original state, and `render` the environment to the user.
 
 ## Wildfire Evacuation as a Markov Decision Process
 
@@ -51,9 +51,9 @@ Under the hood, the environment is a gridworld, with dimensions that the user ca
 - A fire cell
 - Part of an evacuation path
 
-The task at hand is to evacuate all of the populated areas through paths before they are burned down. Akin to how evacuation would occur in real life, the action taker oversees the entire site. Furthermore, the amount of time to evacuate a populated area is proportional to the number of grid squares in the path.
+The task at hand is to evacuate all of the populated areas through paths before they are ignited. Similar to how evacuation would occur in real life, a centralized decision maker assigns paths to populated areas. Furthermore, the amount of time to evacuate a populated area is proportional to the number of grid squares in the path.
 
-Researchers can thus model the problem as a fully observable Markov Decision Process (MDP):
+The problem is modeled a fully observable Markov Decision Process (MDP) [@kochenderfer2022algorithms].
 
 ### State Space
 
@@ -66,20 +66,20 @@ Each possible configuration of the grid. Internally, this is represented as a $5
 - `4 = PATHS_INDEX` – the number of paths a square is a part of
 
 ### Action Space
-Whether or not to evacuate. If evacuating, the action taker must choose a specific populated area to evacuate, as well as a path to evacuate from.
+Whether or not to evacuate. If evacuating, the agent must choose a specific populated area to evacuate, as well as a path to evacuate from.
 
 - Transition Model: determined by the stochastic nature of the wildfire implementation, which we describe below
-- Reward Model: +1 for every populated area that has not evacuated and isn't burned down, and -100 if a populated area is burned down
+- Reward Model: $+1$ for every populated area that has not evacuated and is not ignited, and $-100$ if a populated area is burned down
 
 ## Modeling the Spread of Wildfires
 
-Finally, our stochastic wildfire model is taken from Julian, et. al [@julian2018autonomous]:
+Finally, our stochastic wildfire model is taken from Julian, et al. [@julian2018autonomous]:
 
 ### Fuel
 
-Each fire cell has an initial fuel level $\sim \mathcal{N}(8.5,\,3)$
+Each fire cell has an initial fuel level $\sim \mathcal{N}(8.5, \, (\sqrt{3})^{2})$
 
-- A cell currently on fire has its fuel levels drop by $1$ after each time step until it runs out of fuel
+- A cell currently on fire has its fuel level drop by $1$ after each time step until it runs out of fuel
 
 ### Fire Spread
 
