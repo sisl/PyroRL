@@ -96,8 +96,8 @@ We can add wind bias by modifying the convolution filter. In our working impleme
 
 # Features
 
-Firstly, users have a lot of control over the configuration of their environments. Specifically: users can set the dimensions of the grid world, the locations of populated areas and paths, and even manually place where the fire is at initially. Of course, if users just want to get a feel for the package, they can also select from our library of example environments -- which range in size -- or even have the program dynamically generate environments for them. We also offer examples of how to use popular RL libraries with our environment, such as Stable Baselines 3 (cite).
+Users are given control over the configuration of their environments, including: the dimensions of the grid world, the locations of populated areas and paths, and initial fire placement. Users can also select from our library of example environments or have the program dynamically generate environments. We also offer examples of how to use popular RL libraries with our environment, such as Stable-Baselines3 [@JMLR:v22:20-1364].
 
-In addition, users can view visualizations of the environment by calling the `render` function of the Gymnasium environment object. At the end of a executing a set of actions on the environment, the user can also call `generate_gif`, which stitches together all of the images rendered by the user into a single GIF to view.
+In addition, users can generate visualizations of the environment by calling the `render` function of the Gymnasium environment object. After executing a set of actions on the environment, the user can call `generate_gif`, which stitches together all of the images rendered by the user into a single GIF.
 
 # References
