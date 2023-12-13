@@ -36,7 +36,7 @@ There has been significant traction in the use of computational methods to study
 
 Researchers have recently been studying wildfire surveillance and monitoring. While various forms of machine learning, such as computer vision [@ganapathi2018using], have been used to solve this task, the most popular method by far has been to employ reinforcement learning [@julian2019distributed; @altamimi2022large; @9340340]. Research in surveillance and monitoring has been supported by open-source environments for modeling wildfire spread and surveillance [@cellular_automata; @forest_fire].
 
-There has also been emerging interest in optimizing the evacuation process using computational methods [@https://doi.org/10.1111/risa.12944]. However, no reinforcement learning environments exist for the task of evacuation. We hope that open-source that tools for evacuation will  spur development in this area.
+There has also been emerging interest in optimizing the evacuation process using computational methods [@https://doi.org/10.1111/risa.12944]. However, no reinforcement learning environments exist for the task of evacuation. We hope that open-source that tools for evacuation will spur development in this area.
 
 # Methods
 
