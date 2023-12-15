@@ -9,7 +9,7 @@ authors:
   - name: Joseph Guman
     equal-contrib: true
     affiliation: 1
-  - name: Joseph O'Brien
+  - name: Joseph C. O'Brien
     equal-contrib: true
     affiliation: 1
   - name: Christopher Pondoc
