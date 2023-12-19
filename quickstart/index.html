@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://example.com/quickstart/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Quickstart - Wildfire Evacuation RL Gym Environment</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Quickstart";
+        var mkdocs_page_input_path = "quickstart.md";
+        var mkdocs_page_url = "/quickstart/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Wildfire Evacuation RL Gym Environment
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Quickstart</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#use-with-stable-baselines-3">Use with Stable Baselines 3</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../how-it-works/">How It Works</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contribution-guide/">Contribution Guide</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../reference/">Reference</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Wildfire Evacuation RL Gym Environment</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Quickstart</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="quickstart">Quickstart</h1>
+<h2 id="basic-usage">Basic Usage</h2>
+<p>First, download our Python package:</p>
+<pre><code class="language-bash">pip install wildfire-evac
+</code></pre>
+<p>To use our environment, you need to define five parameters:</p>
+<ul>
+<li><code>num_rows</code> and <code>num_cols</code> – these two integers define a (<code>num_rows</code>, <code>num_cols</code>) grid world</li>
+<li><code>populated_areas</code> – an array of <code>[x, y]</code> coordinates that indicate the location of the populated areas</li>
+<li><code>paths</code> – an array of paths. Each path is an array of <code>[x, y]</code> coordinates that indicate each square in a path</li>
+<li><code>paths_to_pops</code> – a dictionary that maps paths to which populated areas can use those paths. The keys are integers that represent the index of the path in the <code>paths</code> array. The values are arrays of integers that represent the populated area in the <code>populated_areas</code> array.</li>
+</ul>
+<p>You can see an example below:</p>
+<pre><code class="language-python">num_rows, num_cols = 10, 10
+populated_areas = np.array([[1,2],[4,8], [6,4], [8, 7]])
+paths = np.array([[[1,0],[1,1]], [[2,2],[3,2],[4,2],[4,1],[4,0]], [[2,9],[2,8],[3,8]], [[5,8],[6,8],[6,9]], [[7,7], [6,7], [6,8], [6,9]], [[8,6], [8,5], [9,5]], [[8,5], [9,5], [7,5],[7,4]]], dtype=object)
+paths_to_pops = {0:[[1,2]], 1:[[1,2]], 2: [[4,8]], 3:[[4,8]], 4:[[8, 7]], 5:[[8, 7]], 6:[[6,4]]}
+</code></pre>
+<p>Using these parameters, you can then define them as kwargs and use gymnasium.make to create the environment:</p>
+<pre><code class="language-python">kwargs = {
+        'num_rows': num_rows,
+        'num_cols': num_cols,
+        'populated_areas': populated_areas,
+        'paths': paths,
+        'paths_to_pops': paths_to_pops
+    }
+env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
+</code></pre>
+<p>The wildfire environment has the following action and state/observation space:</p>
+<ul>
+<li>action_space: <code>[0, number of paths]</code></li>
+<li>observation_space: <code>(5, num_rows, num_cols)</code> tensor, where every value in each dimension is between <code>[0, 200]</code></li>
+</ul>
+<p>Now, with all of this information, we can create a loop that samples an action from the action space, takes a step with the action, and renders the environment:</p>
+<pre><code class="language-python">env.reset()
+for _ in range(10):
+
+    # Take action and observation
+    action = env.action_space.sample()
+    observation, reward, terminated, truncated, info = env.step(action)
+
+    # Render environment and print reward
+    env.render()
+    print(&quot;Reward: &quot; + str(reward))
+
+# Generate the gif
+env.generate_gif()
+</code></pre>
+<p>Finally, we can see that the function <code>generate_gif</code> allows us to collate all of the visualizations generated by the <code>render</code> function and stitch them together into a GIF:</p>
+<div style="text-align:center;">
+    <video width="75%" autoplay loop muted playsinline>
+        <source src="../imgs/example_visualization.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+<p><br /></p>
+<h2 id="use-with-stable-baselines-3">Use with Stable Baselines 3</h2>
+<p><a href="https://stable-baselines3.readthedocs.io/en/master/">Stable Baselines 3</a> is a popular library for reinforcement learning algorithms. You can use Stable Baseline algorithms to find optimal policies for the wildfire evacuation problem. Given that our environment conforms to the <code>gymnasium</code> specification, training a model is no different than with other environments:</p>
+<pre><code class="language-python"># Train a model and delete
+model = DQN(&quot;MlpPolicy&quot;, env, verbose=1)
+model.learn(total_timesteps=1000, log_interval=4)
+model.save(&quot;sample_baseline&quot;)
+del model
+</code></pre>
+<p>The same is true for using the model during evaluation:</p>
+<pre><code class="language-python"># Load and reset the environment
+model = DQN.load(&quot;sample_baseline&quot;)
+obs, info = env.reset()
+
+# Run a simple loop of the environment
+for _ in range(10):
+    action, _states = model.predict(obs, deterministic=True)
+    observation, reward, terminated, truncated, info = env.step(int(action))
+
+    # Render environment and print reward
+    env.render()
+    print(&quot;Reward: &quot; + str(reward))
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../how-it-works/" class="btn btn-neutral float-right" title="How It Works">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../how-it-works/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
