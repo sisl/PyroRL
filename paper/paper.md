@@ -28,19 +28,19 @@ bibliography: paper.bib
 
 # Summary
 
-A major effect of climate change today is the increased frequency and intensity of wildfires. This reality has led to increased research in wildfire response, particularly with reinforcement learning (RL). However, while much effort has centered on modeling wildfire spread or surveillance, there is a lack of work around wildfire evacuation. We present Wildfire-Evac, a new RL environment for wildfire evacuation. The environment, which builds upon the Gymnasium API standard [@towers_gymnasium_2023], simulates evacuating populated areas through paths from a grid world containing wildfires. This work can serve as a basis for new strategies for wildfire evacuation.
+A major effect of climate change today is the increased frequency and intensity of wildfires. This reality has led to increased research in wildfire response, particularly with reinforcement learning (RL). While much effort has centered on modeling wildfire spread or surveillance, wildfire evacuation has received less attention. We present Wildfire-Evac, a new RL environment for wildfire evacuation. The environment, which builds upon the Gymnasium API standard [@towers_gymnasium_2023], simulates evacuating populated areas through paths from a grid world containing wildfires. This work can serve as a basis for new strategies for wildfire evacuation.
 
 # Statement of Need
 
 There has been significant traction in the use of computational methods to study wildfires. In particular, reinforcement learning -- a subdomain of artificial intelligence where models learn through interaction with their environment -- has seen growing interest from researchers. Applying reinforcement learning requires modeling the spread of wildfires. Traditionally, modeling was primarily done using physics-based methods [@rothermel1972mathematical; @Andrews_1986]. However, newer methods are more data-driven, enabling the use of a higher diversity of features [@https://doi.org/10.1002/eap.1898; @diao2020uncertainty].
 
-Researchers have recently been studying wildfire surveillance and monitoring. While various forms of machine learning, such as computer vision [@ganapathi2018using], have been used to solve this task, the most popular method by far has been to employ reinforcement learning [@julian2019distributed; @altamimi2022large; @9340340]. Research in surveillance and monitoring has been supported by open-source environments for modeling wildfire spread and surveillance [@cellular_automata; @forest_fire].
+Researchers have recently been studying wildfire surveillance and monitoring. While various forms of machine learning, such as computer vision [@ganapathi2018using], have been used to solve this task, the most popular method by far has been reinforcement learning [@julian2019distributed; @altamimi2022large; @9340340]. Research in surveillance and monitoring has been supported by open-source environments for modeling wildfire spread and surveillance [@cellular_automata; @forest_fire].
 
-There has also been emerging interest in optimizing the evacuation process using computational methods [@https://doi.org/10.1111/risa.12944]. However, no reinforcement learning environments exist for the task of evacuation. We hope that open-source that tools for evacuation will spur development in this area.
+There has also been emerging interest in optimizing the evacuation process using computational methods [@https://doi.org/10.1111/risa.12944]. However, no reinforcement learning environments exist for the task of evacuation. We hope that open-source tools for evacuation will spur development in this area.
 
 # Methods
 
-Our environment for wildfire evacuation builds upon the Gymnasium API standard. This standard has functions to help the user `step` through a single discrete time step of the environment, `reset` the environment back to its original state, and `render` the environment to the user.
+Our environment for wildfire evacuation builds upon the Gymnasium API standard. This standard has functions to help the user `step` through a single discrete time step of the environment, `reset` the environment back to its original state, and `render` the environment for the user.
 
 ## Wildfire Evacuation as a Markov Decision Process
 
@@ -73,7 +73,7 @@ Whether or not to evacuate. If evacuating, the agent must choose a specific popu
 
 ## Modeling the Spread of Wildfires
 
-Finally, our stochastic wildfire model is taken from Julian, et al. [@Julian2018]:
+Finally, our stochastic wildfire model is based on prior work [@Julian2018]:
 
 ### Fuel
 
@@ -88,16 +88,16 @@ We define the spread of the fire by the following equation: $p(s)=1-\Pi_{s'}(1 -
 - $p(s)$ represents the probability of non-inflamed cell $s$ alighting
 - $s'$ represents an adjacent cell
 - $\lambda$ is a hyperparameter that affects the probability of fire spreading from one cell to an adjacent one (we set $\lambda = 0.094$)
-- $d(s,s')$ is the $L^{2}$ distance between cells
+- $d(s,s')$ is the Euclidean distance between cells
 - $B(s)$ is a Boolean to check if cell is currently on fire
 
 ### Wind
 
-We can add wind bias by modifying the convolution filter. In our working implementation, wind speed is linearly scale of how wind affects probability of neighboring cell alighting current cell. linear scale is further scaled for each neighboring cell by cosine similarity of vector between direction to neighboring cell to wind direction.
+We can add wind bias by modifying the convolution filter. In our implementation, wind speed affects the probability of neighboring cells igniting the current cell. The linear scale is further scaled for each neighboring cell by cosine similarity of vector between direction to neighboring cell to wind direction.
 
 # Features
 
-Users are given control over the configuration of their environments, including: the dimensions of the grid world, the locations of populated areas and paths, and initial fire placement. Users can also select from our library of example environments or have the program dynamically generate environments. We also offer examples of how to use popular RL libraries with our environment, such as Stable-Baselines3 [@JMLR:v22:20-1364].
+Users can control the configuration of the environment, including the dimensions of the grid world, the locations of populated areas and paths, and initial fire placement. Users can also select from our library of example environments or have the program dynamically generate environments. We also offer examples of how to use popular RL libraries with our environment, such as Stable-Baselines3 [@JMLR:v22:20-1364].
 
 In addition, users can generate visualizations of the environment by calling the `render` function of the Gymnasium environment object. After executing a set of actions on the environment, the user can call `generate_gif`, which stitches together all of the images rendered by the user into a single GIF.
 
