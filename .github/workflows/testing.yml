@@ -18,7 +18,7 @@ jobs:
       - name: Install package locally
         run: pip install -e wildfire_evac
       - name: Install pytest for testing
-        run: python -m pip install pytest pytest-cov
+        run: python -m pip install pytest pytest-mock pytest-cov
       - name: Run tests
         run: python -m pytest -s
       - name: Generate code coverage file
