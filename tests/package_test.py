@@ -25,5 +25,12 @@ def test_constructor():
     }
     env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
     
-    # Make basic checks
+    # Make basic checks for the constructor
     assert(env.num_rows == num_rows)
+    assert(env.num_cols == num_cols)
+    np.testing.assert_array_equal(env.populated_areas, populated_areas)
+    np.testing.assert_array_equal(env.paths, paths)
+
+    # Special check for paths to populated aras
+    for key in paths_to_pops:
+        np.testing.assert_array_equal(np.array(env.paths_to_pops[key]), np.array(paths_to_pops[key]))
