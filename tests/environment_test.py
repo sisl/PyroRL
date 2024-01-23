@@ -21,11 +21,6 @@ def dummy_environment():
     test_world = FireWorld(10, 10, populated_areas, paths, paths_to_pops)
     return test_world
 
-
-
-
-
-
 def test_initialization():
     populated_areas = np.array([[2,2],[4,1]])
     paths = [[[2,0],[2,1]], [[1,0],[1,1],[2,1],[3,1]]]

@@ -1,4 +1,4 @@
-# Wildfire Evacuation RL Environment
+# PyroRL
 
 A new reinforcement learning OpenAI Gym environment built for the simulation of wildfire evacuation.
 
