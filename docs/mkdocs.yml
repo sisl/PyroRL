@@ -1,5 +1,5 @@
-site_name: Wildfire Evacuation RL Gym Environment
-site_url: https://example.com/
+site_name: PyroRL
+site_url: https://sisl.github.io/PyroRL/
 nav:
   - Home: index.md
   - Quickstart: quickstart.md
