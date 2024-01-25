@@ -2,7 +2,7 @@ name: Publish docs via GitHub Pages
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v2
-        with:
-          ref: master  # Specify the branch you want to checkout
       - run: cd ${{ github.workspace }}
       - run: cd docs
       - name: Deploy docs
