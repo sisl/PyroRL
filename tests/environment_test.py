@@ -21,7 +21,11 @@ def dummy_environment():
     test_world = FireWorld(10, 10, populated_areas, paths, paths_to_pops)
     return test_world
 
+
 def test_initialization():
+    """
+    Test to make sure that initializing the environment goes smoothly.
+    """
     populated_areas = np.array([[2,2],[4,1]])
     paths = [[[2,0],[2,1]], [[1,0],[1,1],[2,1],[3,1]]]
     paths_to_pops = {0:[2,2], 1:[4,1]}
@@ -53,6 +57,7 @@ def test_initialization():
     returned_state = test_world.get_state()
     assert np.array_equal(returned_state[PATHS_INDEX], expected_returned_path_array)
 
+
 def test_setup():
     """
     Set up grid world and initiate loop of action-taking + updating.
@@ -72,10 +77,10 @@ def test_setup():
         print("Reward: " + str(reward) + "\n")
 
 
-"""
-Test to make sure that if a path goes on fire, they are removed from the state space for paths. 
-"""
 def test_remove_path_on_fire():
+    """
+    Test to make sure that if a path goes on fire, they are removed from the state space for paths. 
+    """
     populated_areas = np.array([[1,2]])
     paths = [[[1,0],[1,1]]]
     paths_to_pops = {0:[[1,2]]}
@@ -95,11 +100,11 @@ def test_remove_path_on_fire():
     assert test_world.paths[0][1] == False
 
 
-"""
-Test to make sure that if multiple paths go on fire after a step, they are both removed from 
-the paths state space.
-"""
 def test_remove_multiple_paths_on_fire():
+    """
+    Test to make sure that if multiple paths go on fire after a step, they are both removed from 
+    the paths state space.
+    """
     populated_areas = np.array([[1,2], [3,3]])
     paths = [[[1,0],[1,1]], [[3,4]]]
     paths_to_pops = {0:[[1,2]], 1:[[3,4]]}
@@ -122,10 +127,11 @@ def test_remove_multiple_paths_on_fire():
     assert test_world.paths[0][1] == False
     assert test_world.paths[1][1] == False
 
-"""
-Test for if two paths intersect only the one on fire disappears
-"""
+
 def test_remove_path_on_fire_intersecting_paths():
+    """
+    Test for if two paths intersect only the one on fire disappears
+    """
     populated_areas = np.array([[1,2], [2,1]])
     paths = [[[1,0],[1,1]], [[0,1], [1,1]]]
     paths_to_pops = {0:[[1,2]], 1:[2,1]}
@@ -146,11 +152,12 @@ def test_remove_path_on_fire_intersecting_paths():
     check_grid[1,1] = 1
     assert np.array_equal(test_world.state_space[PATHS_INDEX], check_grid)
 
-"""
-Test to make sure that if a populated area was taking a path that caught on fire, it stops 
-evacuating. 
-"""
+
 def test_stop_evacuating():
+    """
+    Test to make sure that if a populated area was taking a path that caught on fire, it stops 
+    evacuating. 
+    """
     populated_areas = np.array([[1,2]])
     paths = [[[1,0],[1,1]]]
     paths_to_pops = {0:[[1,2]]}
@@ -176,10 +183,11 @@ def test_stop_evacuating():
     assert np.array_equal(test_world.state_space[EVACUATING_INDEX], np.zeros((num_rows, num_cols)))
     assert 0 not in test_world.evacuating_paths
 
-"""
-Test to make sure that if two areas are taking the same path, they both stop evacuating.
-"""
+
 def test_multiple_stop_evacuating():
+    """
+    Test to make sure that if two areas are taking the same path, they both stop evacuating.
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]]]
     paths_to_pops = {0:[[1,2], [0,1]]}
@@ -209,12 +217,11 @@ def test_multiple_stop_evacuating():
     assert 0 not in test_world.evacuating_paths
 
 
-
-"""
-Test to make sure that if a path is evacuating its evacuating timestamp is decremented when a step
-is taken. 
-"""
 def test_evacuation_decrement():
+    """
+    Test to make sure that if a path is evacuating its evacuating timestamp is decremented when a step
+    is taken. 
+    """
     populated_areas = np.array([[1,2]])
     paths = [[[1,0],[1,1]]]
     paths_to_pops = {0:[[1,2]]}
@@ -236,11 +243,12 @@ def test_evacuation_decrement():
 
     assert test_world.evacuating_timestamps[pop_area[0], pop_area[1]] == 9
 
-"""
-Test to make sure if two areas are evacuating on the same path, they both have their 
-timestamps decremented when a step is taken.
-"""
+
 def test_multiple_evacuation_decrement():
+    """
+    Test to make sure if two areas are evacuating on the same path, they both have their 
+    timestamps decremented when a step is taken.
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]]]
     paths_to_pops = {0:[[1,2], [0,1]]}
@@ -266,11 +274,12 @@ def test_multiple_evacuation_decrement():
     assert test_world.evacuating_timestamps[first_pop_area[0], first_pop_area[1]] == 9
     assert test_world.evacuating_timestamps[first_pop_area[0], first_pop_area[1]] == 9
 
-"""
-Test to make sure that if a populated area finishes evacuating it is removed from the evacuating 
-populated areas state. 
-"""
+
 def test_finished_evacuating():
+    """
+    Test to make sure that if a populated area finishes evacuating it is removed from the evacuating 
+    populated areas state. 
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]]]
     paths_to_pops = {0:[[1,2], [0,1]]}
@@ -298,10 +307,11 @@ def test_finished_evacuating():
     assert 0 not in test_world.evacuating_paths
     assert test_world.evacuating_timestamps[pop_area[0], pop_area[1]] == np.inf
 
-"""
-Test to make sure self.actions is set up correctly.
-"""
+
 def test_set_actions():
+    """
+    Test to make sure self.actions is set up correctly.
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
@@ -313,10 +323,11 @@ def test_set_actions():
     
     assert len(test_world.actions) == 4 #4 because action to do nothing adds 1
 
-"""
-Test to make sure that if an action that doesn't exist is given, nothing happens
-"""
+
 def test_bad_action():
+    """
+    Test to make sure that if an action that doesn't exist is given, nothing happens
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
@@ -330,10 +341,11 @@ def test_bad_action():
     test_world.set_action(4)
     assert(np.equal(test_world.state_space, old_state_space).all())
 
-"""
-Test to make sure that if the "do nothing" action is given, nothing happens
-"""
+
 def test_do_nothing_action():
+    """
+    Test to make sure that if the "do nothing" action is given, nothing happens
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
@@ -347,10 +359,11 @@ def test_do_nothing_action():
     test_world.set_action(3)
     assert(np.equal(test_world.state_space, old_state_space).all())
 
-"""
-Test to make sure that if the chosen path has burned down, nothing happens.
-"""
+
 def test_burned_down_path():
+    """
+    Test to make sure that if the chosen path has burned down, nothing happens.
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
@@ -375,10 +388,11 @@ def test_burned_down_path():
     assert(np.equal(old_state_space, test_world.state_space).all())
     assert(np.equal(old_evacuating_timestamps, test_world.evacuating_timestamps).all())
 
-"""
-Test to make sure that if the chosen population center has burned down, nothing happens.
-"""
+
 def test_burned_down_pop():
+    """
+    Test to make sure that if the chosen population center has burned down, nothing happens.
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
@@ -404,10 +418,10 @@ def test_burned_down_pop():
     assert(np.equal(old_evacuating_timestamps, test_world.evacuating_timestamps).all())
 
 
-"""
-Test to make sure that if populated cell is already evacuating, nothing happens when it is told to evacuate again
-"""
 def test_already_evacuating():
+    """
+    Test to make sure that if populated cell is already evacuating, nothing happens when it is told to evacuate again
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
@@ -432,10 +446,10 @@ def test_already_evacuating():
     assert(np.equal(old_evacuating_timestamps, test_world.evacuating_timestamps).all())
 
 
-"""
-Test to make sure that taking an action for the first time for a populated cell works
-"""
 def test_pop_taking_first_action():
+    """
+    Test to make sure that taking an action for the first time for a populated cell works
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
@@ -451,10 +465,11 @@ def test_pop_taking_first_action():
     assert(test_world.state_space[EVACUATING_INDEX, 0, 1] == 1)
     assert(test_world.evacuating_timestamps[0,1] == 10)
 
-"""
-Test to make sure that taking an action for the first time for a populated cell works
-"""
+
 def test_pop_taking_first_action():
+    """
+    Test to make sure that taking an action for the first time for a populated cell works
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
@@ -470,10 +485,10 @@ def test_pop_taking_first_action():
     assert(test_world.state_space[EVACUATING_INDEX, 0, 1] == 1)
     assert(test_world.evacuating_timestamps[0,1] == 10)
 
-"""
-Test to make sure that taking an action works for one populated area if another populated area is already taking the same path.
-"""
 def test_multiple_pop_cells_same_path():
+    """
+    Test to make sure that taking an action works for one populated area if another populated area is already taking the same path.
+    """
     populated_areas = np.array([[1,2], [0,1]])
     paths = [[[1,0],[1,1]],[[0,0]]]
     paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
