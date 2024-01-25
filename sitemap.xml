@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://example.com/</loc>
-         <lastmod>2023-12-19</lastmod>
+         <loc>https://sisl.github.io/PyroRL/</loc>
+         <lastmod>2024-01-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://example.com/contribution-guide/</loc>
-         <lastmod>2023-12-19</lastmod>
+         <loc>https://sisl.github.io/PyroRL/contribution-guide/</loc>
+         <lastmod>2024-01-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://example.com/how-it-works/</loc>
-         <lastmod>2023-12-19</lastmod>
+         <loc>https://sisl.github.io/PyroRL/how-it-works/</loc>
+         <lastmod>2024-01-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://example.com/quickstart/</loc>
-         <lastmod>2023-12-19</lastmod>
+         <loc>https://sisl.github.io/PyroRL/quickstart/</loc>
+         <lastmod>2024-01-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://example.com/reference/</loc>
-         <lastmod>2023-12-19</lastmod>
+         <loc>https://sisl.github.io/PyroRL/reference/</loc>
+         <lastmod>2024-01-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
