@@ -6,10 +6,10 @@ frontend/
 env/
 
 # Elements associated with publishing as a package
-wildfire_evac/wildfire_evac.egg-info/
-wildfire_evac/.pypirc
-wildfire_evac/dist/
-wildfire_evac/build/
+pyrorl/pyrorl.egg-info/
+pyrorl/.pypirc
+pyrorl/dist/
+pyrorl/build/
 
 # Created when training a policy
 sample_baseline.zip

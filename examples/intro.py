@@ -3,7 +3,7 @@ Example of how to use the wildfire evacuation RL environment.
 """
 import gymnasium
 import numpy as np
-import wildfire_evac
+import pyrorl
 
 if __name__ == "__main__":
     """
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         'paths': paths,
         'paths_to_pops': paths_to_pops
     }
-    env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
+    env = gymnasium.make('pyrorl/PyroRL-v0', **kwargs)
 
     # Run a simple loop of the environment
     env.reset()

@@ -5,8 +5,8 @@ with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name="wildfire_evac",
-    version="0.0.15",
+    name="pyrorl",
+    version="0.0.3",
     author='Celtics Big 3',
     author_email='clpondoc@stanford.edu',
     description='An RL OpenAI Gym Environment for Wildfire Evacuation',

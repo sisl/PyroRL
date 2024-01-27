@@ -1,7 +1,7 @@
 """
 OpenAI Gym Environment Wrapper Class
 """
-from wildfire_evac.envs.environment.environment import *
+from pyrorl.envs.environment.environment import *
 import gymnasium as gym
 from gymnasium import spaces
 import imageio

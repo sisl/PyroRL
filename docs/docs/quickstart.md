@@ -5,7 +5,7 @@
 First, download our Python package:
 
 ```bash
-pip install wildfire-evac
+pip install pyrorl
 ```
 
 To use our environment, you need to define five parameters:
@@ -34,7 +34,7 @@ kwargs = {
         'paths': paths,
         'paths_to_pops': paths_to_pops
     }
-env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
+env = gymnasium.make('pyrorl/PyroRL-v0', **kwargs)
 ```
 
 The wildfire environment has the following action and state/observation space:

@@ -2,7 +2,7 @@
 Unit tests for each of the functions in environment.py
 """
 import sys
-from wildfire_evac.envs.environment.environment import *
+from pyrorl.envs.environment.environment import *
 import numpy as np
 import random
 

@@ -9,13 +9,13 @@ To set up our codebase, create a virtual environment and install a local copy of
 ```bash
 python3 -m venv env
 source env/bin/activate
-cd wildfire_evac/
+cd pyrorl/
 pip install .
 ```
 
 ## Package Deployment
 
-All of the details of the package can be found in `wildfire_evac/setup.py`. This file defines attributes such as the name of the package, the version number, and the dependencies needed to use the package.
+All of the details of the package can be found in `pyrorl/setup.py`. This file defines attributes such as the name of the package, the version number, and the dependencies needed to use the package.
 
 Next, you build the distribution archives. Archives are compressed files that allow the package to be deployed across multiple platforms. You run the following command to generate the distribution files:
 

@@ -5,7 +5,7 @@ import gymnasium
 import numpy as np
 import pygame
 import pytest 
-import wildfire_evac
+import pyrorl
 
 def PGEvent():
     def __init__(self):
@@ -29,7 +29,7 @@ def test_constructor():
         'paths': paths,
         'paths_to_pops': paths_to_pops
     }
-    env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
+    env = gymnasium.make('pyrorl/PyroRL-v0', **kwargs)
     
     # Make basic checks for the constructor
     assert(env.num_rows == num_rows)
@@ -59,7 +59,7 @@ def test_reset():
         'paths': paths,
         'paths_to_pops': paths_to_pops
     }
-    env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
+    env = gymnasium.make('pyrorl/PyroRL-v0', **kwargs)
 
     # Run a simple loop of the environment
     env.reset()
@@ -98,7 +98,7 @@ def test_reset(mocker):
         'paths': paths,
         'paths_to_pops': paths_to_pops
     }
-    env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
+    env = gymnasium.make('pyrorl/PyroRL-v0', **kwargs)
 
     # Render and make simple test check
     env.reset()

@@ -4,7 +4,7 @@ An example of how to use our environment with Stable Baselines 3
 import gymnasium
 import numpy as np
 from stable_baselines3 import DQN
-import wildfire_evac
+import pyrorl
 
 if __name__ == "__main__":
     """
@@ -24,7 +24,7 @@ if __name__ == "__main__":
         'paths': paths,
         'paths_to_pops': paths_to_pops
     }
-    env = gymnasium.make('wildfire_evac/WildfireEvacuation-v0', **kwargs)
+    env = gymnasium.make('pyrorl/PyroRL-v0', **kwargs)
 
     # Train a model and delete
     model = DQN("MlpPolicy", env, verbose=1)
