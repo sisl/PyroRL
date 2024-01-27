@@ -73,7 +73,7 @@ Whether or not to evacuate. If evacuating, the agent must choose a specific popu
 
 ## Modeling the Spread of Wildfires
 
-Finally, our stochastic wildfire model is based on prior work [@Julian2018]:
+Finally, our stochastic wildfire model is based on prior work [@Julian2019]:
 
 ### Fuel
 
