@@ -93,7 +93,7 @@ We define the spread of the fire by the following equation: $p(s)=1-\Pi_{s'}(1 -
 
 ### Wind
 
-We can add wind bias by modifying the convolution filter. In our implementation, wind speed affects the probability of neighboring cells igniting the current cell. The linear scale is further scaled for each neighboring cell by cosine similarity of vector between direction to neighboring cell to wind direction.
+The spread of wildfire is also influenced by wind. This bias is modeled through a linear transformation using two properties. First, the wind speed affects the probability of neighboring cells igniting the current cell. In addition, for each cell, we calculate the vectors that point in the direction of each neighboring cell. We then take the dot product between this vector and the direction of the wind.
 
 # Features
 
