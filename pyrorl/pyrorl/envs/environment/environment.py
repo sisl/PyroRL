@@ -12,7 +12,7 @@ import random
 from scipy.stats import bernoulli
 import torch
 
-from .environment_constant import fire_mask
+from .environment_constant import fire_mask, linear_wind_transform
 
 """
 Indices corresponding to each layer of state
@@ -29,7 +29,18 @@ class FireWorld:
     while the 5 represents each of the following: [fire, fuel, populated_areas, evacuating, paths]
     """
 
-    def __init__(self, num_rows, num_cols, populated_areas, paths, paths_to_pops, num_fire_cells = 2, custom_fire_locations = None):
+    def __init__(
+            self,
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            num_fire_cells = 2,
+            custom_fire_locations = None,
+            wind_speed = None,
+            wind_angle = None,
+        ):
         """
         The constructor defines the state and action space, initializes the fires,
         and sets the paths and populated areas.
@@ -92,6 +103,13 @@ class FireWorld:
 
         # Set the timestep
         self.time_step = 0
+
+        #Factor in wind speeds
+        if wind_speed is not None or wind_angle is not None:
+            if wind_speed is None or wind_angle is None:
+                raise TypeError("When setting wind details, wind speed and wind angle must both be provided")
+            global fire_mask
+            fire_mask = linear_wind_transform(wind_speed, wind_angle)
 
     def sample_fire_propogation(self):
         """

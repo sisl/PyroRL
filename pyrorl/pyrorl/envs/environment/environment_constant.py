@@ -34,4 +34,4 @@ neighbor_vectors[12,:] = 0
 def linear_wind_transform(wind_speed : float, wind_angle : float):
     wind_vector = np.array([[np.cos(wind_angle)], [np.sin(wind_angle)]])
     scaling_term = -(neighbor_vectors @ wind_vector) * speed_to_percent_ratio * wind_speed + 1
-    return np.clip(scaling_term * base_fire_mask, a_min=0, a_max=1)
+    return np.clip(torch.from_numpy(scaling_term) * base_fire_mask, a_min=0, a_max=1)

@@ -19,7 +19,16 @@ PATH_COLOR = pygame.Color("#ffd166")
 GRASS_COLOR = pygame.Color("#06d6a0")
 
 class WildfireEvacuationEnv(gym.Env):
-    def __init__(self, num_rows, num_cols, populated_areas, paths, paths_to_pops):
+    def __init__(
+        self,
+        num_rows,
+        num_cols,
+        populated_areas,
+        paths,
+        paths_to_pops,
+        wind_speed = None,
+        wind_angle = None,
+    ):
         """
         Set up the basic environment and its parameters.
         """
@@ -29,7 +38,15 @@ class WildfireEvacuationEnv(gym.Env):
         self.populated_areas = populated_areas
         self.paths = paths
         self.paths_to_pops = paths_to_pops
-        self.fire_env = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
+        self.fire_env = FireWorld(
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            wind_speed=wind_speed,
+            wind_angle=wind_angle
+        )
 
         # Set up action space
         actions = self.fire_env.get_actions()
