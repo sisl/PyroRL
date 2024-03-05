@@ -1,6 +1,7 @@
 """
 Environment for Wildfire Spread
 """
+
 from collections import namedtuple
 import copy
 from importlib.resources import path
@@ -23,6 +24,7 @@ POPULATED_INDEX = 2
 EVACUATING_INDEX = 3
 PATHS_INDEX = 4
 
+
 class FireWorld:
     """
     We represent the world as a 5 by n by m tensor. n by m is the size of the grid world,
@@ -30,17 +32,17 @@ class FireWorld:
     """
 
     def __init__(
-            self,
-            num_rows,
-            num_cols,
-            populated_areas,
-            paths,
-            paths_to_pops,
-            num_fire_cells = 2,
-            custom_fire_locations = None,
-            wind_speed = None,
-            wind_angle = None,
-        ):
+        self,
+        num_rows,
+        num_cols,
+        populated_areas,
+        paths,
+        paths_to_pops,
+        num_fire_cells=2,
+        custom_fire_locations=None,
+        wind_speed=None,
+        wind_angle=None,
+    ):
         """
         The constructor defines the state and action space, initializes the fires,
         and sets the paths and populated areas.
@@ -53,12 +55,14 @@ class FireWorld:
         for key in paths_to_pops:
             for _ in range(len(paths_to_pops[key])):
                 num_actions += 1
-        self.actions = list(np.arange(num_actions + 1)) # extra action for doing nothing
+        self.actions = list(
+            np.arange(num_actions + 1)
+        )  # extra action for doing nothing
 
         # We want to remember which action index corresponds to which population center
         # and which path (because we just provide an array like [1,2,3,4,5,6,7]) which
         # would each be mapped to a given population area taking a given path
-        self.action_to_pop_and_path = { self.actions[-1] : None}
+        self.action_to_pop_and_path = {self.actions[-1]: None}
 
         index = 0
         for path in paths_to_pops:
@@ -67,25 +71,33 @@ class FireWorld:
                 index += 1
 
         # State for the evacuation of populated areas
-        self.evacuating_paths = {} # path_index : list of pop x,y indices that are evacuating [[x,y],[x,y],...]
+        self.evacuating_paths = (
+            {}
+        )  # path_index : list of pop x,y indices that are evacuating [[x,y],[x,y],...]
         self.evacuating_timestamps = np.full((num_rows, num_cols), np.inf)
 
         # Initialize placement of fire cells
         if custom_fire_locations:
-            fire_rows = custom_fire_locations[:,0]
-            fire_cols = custom_fire_locations[:,1]
+            fire_rows = custom_fire_locations[:, 0]
+            fire_cols = custom_fire_locations[:, 1]
             self.state_space[FIRE_INDEX, fire_rows, fire_cols] = 1
         else:
             for _ in range(num_fire_cells):
-                self.state_space[FIRE_INDEX, random.randint(0, num_rows - 1), random.randint(0, num_cols - 1)] = 1
+                self.state_space[
+                    FIRE_INDEX,
+                    random.randint(0, num_rows - 1),
+                    random.randint(0, num_cols - 1),
+                ] = 1
 
         # Initialize fuel levels
         # Note: make the fire spread parameters to constants?
         num_values = num_rows * num_cols
-        self.state_space[FUEL_INDEX] = np.random.normal(8.5,3,num_values).reshape((num_rows,num_cols))
+        self.state_space[FUEL_INDEX] = np.random.normal(8.5, 3, num_values).reshape(
+            (num_rows, num_cols)
+        )
 
         # Initialize populated areas
-        pop_rows, pop_cols = populated_areas[:,0], populated_areas[:,1]
+        pop_rows, pop_cols = populated_areas[:, 0], populated_areas[:, 1]
         self.state_space[POPULATED_INDEX, pop_rows, pop_cols] = 1
 
         # Initialize paths
@@ -93,8 +105,8 @@ class FireWorld:
         self.paths = []
         for path in paths:
             path_array = np.array(path)
-            path_rows, path_cols = path_array[:,0], path_array[:,1]
-            self.state_space[PATHS_INDEX,path_rows,path_cols] += 1
+            path_rows, path_cols = path_array[:, 0], path_array[:, 1]
+            self.state_space[PATHS_INDEX, path_rows, path_cols] += 1
 
             # each path in self.paths is a list that records what the path is and whether or not the path still exists (i.e. has
             # not been destroyed by a fire)
@@ -104,10 +116,12 @@ class FireWorld:
         # Set the timestep
         self.time_step = 0
 
-        #Factor in wind speeds
+        # Factor in wind speeds
         if wind_speed is not None or wind_angle is not None:
             if wind_speed is None or wind_angle is None:
-                raise TypeError("When setting wind details, wind speed and wind angle must both be provided")
+                raise TypeError(
+                    "When setting wind details, wind speed and wind angle must both be provided"
+                )
             global fire_mask
             fire_mask = linear_wind_transform(wind_speed, wind_angle)
 
@@ -116,15 +130,15 @@ class FireWorld:
         Sample the next state of the wildfire model.
         """
         # Drops fuel level of enflamed cells
-        self.state_space[FUEL_INDEX,self.state_space[FIRE_INDEX] == 1] -= 1
-        self.state_space[FUEL_INDEX,self.state_space[FUEL_INDEX] < 0] = 0
+        self.state_space[FUEL_INDEX, self.state_space[FIRE_INDEX] == 1] -= 1
+        self.state_space[FUEL_INDEX, self.state_space[FUEL_INDEX] < 0] = 0
 
         # Extinguishes cells that have run out of fuel
-        self.state_space[FIRE_INDEX,self.state_space[FUEL_INDEX,:] <= 0] = 0
+        self.state_space[FIRE_INDEX, self.state_space[FUEL_INDEX, :] <= 0] = 0
 
         # Runs kernel of neighborhing cells where each row corresponds to the neighborhood of a cell
         torch_rep = torch.tensor(self.state_space[FIRE_INDEX]).unsqueeze(0)
-        y = torch.nn.Unfold((5,5), dilation = 1, padding = 2)
+        y = torch.nn.Unfold((5, 5), dilation=1, padding=2)
         z = y(torch_rep)
 
         # The relative importance of each neighboring cell is weighted
@@ -132,7 +146,7 @@ class FireWorld:
 
         # Unenflamed cells are set to 1 to eliminate their role to the fire spread equation
         z[z == 0] = 1
-        z = z.prod(dim = 0)
+        z = z.prod(dim=0)
         z = 1 - z.reshape(self.state_space[FIRE_INDEX].shape)
 
         # From the probability of an ignition in z, new fire locations are randomly generated
@@ -140,7 +154,9 @@ class FireWorld:
         new_fire = (z > prob_mask).float()
 
         # These new fire locations are added to the state
-        self.state_space[FIRE_INDEX] = np.maximum(np.array(new_fire), self.state_space[FIRE_INDEX])
+        self.state_space[FIRE_INDEX] = np.maximum(
+            np.array(new_fire), self.state_space[FIRE_INDEX]
+        )
 
     # Note to self: make sure to update evacuation timestep state
     def update_paths_and_evactuations(self):
@@ -152,28 +168,36 @@ class FireWorld:
         """
         for i in range(len(self.paths)):
             # Decrement path counts and remove path
-            if self.paths[i][1] and np.sum(np.logical_and(self.state_space[FIRE_INDEX], self.paths[i][0])) > 0:
+            if (
+                self.paths[i][1]
+                and np.sum(
+                    np.logical_and(self.state_space[FIRE_INDEX], self.paths[i][0])
+                )
+                > 0
+            ):
                 self.state_space[PATHS_INDEX] -= self.paths[i][0]
                 self.paths[i][1] = False
 
                 # Stop evacuating an area if it was taking the removed path
                 if i in self.evacuating_paths:
                     pop_centers = np.array(self.evacuating_paths[i])
-                    pop_rows, pop_cols = pop_centers[:,0], pop_centers[:,1]
+                    pop_rows, pop_cols = pop_centers[:, 0], pop_centers[:, 1]
 
                     # Reset timestamp and evacuation index
-                    self.evacuating_timestamps[pop_rows,pop_cols] = np.inf
+                    self.evacuating_timestamps[pop_rows, pop_cols] = np.inf
                     self.state_space[EVACUATING_INDEX, pop_rows, pop_cols] = 0
                     del self.evacuating_paths[i]
 
-            elif i in self.evacuating_paths: # we need to decrement the evacuating paths timestep
+            elif (
+                i in self.evacuating_paths
+            ):  # we need to decrement the evacuating paths timestep
 
                 # for the below, this code works for if multiple population centers are taking the same path and
                 # finish at the same time, but if we have it so that two population centers can't take the same
                 # path it could probably be simplified
                 pop_centers = np.array(self.evacuating_paths[i])
-                pop_rows, pop_cols = pop_centers[:,0], pop_centers[:,1]
-                self.evacuating_timestamps[pop_rows,pop_cols] -= 1
+                pop_rows, pop_cols = pop_centers[:, 0], pop_centers[:, 1]
+                self.evacuating_timestamps[pop_rows, pop_cols] -= 1
                 done_evacuating = np.where(self.evacuating_timestamps == 0)
                 self.state_space[EVACUATING_INDEX, done_evacuating] = 0
                 self.state_space[POPULATED_INDEX, done_evacuating] = 0
@@ -191,7 +215,10 @@ class FireWorld:
                     # this population center is done evacuating, so we can set its timestamp back to infinity
                     # (this is important so that we don't try to remove this from self.evacuating paths twice -
                     # was causing a bug)
-                    update_row, update_col = done_evacuating[j,0], done_evacuating[j,1]
+                    update_row, update_col = (
+                        done_evacuating[j, 0],
+                        done_evacuating[j, 1],
+                    )
                     self.evacuating_timestamps[update_row, update_col] = np.inf
 
                 # no more population centers are using this path, so we delete it
@@ -220,12 +247,14 @@ class FireWorld:
         evacuating = self.state_space[EVACUATING_INDEX][populated_areas]
 
         # Mark enflamed areas as no longer populated or evacuating
-        enflamed_populated_areas = np.where(self.state_space[FIRE_INDEX][populated_areas] == 1)[0]
+        enflamed_populated_areas = np.where(
+            self.state_space[FIRE_INDEX][populated_areas] == 1
+        )[0]
         enflamed_rows = populated_areas[0][enflamed_populated_areas]
         enflamed_cols = populated_areas[1][enflamed_populated_areas]
 
         # Depopulate enflamed areas and remove evacuations
-        self.state_space[POPULATED_INDEX, enflamed_rows, enflamed_cols]= 0
+        self.state_space[POPULATED_INDEX, enflamed_rows, enflamed_cols] = 0
         self.state_space[EVACUATING_INDEX, enflamed_rows, enflamed_cols] = 0
 
         # Update reward
@@ -237,20 +266,27 @@ class FireWorld:
         Allow the agent to take an action within the action space.
         """
         # Check that there is an action to take
-        if action in self.action_to_pop_and_path and self.action_to_pop_and_path[action] is not None and len(self.action_to_pop_and_path[action]) > 0:
+        if (
+            action in self.action_to_pop_and_path
+            and self.action_to_pop_and_path[action] is not None
+            and len(self.action_to_pop_and_path[action]) > 0
+        ):
             pop_cell, path_index = self.action_to_pop_and_path[action]
             pop_cell_row, pop_cell_col = pop_cell[0], pop_cell[1]
 
             # Ensure that the path chosen and populated cell haven't burned down and it's not already evacuating
-            if (self.paths[path_index][1] and self.state_space[POPULATED_INDEX,pop_cell_row, pop_cell_col] == 1
-                and self.evacuating_timestamps[pop_cell_row, pop_cell_col] == np.inf):
+            if (
+                self.paths[path_index][1]
+                and self.state_space[POPULATED_INDEX, pop_cell_row, pop_cell_col] == 1
+                and self.evacuating_timestamps[pop_cell_row, pop_cell_col] == np.inf
+            ):
 
                 # Add to evacuating paths and update state + timestamp
                 if path_index in self.evacuating_paths:
                     self.evacuating_paths[path_index].append(pop_cell)
                 else:
                     self.evacuating_paths[path_index] = [pop_cell]
-                self.state_space[EVACUATING_INDEX,pop_cell_row, pop_cell_col] = 1
+                self.state_space[EVACUATING_INDEX, pop_cell_row, pop_cell_col] = 1
                 self.evacuating_timestamps[pop_cell_row, pop_cell_col] = 10
 
     def get_state_utility(self):
@@ -285,4 +321,4 @@ class FireWorld:
         """
         Get the status of the simulation.
         """
-        return ( self.time_step >= 100 )
+        return self.time_step >= 100
