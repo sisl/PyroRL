@@ -5,7 +5,7 @@ OpenAI Gym Environment Wrapper Class
 from pyrorl.envs.environment.environment import *
 import gymnasium as gym
 from gymnasium import spaces
-import imageio
+import imageio.v2 as imageio
 import numpy as np
 import os
 import pygame

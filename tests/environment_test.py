@@ -95,12 +95,10 @@ def test_setup():
         action = random.randint(0, len(all_actions) - 1)
 
         test_world.set_action(all_actions[action])
-        print("Action: " + str(action))
 
         # Advance the gridworld and get the reward
         test_world.advance_to_next_timestep()
         reward = test_world.get_state_utility()
-        print("Reward: " + str(reward) + "\n")
 
 
 def test_remove_path_on_fire():
