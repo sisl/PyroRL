@@ -77,12 +77,13 @@ class FireWorld:
         self.evacuating_timestamps = np.full((num_rows, num_cols), np.inf)
 
         # Initialize placement of fire cells
+        self.num_fire_cells = num_fire_cells
         if custom_fire_locations:
             fire_rows = custom_fire_locations[:, 0]
             fire_cols = custom_fire_locations[:, 1]
             self.state_space[FIRE_INDEX, fire_rows, fire_cols] = 1
         else:
-            for _ in range(num_fire_cells):
+            for _ in range(self.num_fire_cells):
                 self.state_space[
                     FIRE_INDEX,
                     random.randint(0, num_rows - 1),
