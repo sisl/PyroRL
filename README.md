@@ -40,13 +40,7 @@ for _ in range(10):
 
 A compiled visualization of numerous iterations is seen below. For more examples, check out the `examples/` folder.
 
-<div style="text-align:center;">
-    <video width="75%" autoplay loop muted playsinline>
-        <source src="docs/docs/imgs/example_visualization.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-</div>
-<br />
+![Example Visualization of PyroRL](imgs/example_visualization.gif)
 
 ## How to Contribute
 
