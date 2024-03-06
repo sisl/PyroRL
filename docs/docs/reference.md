@@ -1,7 +1,7 @@
 # Reference
 
-You can find our codebase at the following Github [link](https://github.com/cpondoc/PyroRL). If you have any questions about how to use our package or contribute to the project, create an issue or reach out directly to our team:
+You can find our codebase at the following Github [link](https://github.com/sisl/PyroRL). If you have any questions about how to use our package or contribute to the project, create an issue or reach out directly to our team:
 
-- [clpondoc@stanford.edu](mailto:clpondoc@stanford.edu)
-- [jobrien3@stanford.edu](mailto:jobrien3@stanford.edu)
-- [joeytg@stanford.edu](mailto:joeytg@stanford.edu)
+- [clpondoc@cs.stanford.edu](mailto:clpondoc@cs.stanford.edu)
+- [jobrien3@cs.stanford.edu](mailto:jobrien3@cs.stanford.edu)
+- [joeytg@cs.stanford.edu](mailto:joeytg@cs.stanford.edu)
