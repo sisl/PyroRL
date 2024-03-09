@@ -2,7 +2,6 @@
 Unit tests for each of the functions in environment.py
 """
 
-import sys
 from pyrorl.envs.environment.environment import *
 import numpy as np
 import random
@@ -47,8 +46,17 @@ def test_initialization():
     populated_areas = np.array([[2, 2], [4, 1]])
     paths = [[[2, 0], [2, 1]], [[1, 0], [1, 1], [2, 1], [3, 1]]]
     paths_to_pops = {0: [2, 2], 1: [4, 1]}
+    custom_fire_locations = np.array([[1, 2], [2, 3]])
 
-    test_world = FireWorld(5, 5, populated_areas, paths, paths_to_pops)
+    # Initialize environment and test each dimension of the tensor
+    test_world = FireWorld(
+        5,
+        5,
+        populated_areas,
+        paths,
+        paths_to_pops,
+        custom_fire_locations=custom_fire_locations,
+    )
     expected_population_array = np.array(
         [
             [0, 0, 0, 0, 0],
@@ -58,6 +66,10 @@ def test_initialization():
             [0, 1, 0, 0, 0],
         ]
     )
+    assert np.array_equal(
+        test_world.state_space[POPULATED_INDEX], expected_population_array
+    )
+
     expected_path_array = np.array(
         [
             [0, 0, 0, 0, 0],
@@ -67,6 +79,8 @@ def test_initialization():
             [0, 0, 0, 0, 0],
         ]
     )
+    assert np.array_equal(test_world.state_space[PATHS_INDEX], expected_path_array)
+
     expected_returned_path_array = np.array(
         [
             [0, 0, 0, 0, 0],
@@ -76,12 +90,13 @@ def test_initialization():
             [0, 0, 0, 0, 0],
         ]
     )
-    assert np.array_equal(
-        test_world.state_space[POPULATED_INDEX], expected_population_array
-    )
-    assert np.array_equal(test_world.state_space[PATHS_INDEX], expected_path_array)
     returned_state = test_world.get_state()
     assert np.array_equal(returned_state[PATHS_INDEX], expected_returned_path_array)
+
+    fire_rows = custom_fire_locations[:, 0]
+    fire_cols = custom_fire_locations[:, 1]
+    comparison_array = returned_state[FIRE_INDEX, fire_rows, fire_cols] == 1
+    assert comparison_array.all()
 
 
 def test_setup():

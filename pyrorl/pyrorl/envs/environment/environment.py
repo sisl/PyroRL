@@ -2,17 +2,11 @@
 Environment for Wildfire Spread
 """
 
-from collections import namedtuple
-import copy
-from importlib.resources import path
-import itertools
 import numpy as np
-from os import stat
-from pickle import POP
 import random
-from scipy.stats import bernoulli
 import torch
 
+# For wind bias
 from .environment_constant import fire_mask, linear_wind_transform
 
 """
@@ -76,12 +70,14 @@ class FireWorld:
         )  # path_index : list of pop x,y indices that are evacuating [[x,y],[x,y],...]
         self.evacuating_timestamps = np.full((num_rows, num_cols), np.inf)
 
-        # Initialize placement of fire cells
+        # If the user specifies custom fire locations, set them
         self.num_fire_cells = num_fire_cells
-        if custom_fire_locations:
+        if custom_fire_locations is not None:
             fire_rows = custom_fire_locations[:, 0]
             fire_cols = custom_fire_locations[:, 1]
             self.state_space[FIRE_INDEX, fire_rows, fire_cols] = 1
+
+        # Otherwise, randomly generate them
         else:
             for _ in range(self.num_fire_cells):
                 self.state_space[

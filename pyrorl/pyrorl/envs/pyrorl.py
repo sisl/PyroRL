@@ -28,6 +28,7 @@ class WildfireEvacuationEnv(gym.Env):
         populated_areas,
         paths,
         paths_to_pops,
+        custom_fire_locations=None,
         wind_speed=None,
         wind_angle=None,
     ):
@@ -40,6 +41,7 @@ class WildfireEvacuationEnv(gym.Env):
         self.populated_areas = populated_areas
         self.paths = paths
         self.paths_to_pops = paths_to_pops
+        self.custom_fire_locations = custom_fire_locations
         self.wind_speed = wind_speed
         self.wind_angle = wind_angle
         self.fire_env = FireWorld(
@@ -48,6 +50,7 @@ class WildfireEvacuationEnv(gym.Env):
             populated_areas,
             paths,
             paths_to_pops,
+            custom_fire_locations=custom_fire_locations,
             wind_speed=wind_speed,
             wind_angle=wind_angle,
         )
@@ -80,8 +83,8 @@ class WildfireEvacuationEnv(gym.Env):
             self.populated_areas,
             self.paths,
             self.paths_to_pops,
-            wind_speed = self.wind_speed,
-            wind_angle = self.wind_angle
+            wind_speed=self.wind_speed,
+            wind_angle=self.wind_angle,
         )
         state_space = self.fire_env.get_state()
         return state_space, {"": ""}
