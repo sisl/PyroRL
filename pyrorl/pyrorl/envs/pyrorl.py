@@ -2,7 +2,7 @@
 OpenAI Gym Environment Wrapper Class
 """
 
-from pyrorl.envs.environment.environment import *
+from pyrorl.envs.environment.environment import FireWorld
 import gymnasium as gym
 from gymnasium import spaces
 import imageio.v2 as imageio
@@ -23,14 +23,14 @@ GRASS_COLOR = pygame.Color("#06d6a0")
 class WildfireEvacuationEnv(gym.Env):
     def __init__(
         self,
-        num_rows,
-        num_cols,
-        populated_areas,
-        paths,
-        paths_to_pops,
-        custom_fire_locations=None,
-        wind_speed=None,
-        wind_angle=None,
+        num_rows: int,
+        num_cols: int,
+        populated_areas: np.ndarray,
+        paths: np.ndarray,
+        paths_to_pops: dict,
+        custom_fire_locations: np.ndarray = None,
+        wind_speed: float = None,
+        wind_angle: float = None,
     ):
         """
         Set up the basic environment and its parameters.
@@ -73,7 +73,7 @@ class WildfireEvacuationEnv(gym.Env):
         if os.path.exists("grid_screenshots") is False:
             os.mkdir("grid_screenshots")
 
-    def reset(self, seed=None, options=None):
+    def reset(self, seed: int = None, options: dict = None) -> tuple:
         """
         Reset the environment to its initial state.
         """
@@ -89,7 +89,7 @@ class WildfireEvacuationEnv(gym.Env):
         state_space = self.fire_env.get_state()
         return state_space, {"": ""}
 
-    def step(self, action):
+    def step(self, action: int) -> tuple:
         """
         Take a step and advance the environment after taking an action.
         """
@@ -103,7 +103,9 @@ class WildfireEvacuationEnv(gym.Env):
         terminated = self.fire_env.get_terminated()
         return observations, rewards, terminated, False, {"": ""}
 
-    def render_hf(self, screen, font):
+    def render_hf(
+        self, screen: pygame.Surface, font: pygame.font.Font
+    ) -> pygame.Surface:
         """
         Set up header and footer
         """
@@ -141,8 +143,9 @@ class WildfireEvacuationEnv(gym.Env):
 
     def render(self):
         """
-        Render the environment (to-do)
+        Render the environment
         """
+        # Set up the state space
         state_space = self.fire_env.get_state()
         (_, rows, cols) = state_space.shape
 

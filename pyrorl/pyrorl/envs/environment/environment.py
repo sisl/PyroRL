@@ -21,37 +21,42 @@ PATHS_INDEX = 4
 
 class FireWorld:
     """
-    We represent the world as a 5 by n by m tensor. n by m is the size of the grid world,
-    while the 5 represents each of the following: [fire, fuel, populated_areas, evacuating, paths]
+    We represent the world as a 5 by n by m tensor:
+    - n by m is the size of the grid world,
+    - 5 represents each of the following:
+        - [fire, fuel, populated_areas, evacuating, paths]
     """
 
     def __init__(
         self,
-        num_rows,
-        num_cols,
-        populated_areas,
-        paths,
-        paths_to_pops,
-        num_fire_cells=2,
-        custom_fire_locations=None,
-        wind_speed=None,
-        wind_angle=None,
+        num_rows: int,
+        num_cols: int,
+        populated_areas: np.ndarray,
+        paths: np.ndarray,
+        paths_to_pops: dict,
+        num_fire_cells: int = 2,
+        custom_fire_locations: np.ndarray = None,
+        wind_speed: float = None,
+        wind_angle: float = None,
     ):
         """
         The constructor defines the state and action space, initializes the fires,
         and sets the paths and populated areas.
         """
+        # Assert that number of rows and columns are both positive
+        assert num_rows > 0
+        assert num_cols > 0
+
         # Define the state and action space
         self.reward = 0
         self.state_space = np.zeros([5, num_rows, num_cols])
 
+        # Set up actions -- add extra action for doing nothing
         num_actions = 0
         for key in paths_to_pops:
             for _ in range(len(paths_to_pops[key])):
                 num_actions += 1
-        self.actions = list(
-            np.arange(num_actions + 1)
-        )  # extra action for doing nothing
+        self.actions = list(np.arange(num_actions + 1))
 
         # We want to remember which action index corresponds to which population center
         # and which path (because we just provide an array like [1,2,3,4,5,6,7]) which
@@ -98,15 +103,16 @@ class FireWorld:
         self.state_space[POPULATED_INDEX, pop_rows, pop_cols] = 1
 
         # Initialize paths
-        # Note: right now paths is different from self.paths but we can change this later if needed
+        # Note: right now paths is different from self.paths
+        # but we can change this later if needed
         self.paths = []
         for path in paths:
             path_array = np.array(path)
             path_rows, path_cols = path_array[:, 0], path_array[:, 1]
             self.state_space[PATHS_INDEX, path_rows, path_cols] += 1
 
-            # each path in self.paths is a list that records what the path is and whether or not the path still exists (i.e. has
-            # not been destroyed by a fire)
+            # Each path in self.paths is a list that records what the path is and
+            # whether the path still exists (i.e. has not been destroyed by a fire)
             self.paths.append([np.zeros((num_rows, num_cols)), True])
             self.paths[-1][0][path_rows, path_cols] += 1
 
@@ -117,7 +123,8 @@ class FireWorld:
         if wind_speed is not None or wind_angle is not None:
             if wind_speed is None or wind_angle is None:
                 raise TypeError(
-                    "When setting wind details, wind speed and wind angle must both be provided"
+                    "When setting wind details, "
+                    "wind speed and wind angle must both be provided"
                 )
             global fire_mask
             fire_mask = linear_wind_transform(wind_speed, wind_angle)
@@ -133,7 +140,8 @@ class FireWorld:
         # Extinguishes cells that have run out of fuel
         self.state_space[FIRE_INDEX, self.state_space[FUEL_INDEX, :] <= 0] = 0
 
-        # Runs kernel of neighborhing cells where each row corresponds to the neighborhood of a cell
+        # Runs kernel of neighborhing cells where each row
+        # corresponds to the neighborhood of a cell
         torch_rep = torch.tensor(self.state_space[FIRE_INDEX]).unsqueeze(0)
         y = torch.nn.Unfold((5, 5), dilation=1, padding=2)
         z = y(torch_rep)
@@ -141,12 +149,14 @@ class FireWorld:
         # The relative importance of each neighboring cell is weighted
         z = z * fire_mask
 
-        # Unenflamed cells are set to 1 to eliminate their role to the fire spread equation
+        # Unenflamed cells are set to 1 to eliminate their role to the
+        # fire spread equation
         z[z == 0] = 1
         z = z.prod(dim=0)
         z = 1 - z.reshape(self.state_space[FIRE_INDEX].shape)
 
-        # From the probability of an ignition in z, new fire locations are randomly generated
+        # From the probability of an ignition in z, new fire locations are
+        # randomly generated
         prob_mask = torch.rand_like(z)
         new_fire = (z > prob_mask).float()
 
@@ -185,12 +195,12 @@ class FireWorld:
                     self.state_space[EVACUATING_INDEX, pop_rows, pop_cols] = 0
                     del self.evacuating_paths[i]
 
-            elif (
-                i in self.evacuating_paths
-            ):  # we need to decrement the evacuating paths timestep
+            # We need to decrement the evacuating paths timestep
+            elif i in self.evacuating_paths:
 
-                # for the below, this code works for if multiple population centers are taking the same path and
-                # finish at the same time, but if we have it so that two population centers can't take the same
+                # For the below, this code works for if multiple population centers
+                # are taking the same path and finish at the same time, but if we have
+                # it so that two population centers can't take the same
                 # path it could probably be simplified
                 pop_centers = np.array(self.evacuating_paths[i])
                 pop_rows, pop_cols = pop_centers[:, 0], pop_centers[:, 1]
@@ -201,24 +211,24 @@ class FireWorld:
 
                 # the forbidden for loop (maybe think of a way to do differently later)
                 # note that right now it is going to be vastly often the case that two
-                # population cases don't finish evacuating along the same path at the same
-                # time right now, so this is an extremely rare edge case, meaning that most often
-                # this for loop will run for a single iteration
+                # population cases don't finish evacuating along the same path at the
+                # same time right now, so this is an extremely rare edge case, meaning
+                # that most often this for loop will run for a single iteration
                 done_evacuating = np.array([done_evacuating[0], done_evacuating[1]])
                 done_evacuating = np.transpose(done_evacuating)
                 for j in range(done_evacuating.shape[0]):
                     self.evacuating_paths[i].remove(list(done_evacuating[j]))
 
-                    # this population center is done evacuating, so we can set its timestamp back to infinity
-                    # (this is important so that we don't try to remove this from self.evacuating paths twice -
-                    # was causing a bug)
+                    # This population center is done evacuating, so we can set its
+                    # timestamp back to infinity (so we don't try to remove this
+                    # from self.evacuating paths twice - was causing a bug)
                     update_row, update_col = (
                         done_evacuating[j, 0],
                         done_evacuating[j, 1],
                     )
                     self.evacuating_timestamps[update_row, update_col] = np.inf
 
-                # no more population centers are using this path, so we delete it
+                # No more population centers are using this path, so we delete it
                 if len(self.evacuating_paths[i]) == 0:
                     del self.evacuating_paths[i]
 
@@ -258,7 +268,7 @@ class FireWorld:
         self.reward -= 100 * len(enflamed_populated_areas)
         self.reward += len((np.where(fire + evacuating == 0))[0])
 
-    def set_action(self, action):
+    def set_action(self, action: int):
         """
         Allow the agent to take an action within the action space.
         """
@@ -271,7 +281,8 @@ class FireWorld:
             pop_cell, path_index = self.action_to_pop_and_path[action]
             pop_cell_row, pop_cell_col = pop_cell[0], pop_cell[1]
 
-            # Ensure that the path chosen and populated cell haven't burned down and it's not already evacuating
+            # Ensure that the path chosen and populated cell haven't
+            # burned down and it's not already evacuating
             if (
                 self.paths[path_index][1]
                 and self.state_space[POPULATED_INDEX, pop_cell_row, pop_cell_col] == 1
@@ -286,7 +297,7 @@ class FireWorld:
                 self.state_space[EVACUATING_INDEX, pop_cell_row, pop_cell_col] = 1
                 self.evacuating_timestamps[pop_cell_row, pop_cell_col] = 10
 
-    def get_state_utility(self):
+    def get_state_utility(self) -> int:
         """
         Get the total amount of utility given a current state.
         """
@@ -294,19 +305,19 @@ class FireWorld:
         self.reward = 0
         return present_reward
 
-    def get_actions(self):
+    def get_actions(self) -> list:
         """
         Get the set of actions available to the agent.
         """
         return self.actions
 
-    def get_timestep(self):
+    def get_timestep(self) -> int:
         """
         Get current timestep of simulation
         """
         return self.time_step
 
-    def get_state(self):
+    def get_state(self) -> np.ndarray:
         """
         Get the state space of the current configuration of the gridworld.
         """
@@ -314,7 +325,7 @@ class FireWorld:
         returned_state[PATHS_INDEX] = np.clip(returned_state[PATHS_INDEX], 0, 1)
         return returned_state
 
-    def get_terminated(self):
+    def get_terminated(self) -> bool:
         """
         Get the status of the simulation.
         """
