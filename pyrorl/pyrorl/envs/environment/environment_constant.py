@@ -56,7 +56,7 @@ neighbor_vectors = neighbor_vectors / normalizer.reshape((normalizer.size, 1))
 neighbor_vectors[12, :] = 0
 
 
-def linear_wind_transform(wind_speed: float, wind_angle: float) -> torch.Tensor:
+def linear_wind_transform(wind_speed: float, wind_angle: float) -> np.ndarray:
     """
     Computes a simple linear transformation of fire propogation probabilities
     scaled linearly by the speed of the wind and the dot product between the

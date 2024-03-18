@@ -5,6 +5,7 @@ Environment for Wildfire Spread
 import numpy as np
 import random
 import torch
+from typing import Optional, Any, Tuple, Dict, List
 
 # For wind bias
 from .environment_constant import fire_mask, linear_wind_transform
@@ -35,17 +36,21 @@ class FireWorld:
         paths: np.ndarray,
         paths_to_pops: dict,
         num_fire_cells: int = 2,
-        custom_fire_locations: np.ndarray = None,
-        wind_speed: float = None,
-        wind_angle: float = None,
+        custom_fire_locations: Optional[np.ndarray] = None,
+        wind_speed: Optional[float] = None,
+        wind_angle: Optional[float] = None,
     ):
         """
         The constructor defines the state and action space, initializes the fires,
         and sets the paths and populated areas.
         """
-        # Assert that number of rows and columns are both positive
-        assert num_rows > 0
-        assert num_cols > 0
+        # Assert that number of rows, columns, and fire cells are both positive
+        if num_rows < 0:
+            raise ValueError("Number of rows should be positive!")
+        if num_cols < 0:
+            raise ValueError("Number of rows should be positive!")
+        if num_fire_cells < 0:
+            raise ValueError("Number of fire cells should be positive!")
 
         # Define the state and action space
         self.reward = 0
@@ -61,8 +66,13 @@ class FireWorld:
         # We want to remember which action index corresponds to which population center
         # and which path (because we just provide an array like [1,2,3,4,5,6,7]) which
         # would each be mapped to a given population area taking a given path
-        self.action_to_pop_and_path = {self.actions[-1]: None}
+        self.action_to_pop_and_path: dict[Any, Optional[Tuple[Any, Any]]] = {
+            self.actions[-1]: None
+        }
 
+        """self.action_to_pop_and_path = {
+            self.actions[-1]: Optional[tuple[Any, Any]](None)
+        }"""
         index = 0
         for path in paths_to_pops:
             for pop in paths_to_pops[path]:
@@ -70,7 +80,7 @@ class FireWorld:
                 index += 1
 
         # State for the evacuation of populated areas
-        self.evacuating_paths = (
+        self.evacuating_paths: Dict[int, list] = (
             {}
         )  # path_index : list of pop x,y indices that are evacuating [[x,y],[x,y],...]
         self.evacuating_timestamps = np.full((num_rows, num_cols), np.inf)
@@ -105,7 +115,7 @@ class FireWorld:
         # Initialize paths
         # Note: right now paths is different from self.paths
         # but we can change this later if needed
-        self.paths = []
+        self.paths: List[List[Any]] = []
         for path in paths:
             path_array = np.array(path)
             path_rows, path_cols = path_array[:, 0], path_array[:, 1]
@@ -276,26 +286,28 @@ class FireWorld:
         if (
             action in self.action_to_pop_and_path
             and self.action_to_pop_and_path[action] is not None
-            and len(self.action_to_pop_and_path[action]) > 0
         ):
-            pop_cell, path_index = self.action_to_pop_and_path[action]
-            pop_cell_row, pop_cell_col = pop_cell[0], pop_cell[1]
+            action_val = self.action_to_pop_and_path[action]
+            if action_val is not None and len(action_val) > 0:
+                pop_cell, path_index = action_val
+                pop_cell_row, pop_cell_col = pop_cell[0], pop_cell[1]
 
-            # Ensure that the path chosen and populated cell haven't
-            # burned down and it's not already evacuating
-            if (
-                self.paths[path_index][1]
-                and self.state_space[POPULATED_INDEX, pop_cell_row, pop_cell_col] == 1
-                and self.evacuating_timestamps[pop_cell_row, pop_cell_col] == np.inf
-            ):
+                # Ensure that the path chosen and populated cell haven't
+                # burned down and it's not already evacuating
+                if (
+                    self.paths[path_index][1]
+                    and self.state_space[POPULATED_INDEX, pop_cell_row, pop_cell_col]
+                    == 1
+                    and self.evacuating_timestamps[pop_cell_row, pop_cell_col] == np.inf
+                ):
 
-                # Add to evacuating paths and update state + timestamp
-                if path_index in self.evacuating_paths:
-                    self.evacuating_paths[path_index].append(pop_cell)
-                else:
-                    self.evacuating_paths[path_index] = [pop_cell]
-                self.state_space[EVACUATING_INDEX, pop_cell_row, pop_cell_col] = 1
-                self.evacuating_timestamps[pop_cell_row, pop_cell_col] = 10
+                    # Add to evacuating paths and update state + timestamp
+                    if path_index in self.evacuating_paths:
+                        self.evacuating_paths[path_index].append(pop_cell)
+                    else:
+                        self.evacuating_paths[path_index] = [pop_cell]
+                    self.state_space[EVACUATING_INDEX, pop_cell_row, pop_cell_col] = 1
+                    self.evacuating_timestamps[pop_cell_row, pop_cell_col] = 10
 
     def get_state_utility(self) -> int:
         """

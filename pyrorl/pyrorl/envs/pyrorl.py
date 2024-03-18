@@ -10,6 +10,7 @@ import numpy as np
 import os
 import pygame
 import shutil
+from typing import Optional, Any
 
 # Constants for visualization
 WIDTH, HEIGHT = 475, 475
@@ -28,9 +29,9 @@ class WildfireEvacuationEnv(gym.Env):
         populated_areas: np.ndarray,
         paths: np.ndarray,
         paths_to_pops: dict,
-        custom_fire_locations: np.ndarray = None,
-        wind_speed: float = None,
-        wind_angle: float = None,
+        custom_fire_locations: Optional[np.ndarray] = None,
+        wind_speed: Optional[float] = None,
+        wind_angle: Optional[float] = None,
     ):
         """
         Set up the basic environment and its parameters.
@@ -73,7 +74,9 @@ class WildfireEvacuationEnv(gym.Env):
         if os.path.exists("grid_screenshots") is False:
             os.mkdir("grid_screenshots")
 
-    def reset(self, seed: int = None, options: dict = None) -> tuple:
+    def reset(
+        self, seed: Optional[int] = None, options: Optional[dict[str, Any]] = None
+    ) -> tuple[np.ndarray, dict[str, Any]]:
         """
         Reset the environment to its initial state.
         """
