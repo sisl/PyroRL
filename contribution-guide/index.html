@@ -58,7 +58,17 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#package-deployment">Package Deployment</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a>
+    <li class="toctree-l2"><a class="reference internal" href="#coding-standards">Coding Standards</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#linting">Linting</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#formatting">Formatting</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#type-checking">Type Checking</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#continuous-integration">Continuous Integration</a>
     </li>
@@ -113,13 +123,29 @@ pip install .
 <pre><code class="language-bash">twine upload dist/*
 </code></pre>
 <p>Doing the * will upload all of the compressed distribution files, so ideally, we would clear out all of them and then have only one set of distribution files.</p>
-<h2 id="testing">Testing</h2>
+<h2 id="coding-standards">Coding Standards</h2>
+<h3 id="testing">Testing</h3>
 <p>We use <a href="https://docs.pytest.org/en/7.4.x/"><code>pytest</code></a> for our backend tests. To keep the state of our package as small as possible, we don't include <code>pytest</code>. Thus, make sure to install the package before running.</p>
 <pre><code class="language-bash">pip install pytest
 python3 -m pytest -s
 </code></pre>
+<h3 id="linting">Linting</h3>
+<p>We use <a href="https://flake8.pycqa.org/en/latest/"><code>flake8</code></a> for linting. We also don't install <code>flake8</code> as part of our package, so make sure to install the package. You can then run:</p>
+<pre><code class="language-bash">pip install flake8
+flake8 .
+</code></pre>
+<h3 id="formatting">Formatting</h3>
+<p>We <a href="https://github.com/psf/black"><code>black</code></a> for code formatting. Make sure to install package, and then run:</p>
+<pre><code class="language-bash">pip install black
+black .
+</code></pre>
+<h3 id="type-checking">Type Checking</h3>
+<p>Lastly, we use <a href="https://mypy-lang.org/"><code>mypy</code></a> for type checking. Make sure to instal the package to run:</p>
+<pre><code class="language-bash">pip install mypy
+python3 -m mypy .
+</code></pre>
 <h2 id="continuous-integration">Continuous Integration</h2>
-<p>We use <a href="https://github.com/features/actions">GitHub Actions</a> to automatically run our entire test suite upon each <code>push</code>. Check out the file <code>.github/workflows/testing.yml</code> to edit this job.</p>
+<p>We use <a href="https://github.com/features/actions">GitHub Actions</a> to automatically run our entire test suite upon each <code>push</code>. Check out the file <code>.github/workflows/testing.yml</code> to edit the testing workflow, and <code>.github/workflows/testing.yml</code> to edit the linting workflow.</p>
 <h2 id="documentation">Documentation</h2>
 <p>We use <a href="https://www.mkdocs.org/">MkDocs</a> for our documentation. To set up and make edits to our documentation, first install the MkDocs package:</p>
 <pre><code class="language-bash">pip install mkdocs
