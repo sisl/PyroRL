@@ -16,11 +16,9 @@ jobs:
         run: python -m pip install setuptools wheel
       - run: cd ${{ github.workspace }}
       - name: Create distribution files for package
-        run: cd pyrorl
+        run: python pyrorl/setup.py sdist -d pyrorl/dist
       - name: Install package locally
-        run: pip install .
-      - name: Go back into global directory
-        run: cd ..
+        run: pip install -e pyrorl
       - name: Install pytest for testing
         run: python -m pip install pytest pytest-mock pytest-cov
       - name: Run tests
