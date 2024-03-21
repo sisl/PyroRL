@@ -155,6 +155,40 @@ def test_negative_parameters():
             num_fire_cells=num_fire_cells,
         )
 
+def test_missing_wind_parameters():
+    """
+    Test the behavior when one of the wind parameters is defined and the other isn't
+    """
+    populated_areas = np.array([[1, 2], [0, 1]])
+    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
+    num_rows = 5
+    num_cols = 5
+
+    # Initialize fire world with wind speed but no wind angle
+    with pytest.raises(TypeError):
+        test_wind_world = FireWorld(
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            wind_angle=None,
+            wind_speed=20,
+        )
+
+    # Initialize fire world with wind angle but no wind speed
+    with pytest.raises(TypeError):
+        test_wind_world = FireWorld(
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            wind_angle=np.pi,
+            wind_speed=None,
+        )
+    
 
 def test_invalid_populated_areas():
     """
