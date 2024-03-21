@@ -80,8 +80,19 @@ class FireWorld:
         self.state_space = np.zeros([5, num_rows, num_cols])
 
         # Set up actions -- add extra action for doing nothing
-        num_actions = 0
+        num_paths, num_actions = np.arange(len(paths)), 0
         for key in paths_to_pops:
+
+            # First, check that path index actually exists
+            if not np.isin(key, num_paths):
+                raise ValueError("Key is not a valid index of a path!")
+
+            # Then, check that each populated area exists
+            areas = np.array(paths_to_pops[key])
+            if not np.any(np.isin(areas, populated_areas)):
+                raise ValueError("Corresponding populated area does not exist!")
+
+            # Increment total number of actions to be taken
             for _ in range(len(paths_to_pops[key])):
                 num_actions += 1
         self.actions = list(np.arange(num_actions + 1))

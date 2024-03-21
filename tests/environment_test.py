@@ -155,6 +155,7 @@ def test_negative_parameters():
             num_fire_cells=num_fire_cells,
         )
 
+
 def test_missing_wind_parameters():
     """
     Test the behavior when one of the wind parameters is defined and the other isn't
@@ -188,7 +189,7 @@ def test_missing_wind_parameters():
             wind_angle=np.pi,
             wind_speed=None,
         )
-    
+
 
 def test_invalid_populated_areas():
     """
@@ -230,7 +231,7 @@ def test_invalid_populated_areas():
 
 def test_invalid_paths():
     """
-    Test that invalid paths
+    Test that invalid paths throw an error
     """
     populated_areas = np.array([[1, 2]])
     paths = np.array([[[1, 0], [-1, 1]]], dtype=object)
@@ -260,6 +261,37 @@ def test_invalid_paths():
 
     # Try with out of bounds y coordinate
     paths = np.array([[[1, 1], [1, 0], [0, 0]], [[4, 4], [4, 5]]], dtype=object)
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+
+def test_invalid_paths_to_pops():
+    """
+    Test invalid mappings from paths to populated areas
+    """
+    populated_areas = np.array([[1, 2]])
+    paths = np.array([[[1, 0], [-1, 1]]], dtype=object)
+    paths_to_pops = {-1: [[1, 2]]}
+    num_rows = 5
+    num_cols = 5
+
+    # Initialize fire world and assert error
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with path index that is greater than total number allowed
+    paths_to_pops = {2: [[1, 2]]}
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with populated area that doesn't exist
+    paths_to_pops = {0: [[1, 2], [2, 3]]}
     with pytest.raises(ValueError):
         test_world = FireWorld(
             num_rows, num_cols, populated_areas, paths, paths_to_pops

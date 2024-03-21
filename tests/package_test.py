@@ -52,9 +52,7 @@ def test_constructor():
     # Make basic checks for the constructor
     assert env.num_rows == num_rows
     assert env.num_cols == num_cols
-    np.testing.assert_array_equal(
-        env.populated_areas, populated_areas
-    )
+    np.testing.assert_array_equal(env.populated_areas, populated_areas)
     np.testing.assert_array_equal(env.paths, paths)
 
     # Special check for paths to populated areas
@@ -116,9 +114,7 @@ def test_reset():
     env.reset()
     assert env.num_rows == num_rows
     assert env.num_cols == num_cols
-    np.testing.assert_array_equal(
-        env.populated_areas, populated_areas
-    )
+    np.testing.assert_array_equal(env.populated_areas, populated_areas)
     np.testing.assert_array_equal(env.paths, paths)
 
     # Special check for paths to populated areas
