@@ -52,6 +52,31 @@ class FireWorld:
         if num_fire_cells < 0:
             raise ValueError("Number of fire cells should be positive!")
 
+        # Check that populated areas are within the grid
+        valid_populated_areas = (
+            (populated_areas[:, 0] >= 0)
+            & (populated_areas[:, 1] >= 0)
+            & (populated_areas[:, 0] < num_rows)
+            & (populated_areas[:, 1] < num_cols)
+        )
+        if np.any(~valid_populated_areas):
+            raise ValueError("Populated areas are not valid with the grid dimensions")
+
+        # Check that each path has squares within the grid
+        valid_paths = np.array(
+            [
+                (
+                    (np.array(path)[:, 0] >= 0)
+                    & (np.array(path)[:, 1] >= 0)
+                    & (np.array(path)[:, 0] < num_rows)
+                    & (np.array(path)[:, 1] < num_cols)
+                )
+                for path in paths
+            ]
+        )
+        if np.any(~np.hstack(valid_paths)):
+            raise ValueError("Pathed areas are not valid with the grid dimensions")
+
         # Define the state and action space
         self.reward = 0
         self.state_space = np.zeros([5, num_rows, num_cols])
@@ -70,9 +95,7 @@ class FireWorld:
             self.actions[-1]: None
         }
 
-        """self.action_to_pop_and_path = {
-            self.actions[-1]: Optional[tuple[Any, Any]](None)
-        }"""
+        # Map each action to a populated area and path
         index = 0
         for path in paths_to_pops:
             for pop in paths_to_pops[path]:
@@ -88,6 +111,20 @@ class FireWorld:
         # If the user specifies custom fire locations, set them
         self.num_fire_cells = num_fire_cells
         if custom_fire_locations is not None:
+
+            # Check that populated areas are within the grid
+            valid_fire_locations = (
+                (custom_fire_locations[:, 0] >= 0)
+                & (custom_fire_locations[:, 1] >= 0)
+                & (custom_fire_locations[:, 0] < num_rows)
+                & (custom_fire_locations[:, 1] < num_cols)
+            )
+            if np.any(~valid_fire_locations):
+                raise ValueError(
+                    "Populated areas are not valid with the grid dimensions"
+                )
+
+            # Only once valid, set them!
             fire_rows = custom_fire_locations[:, 0]
             fire_cols = custom_fire_locations[:, 1]
             self.state_space[FIRE_INDEX, fire_rows, fire_cols] = 1

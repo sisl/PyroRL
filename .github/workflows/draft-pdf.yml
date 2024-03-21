@@ -1,7 +1,10 @@
 name: Generate PDF Draft
 run-name: Generate latest PDF draft!
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'paper/paper.md'
 
 jobs:
   paper:

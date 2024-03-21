@@ -2,8 +2,9 @@
 Unit tests for each of the functions in environment.py
 """
 
-from pyrorl.envs.environment.environment import *
 import numpy as np
+from pyrorl.envs.environment.environment import *
+import pytest
 import random
 
 
@@ -15,15 +16,18 @@ def dummy_environment():
     # and which areas can use whicn paths.
     # Note: discuss if these should be dynamically generated or others.
     populated_areas = np.array([[1, 2], [4, 8], [6, 4], [8, 7]])
-    paths = [
-        [[1, 0], [1, 1]],
-        [[2, 2], [3, 2], [4, 2], [4, 1], [4, 0]],
-        [[2, 9], [2, 8], [3, 8]],
-        [[5, 8], [6, 8], [6, 9]],
-        [[7, 7], [6, 7], [6, 8], [6, 9]],
-        [[8, 6], [8, 5], [9, 5]],
-        [[8, 5], [9, 5], [7, 5], [7, 4]],
-    ]
+    paths = np.array(
+        [
+            [[1, 0], [1, 1]],
+            [[2, 2], [3, 2], [4, 2], [4, 1], [4, 0]],
+            [[2, 9], [2, 8], [3, 8]],
+            [[5, 8], [6, 8], [6, 9]],
+            [[7, 7], [6, 7], [6, 8], [6, 9]],
+            [[8, 6], [8, 5], [9, 5]],
+            [[8, 5], [9, 5], [7, 5], [7, 4]],
+        ],
+        dtype=object,
+    )
     paths_to_pops = {
         0: [[1, 2]],
         1: [[1, 2]],
@@ -44,7 +48,7 @@ def test_initialization():
     Test to make sure that initializing the environment goes smoothly.
     """
     populated_areas = np.array([[2, 2], [4, 1]])
-    paths = [[[2, 0], [2, 1]], [[1, 0], [1, 1], [2, 1], [3, 1]]]
+    paths = np.array([[[2, 0], [2, 1]], [[1, 0], [1, 1], [2, 1], [3, 1]]], dtype=object)
     paths_to_pops = {0: [2, 2], 1: [4, 1]}
     custom_fire_locations = np.array([[1, 2], [2, 3]])
 
@@ -116,12 +120,183 @@ def test_setup():
         reward = test_world.get_state_utility()
 
 
+def test_negative_parameters():
+    """
+    Test that negative parameters bring up ValueErrors
+    """
+    populated_areas = np.array([[1, 2]])
+    paths = np.array([[[1, 0], [1, 1]]], dtype=object)
+    paths_to_pops = {0: [[1, 2]]}
+    num_rows = -5
+    num_cols = 5
+
+    # Initialize fire world and assert error
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with negative columns instead
+    num_rows, num_cols = 5, -5
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with negative number of fire cells instead
+    num_cols, num_fire_cells = 5, -5
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            num_fire_cells=num_fire_cells,
+        )
+
+
+def test_invalid_populated_areas():
+    """
+    Test that invalid populuated areas are not allowed
+    """
+    populated_areas = np.array([[-1, 2]])
+    paths = np.array([[[1, 0], [1, 1]]], dtype=object)
+    paths_to_pops = {0: [[1, 2]]}
+    num_rows = 5
+    num_cols = 5
+
+    # Initialize fire world and assert error
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with negative column instead
+    populated_areas = np.array([[1, -2]])
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with out of bounds x coordinate
+    populated_areas = np.array([[7, 2]])
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with out of bounds y coordinate
+    populated_areas = np.array([[3, 8]])
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+
+def test_invalid_paths():
+    """
+    Test that invalid paths
+    """
+    populated_areas = np.array([[1, 2]])
+    paths = np.array([[[1, 0], [-1, 1]]], dtype=object)
+    paths_to_pops = {0: [[1, 2]]}
+    num_rows = 5
+    num_cols = 5
+
+    # Initialize fire world and assert error
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with negative column instead
+    paths = np.array([[[1, 1]], [[1, -2]]], dtype=object)
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with out of bounds x coordinate
+    paths = np.array([[[1, 1]], [[20, 3], [1, 2]]], dtype=object)
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+    # Try with out of bounds y coordinate
+    paths = np.array([[[1, 1], [1, 0], [0, 0]], [[4, 4], [4, 5]]], dtype=object)
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows, num_cols, populated_areas, paths, paths_to_pops
+        )
+
+
+def test_invalid_fire_locations():
+    """
+    Test that invalid fire locations are removed
+    """
+    populated_areas = np.array([[2, 2], [4, 1]])
+    paths = np.array([[[2, 0], [2, 1]], [[1, 0], [1, 1], [2, 1], [3, 1]]], dtype=object)
+    paths_to_pops = {0: [2, 2], 1: [4, 1]}
+    custom_fire_locations = np.array([[1, 2], [2, -1]])
+    num_rows = 5
+    num_cols = 5
+
+    # Initialize fire world and assert error
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            custom_fire_locations=custom_fire_locations,
+        )
+
+    # Try with negative column instead
+    custom_fire_locations = np.array([[1, -2]])
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            custom_fire_locations=custom_fire_locations,
+        )
+
+    # Try with out of bounds x coordinate
+    custom_fire_locations = np.array([[7, 2]])
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            custom_fire_locations=custom_fire_locations,
+        )
+
+    # Try with out of bounds y coordinate
+    custom_fire_locations = np.array([[3, 8]])
+    with pytest.raises(ValueError):
+        test_world = FireWorld(
+            num_rows,
+            num_cols,
+            populated_areas,
+            paths,
+            paths_to_pops,
+            custom_fire_locations=custom_fire_locations,
+        )
+
+
 def test_remove_path_on_fire():
     """
     Test to make sure that if a path goes on fire, they are removed from the state space for paths.
     """
     populated_areas = np.array([[1, 2]])
-    paths = [[[1, 0], [1, 1]]]
+    paths = np.array([[[1, 0], [1, 1]]])
     paths_to_pops = {0: [[1, 2]]}
     num_rows = 5
     num_cols = 5
@@ -147,7 +322,7 @@ def test_remove_multiple_paths_on_fire():
     the paths state space.
     """
     populated_areas = np.array([[1, 2], [3, 3]])
-    paths = [[[1, 0], [1, 1]], [[3, 4]]]
+    paths = np.array([[[1, 0], [1, 1]], [[3, 4]]], dtype=object)
     paths_to_pops = {0: [[1, 2]], 1: [[3, 4]]}
     num_rows = 5
     num_cols = 5
@@ -175,7 +350,7 @@ def test_remove_path_on_fire_intersecting_paths():
     Test for if two paths intersect only the one on fire disappears
     """
     populated_areas = np.array([[1, 2], [2, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 1], [1, 1]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 1], [1, 1]]])
     paths_to_pops = {0: [[1, 2]], 1: [2, 1]}
     num_rows = 5
     num_cols = 5
@@ -201,7 +376,7 @@ def test_stop_evacuating():
     evacuating.
     """
     populated_areas = np.array([[1, 2]])
-    paths = [[[1, 0], [1, 1]]]
+    paths = np.array([[[1, 0], [1, 1]]])
     paths_to_pops = {0: [[1, 2]]}
     num_rows = 5
     num_cols = 5
@@ -233,7 +408,7 @@ def test_multiple_stop_evacuating():
     Test to make sure that if two areas are taking the same path, they both stop evacuating.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]]]
+    paths = np.array([[[1, 0], [1, 1]]])
     paths_to_pops = {0: [[1, 2], [0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -273,7 +448,7 @@ def test_evacuation_decrement():
     is taken.
     """
     populated_areas = np.array([[1, 2]])
-    paths = [[[1, 0], [1, 1]]]
+    paths = np.array([[[1, 0], [1, 1]]])
     paths_to_pops = {0: [[1, 2]]}
     num_rows = 5
     num_cols = 5
@@ -300,7 +475,7 @@ def test_multiple_evacuation_decrement():
     timestamps decremented when a step is taken.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]]]
+    paths = np.array([[[1, 0], [1, 1]]])
     paths_to_pops = {0: [[1, 2], [0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -331,7 +506,7 @@ def test_finished_evacuating():
     populated areas state.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]]]
+    paths = np.array([[[1, 0], [1, 1]]])
     paths_to_pops = {0: [[1, 2], [0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -363,7 +538,7 @@ def test_set_actions():
     Test to make sure self.actions is set up correctly.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -379,7 +554,7 @@ def test_bad_action():
     Test to make sure that if an action that doesn't exist is given, nothing happens
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -397,7 +572,7 @@ def test_do_nothing_action():
     Test to make sure that if the "do nothing" action is given, nothing happens
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -415,7 +590,7 @@ def test_burned_down_path():
     Test to make sure that if the chosen path has burned down, nothing happens.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -444,7 +619,7 @@ def test_burned_down_pop():
     Test to make sure that if the chosen population center has burned down, nothing happens.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -473,7 +648,7 @@ def test_already_evacuating():
     Test to make sure that if populated cell is already evacuating, nothing happens when it is told to evacuate again
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -503,7 +678,7 @@ def test_pop_taking_first_action():
     Test to make sure that taking an action for the first time for a populated cell works
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -523,7 +698,7 @@ def test_pop_taking_first_action():
     Test to make sure that taking an action for the first time for a populated cell works
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
@@ -543,7 +718,7 @@ def test_multiple_pop_cells_same_path():
     Test to make sure that taking an action works for one populated area if another populated area is already taking the same path.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
-    paths = [[[1, 0], [1, 1]], [[0, 0]]]
+    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
     paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
     num_rows = 5
     num_cols = 5
