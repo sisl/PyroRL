@@ -89,7 +89,7 @@ class FireWorld:
 
             # Then, check that each populated area exists
             areas = np.array(paths_to_pops[key])
-            if not np.any(np.isin(areas, populated_areas)):
+            if np.any(~np.isin(areas, populated_areas)):
                 raise ValueError("Corresponding populated area does not exist!")
 
             # Increment total number of actions to be taken

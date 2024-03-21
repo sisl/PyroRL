@@ -272,7 +272,7 @@ def test_invalid_paths_to_pops():
     Test invalid mappings from paths to populated areas
     """
     populated_areas = np.array([[1, 2]])
-    paths = np.array([[[1, 0], [-1, 1]]], dtype=object)
+    paths = np.array([[[1, 0], [1, 1]]], dtype=object)
     paths_to_pops = {-1: [[1, 2]]}
     num_rows = 5
     num_cols = 5
@@ -389,7 +389,7 @@ def test_remove_multiple_paths_on_fire():
     """
     populated_areas = np.array([[1, 2], [3, 3]])
     paths = np.array([[[1, 0], [1, 1]], [[3, 4]]], dtype=object)
-    paths_to_pops = {0: [[1, 2]], 1: [[3, 4]]}
+    paths_to_pops = {0: [[1, 2]], 1: [[3, 3]]}
     num_rows = 5
     num_cols = 5
 
