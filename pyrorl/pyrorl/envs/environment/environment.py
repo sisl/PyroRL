@@ -72,7 +72,7 @@ class FireWorld:
                 )
                 for path in paths
         ]
-        if np.any(~np.hstack(np.array(valid_paths))):
+        if np.any(~np.hstack(valid_paths)):
             raise ValueError("Pathed areas are not valid with the grid dimensions")
 
         # Define the state and action space
