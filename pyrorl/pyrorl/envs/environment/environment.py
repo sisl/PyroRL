@@ -64,13 +64,13 @@ class FireWorld:
 
         # Check that each path has squares within the grid
         valid_paths = [
-                (
-                    (np.array(path)[:, 0] >= 0)
-                    & (np.array(path)[:, 1] >= 0)
-                    & (np.array(path)[:, 0] < num_rows)
-                    & (np.array(path)[:, 1] < num_cols)
-                )
-                for path in paths
+            (
+                (np.array(path)[:, 0] >= 0)
+                & (np.array(path)[:, 1] >= 0)
+                & (np.array(path)[:, 0] < num_rows)
+                & (np.array(path)[:, 1] < num_cols)
+            )
+            for path in paths
         ]
         if np.any(~np.hstack(valid_paths)):
             raise ValueError("Pathed areas are not valid with the grid dimensions")
