@@ -50,17 +50,17 @@ def test_constructor():
     env = gymnasium.make("pyrorl/PyroRL-v0", **kwargs)
 
     # Make basic checks for the constructor
-    assert env.get_wrapper_attr("num_rows") == num_rows
-    assert env.get_wrapper_attr("num_cols") == num_cols
+    assert env.num_rows == num_rows
+    assert env.num_cols == num_cols
     np.testing.assert_array_equal(
-        env.get_wrapper_attr("populated_areas"), populated_areas
+        env.populated_areas, populated_areas
     )
-    np.testing.assert_array_equal(env.get_wrapper_attr("paths"), paths)
+    np.testing.assert_array_equal(env.paths, paths)
 
     # Special check for paths to populated areas
     for key in paths_to_pops:
         np.testing.assert_array_equal(
-            np.array(env.get_wrapper_attr("paths_to_pops")[key]),
+            np.array(env.paths_to_pops[key]),
             np.array(paths_to_pops[key]),
         )
 
@@ -114,17 +114,17 @@ def test_reset():
 
     # Check that reset makes it all the same
     env.reset()
-    assert env.get_wrapper_attr("num_rows") == num_rows
-    assert env.get_wrapper_attr("num_cols") == num_cols
+    assert env.num_rows == num_rows
+    assert env.num_cols == num_cols
     np.testing.assert_array_equal(
-        env.get_wrapper_attr("populated_areas"), populated_areas
+        env.populated_areas, populated_areas
     )
-    np.testing.assert_array_equal(env.get_wrapper_attr("paths"), paths)
+    np.testing.assert_array_equal(env.paths, paths)
 
     # Special check for paths to populated areas
     for key in paths_to_pops:
         np.testing.assert_array_equal(
-            np.array(env.get_wrapper_attr("paths_to_pops")[key]),
+            np.array(env.paths_to_pops[key]),
             np.array(paths_to_pops[key]),
         )
 
@@ -241,7 +241,7 @@ def test_generate_gif(mocker):
     for _ in range(10):
 
         # Take action and observation
-        action = env.get_wrapper_attr("action_space").sample()
+        action = env.action_space.sample()
         env.step(action)
 
         # Render environment and print reward

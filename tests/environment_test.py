@@ -738,7 +738,7 @@ def test_multiple_pop_cells_same_path():
 
 def test_wind_bias():
     """
-    Test to make sure that taking an action works for one populated area if another populated area is already taking the same path.
+    Test that relative value of the fire mask changes when adding wind or no wind
     """
     populated_areas = np.array([[1, 2], [0, 1]])
     paths = [[[1, 0], [1, 1]], [[0, 0]]]
@@ -758,9 +758,11 @@ def test_wind_bias():
         wind_speed=20,
     )
 
+    # Calculate the wind and no wind fire masks
     windless_mask = test_world.fire_mask.reshape((5, 5))
     wind_mask = test_wind_world.fire_mask.reshape((5, 5))
 
+    # Check difference between wind and no wind bias
     assert (windless_mask[:, 0] < wind_mask[:, 0]).all().item()
     assert (windless_mask[:, 4] > wind_mask[:, 4]).all().item()
     assert (windless_mask[:, 2] == wind_mask[:, 2]).all().item()
