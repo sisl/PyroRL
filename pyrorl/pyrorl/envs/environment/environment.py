@@ -63,8 +63,7 @@ class FireWorld:
             raise ValueError("Populated areas are not valid with the grid dimensions")
 
         # Check that each path has squares within the grid
-        valid_paths = np.array(
-            [
+        valid_paths = [
                 (
                     (np.array(path)[:, 0] >= 0)
                     & (np.array(path)[:, 1] >= 0)
@@ -72,9 +71,8 @@ class FireWorld:
                     & (np.array(path)[:, 1] < num_cols)
                 )
                 for path in paths
-            ]
-        )
-        if np.any(~np.hstack(valid_paths)):
+        ]
+        if np.any(~np.hstack(np.array(valid_paths))):
             raise ValueError("Pathed areas are not valid with the grid dimensions")
 
         # Define the state and action space
