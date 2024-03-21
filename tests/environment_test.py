@@ -506,3 +506,24 @@ def test_multiple_pop_cells_same_path():
     assert(test_world.evacuating_timestamps[0,1] == 10)
     assert(test_world.state_space[EVACUATING_INDEX, 1, 2] == 1)
     assert(test_world.evacuating_timestamps[1,2] == 10)
+
+def test_wind_bias():
+    """
+    Test to make sure that taking an action works for one populated area if another populated area is already taking the same path.
+    """
+    populated_areas = np.array([[1,2], [0,1]])
+    paths = [[[1,0],[1,1]],[[0,0]]]
+    paths_to_pops = {0:[[1,2], [0,1]], 1:[[0,1]]}
+    num_rows = 5
+    num_cols = 5
+
+    # Initialize fire world
+    test_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
+    test_wind_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops, wind_angle=np.pi, wind_speed=20)
+
+    windless_mask = test_world.fire_mask.reshape((5,5))
+    wind_mask = test_wind_world.fire_mask.reshape((5,5))
+    
+    assert((windless_mask[:,0] < wind_mask[:,0]).all().item())
+    assert((windless_mask[:,4] > wind_mask[:,4]).all().item())
+    assert((windless_mask[:,2] == wind_mask[:,2]).all().item())

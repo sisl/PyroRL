@@ -17,7 +17,7 @@ fire_mask = np.copy(base_fire_mask)
 
 # Wind components
 # The rate with which speed of wind converts to a percent change in the chance of a neighbor cell igniting the center cell
-speed_to_percent_ratio = 0.1
+speed_to_percent_ratio = 0.004
 axis_distance = np.array([5 * [-i] for i in range(-2,3)])
 # a 5x5 matrix where each element represents a vector pointing in the direction of the corresponding neihboring cell
 neighbor_vectors = np.stack((-axis_distance.T, axis_distance), axis=2).reshape((-1,2))
@@ -33,5 +33,5 @@ neighbor_vectors[12,:] = 0
 # Probabilities are clamped around 0 and 1
 def linear_wind_transform(wind_speed : float, wind_angle : float):
     wind_vector = np.array([[np.cos(wind_angle)], [np.sin(wind_angle)]])
-    scaling_term = -(neighbor_vectors @ wind_vector) * speed_to_percent_ratio * wind_speed + 1
+    scaling_term = (neighbor_vectors @ wind_vector) * speed_to_percent_ratio * wind_speed + 1
     return np.clip(torch.from_numpy(scaling_term) * base_fire_mask, a_min=0, a_max=1)

@@ -109,7 +109,9 @@ class FireWorld:
             if wind_speed is None or wind_angle is None:
                 raise TypeError("When setting wind details, wind speed and wind angle must both be provided")
             global fire_mask
-            fire_mask = linear_wind_transform(wind_speed, wind_angle)
+            self.fire_mask = linear_wind_transform(wind_speed, wind_angle)
+        else:
+            self.fire_mask = torch.from_numpy(fire_mask)
 
     def sample_fire_propogation(self):
         """
@@ -128,7 +130,7 @@ class FireWorld:
         z = y(torch_rep)
 
         # The relative importance of each neighboring cell is weighted
-        z = z * fire_mask
+        z = z * self.fire_mask
 
         # Unenflamed cells are set to 1 to eliminate their role to the fire spread equation
         z[z == 0] = 1
