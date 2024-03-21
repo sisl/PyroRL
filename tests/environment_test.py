@@ -693,26 +693,6 @@ def test_pop_taking_first_action():
     assert test_world.evacuating_timestamps[0, 1] == 10
 
 
-def test_pop_taking_first_action():
-    """
-    Test to make sure that taking an action for the first time for a populated cell works
-    """
-    populated_areas = np.array([[1, 2], [0, 1]])
-    paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)
-    paths_to_pops = {0: [[1, 2], [0, 1]], 1: [[0, 1]]}
-    num_rows = 5
-    num_cols = 5
-
-    # Initialize fire world
-    test_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
-
-    test_world.set_action(1)
-
-    assert test_world.evacuating_paths[0] == [[0, 1]]
-    assert test_world.state_space[EVACUATING_INDEX, 0, 1] == 1
-    assert test_world.evacuating_timestamps[0, 1] == 10
-
-
 def test_multiple_pop_cells_same_path():
     """
     Test to make sure that taking an action works for one populated area if another populated area is already taking the same path.
