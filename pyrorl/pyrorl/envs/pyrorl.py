@@ -1,14 +1,16 @@
 """
 OpenAI Gym Environment Wrapper Class
 """
-from pyrorl.envs.environment.environment import *
+
+from pyrorl.envs.environment.environment import FireWorld
 import gymnasium as gym
 from gymnasium import spaces
-import imageio
+import imageio.v2 as imageio
 import numpy as np
 import os
 import pygame
 import shutil
+from typing import Optional, Any
 
 # Constants for visualization
 WIDTH, HEIGHT = 475, 475
@@ -18,16 +20,18 @@ EVACUATING_COLOR = pygame.Color("#118ab2")
 PATH_COLOR = pygame.Color("#ffd166")
 GRASS_COLOR = pygame.Color("#06d6a0")
 
+
 class WildfireEvacuationEnv(gym.Env):
     def __init__(
         self,
-        num_rows,
-        num_cols,
-        populated_areas,
-        paths,
-        paths_to_pops,
-        wind_speed = None,
-        wind_angle = None,
+        num_rows: int,
+        num_cols: int,
+        populated_areas: np.ndarray,
+        paths: np.ndarray,
+        paths_to_pops: dict,
+        custom_fire_locations: Optional[np.ndarray] = None,
+        wind_speed: Optional[float] = None,
+        wind_angle: Optional[float] = None,
     ):
         """
         Set up the basic environment and its parameters.
@@ -38,14 +42,18 @@ class WildfireEvacuationEnv(gym.Env):
         self.populated_areas = populated_areas
         self.paths = paths
         self.paths_to_pops = paths_to_pops
+        self.custom_fire_locations = custom_fire_locations
+        self.wind_speed = wind_speed
+        self.wind_angle = wind_angle
         self.fire_env = FireWorld(
             num_rows,
             num_cols,
             populated_areas,
             paths,
             paths_to_pops,
+            custom_fire_locations=custom_fire_locations,
             wind_speed=wind_speed,
-            wind_angle=wind_angle
+            wind_angle=wind_angle,
         )
 
         # Set up action space
@@ -54,25 +62,37 @@ class WildfireEvacuationEnv(gym.Env):
 
         # Set up observation space
         observations = self.fire_env.get_state()
-        self.observation_space = spaces.Box(low=0, high=200, shape = observations.shape, dtype=np.float64)
+        self.observation_space = spaces.Box(
+            low=0, high=200, shape=observations.shape, dtype=np.float64
+        )
 
         # Set up grid constants
         self.grid_width = WIDTH // num_rows
         self.grid_height = HEIGHT // num_cols
 
         # Create directory to store screenshots
-        if (os.path.exists("grid_screenshots") is False):
+        if os.path.exists("grid_screenshots") is False:
             os.mkdir("grid_screenshots")
 
-    def reset(self, seed = None, options = None):
+    def reset(
+        self, seed: Optional[int] = None, options: Optional[dict[str, Any]] = None
+    ) -> tuple[np.ndarray, dict[str, Any]]:
         """
         Reset the environment to its initial state.
         """
-        self.fire_env = FireWorld(self.num_rows, self.num_cols, self.populated_areas, self.paths, self.paths_to_pops)
+        self.fire_env = FireWorld(
+            self.num_rows,
+            self.num_cols,
+            self.populated_areas,
+            self.paths,
+            self.paths_to_pops,
+            wind_speed=self.wind_speed,
+            wind_angle=self.wind_angle,
+        )
         state_space = self.fire_env.get_state()
-        return state_space, { "": "" }
+        return state_space, {"": ""}
 
-    def step(self, action):
+    def step(self, action: int) -> tuple:
         """
         Take a step and advance the environment after taking an action.
         """
@@ -84,9 +104,11 @@ class WildfireEvacuationEnv(gym.Env):
         observations = self.fire_env.get_state()
         rewards = self.fire_env.get_state_utility()
         terminated = self.fire_env.get_terminated()
-        return observations, rewards, terminated, False, { "" : "" }
+        return observations, rewards, terminated, False, {"": ""}
 
-    def render_hf(self, screen, font):
+    def render_hf(
+        self, screen: pygame.Surface, font: pygame.font.Font
+    ) -> pygame.Surface:
         """
         Set up header and footer
         """
@@ -124,8 +146,9 @@ class WildfireEvacuationEnv(gym.Env):
 
     def render(self):
         """
-        Render the environment (to-do)
+        Render the environment
         """
+        # Set up the state space
         state_space = self.fire_env.get_state()
         (_, rows, cols) = state_space.shape
 
@@ -146,7 +169,9 @@ class WildfireEvacuationEnv(gym.Env):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     timestep = self.fire_env.get_timestep()
-                    pygame.image.save(screen, "grid_screenshots/" + str(timestep) + ".png")
+                    pygame.image.save(
+                        screen, "grid_screenshots/" + str(timestep) + ".png"
+                    )
                     running = False
 
             # Iterate through all of the squares
@@ -156,17 +181,22 @@ class WildfireEvacuationEnv(gym.Env):
 
                     # Set color of the square
                     color = GRASS_COLOR
-                    if (state_space[0][x][y] == 1):
+                    if state_space[0][x][y] == 1:
                         color = FIRE_COLOR
-                    if (state_space[2][x][y] == 1):
+                    if state_space[2][x][y] == 1:
                         color = POPULATED_COLOR
-                    if (state_space[3][x][y] > 0):
+                    if state_space[3][x][y] > 0:
                         color = EVACUATING_COLOR
-                    if (state_space[4][x][y] > 0):
+                    if state_space[4][x][y] > 0:
                         color = PATH_COLOR
 
                     # Draw the square
-                    square_rect = pygame.Rect(50 + x * (self.grid_width + 2), 50 + y * (self.grid_height + 2), self.grid_width, self.grid_height)
+                    square_rect = pygame.Rect(
+                        50 + x * (self.grid_width + 2),
+                        50 + y * (self.grid_height + 2),
+                        self.grid_width,
+                        self.grid_height,
+                    )
                     pygame.draw.rect(screen, color, square_rect)
 
             # Render and then quit outside

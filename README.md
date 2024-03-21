@@ -38,7 +38,9 @@ for _ in range(10):
     print("Reward: " + str(reward))
 ```
 
-For more examples, check out the `examples/` folder.
+A compiled visualization of numerous iterations is seen below. For more examples, check out the `examples/` folder.
+
+![Example Visualization of PyroRL](imgs/example_visualization.gif)
 
 ## How to Contribute
 

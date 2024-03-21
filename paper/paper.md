@@ -53,7 +53,7 @@ Under the hood, the environment is a gridworld, with dimensions that the user ca
 
 The task at hand is to evacuate all of the populated areas through paths before they are ignited. Similar to how evacuation would occur in real life, a centralized decision maker assigns paths to populated areas. Furthermore, the amount of time to evacuate a populated area is proportional to the number of grid squares in the path.
 
-The problem is modeled a fully observable Markov Decision Process (MDP) [@kochenderfer2022algorithms].
+The problem is modeled as a fully observable Markov Decision Process (MDP) [@kochenderfer2022algorithms].
 
 ### State Space
 
