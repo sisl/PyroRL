@@ -164,7 +164,7 @@ class FireWorld:
         self.paths: List[List[Any]] = []
         for path in paths:
             path_array = np.array(path)
-            path_rows, path_cols = path_array[:, 0], path_array[:, 1]
+            path_rows, path_cols = path_array[:, 0].astype(int), path_array[:, 1].astype(int)
             self.state_space[PATHS_INDEX, path_rows, path_cols] += 1
 
             # Each path in self.paths is a list that records what the path is and
