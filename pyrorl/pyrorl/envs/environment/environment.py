@@ -164,7 +164,7 @@ class FireWorld:
         self.paths: List[List[Any]] = []
         for path in paths:
             path_array = np.array(path)
-            path_rows, path_cols = path_array[:, 0], path_array[:, 1]
+            path_rows, path_cols = path_array[:, 0].astype(int), path_array[:, 1].astype(int)
             self.state_space[PATHS_INDEX, path_rows, path_cols] += 1
 
             # Each path in self.paths is a list that records what the path is and
@@ -186,6 +186,9 @@ class FireWorld:
             self.fire_mask = linear_wind_transform(wind_speed, wind_angle)
         else:
             self.fire_mask = torch.from_numpy(fire_mask)
+        
+        # record which population cells have finished evacuating
+        self.finished_evacuating_cells = []
 
     def sample_fire_propogation(self):
         """
@@ -264,10 +267,10 @@ class FireWorld:
                 pop_rows, pop_cols = pop_centers[:, 0], pop_centers[:, 1]
                 self.evacuating_timestamps[pop_rows, pop_cols] -= 1
                 done_evacuating = np.where(self.evacuating_timestamps == 0)
+
                 self.state_space[EVACUATING_INDEX, done_evacuating] = 0
                 self.state_space[POPULATED_INDEX, done_evacuating] = 0
 
-                # the forbidden for loop (maybe think of a way to do differently later)
                 # note that right now it is going to be vastly often the case that two
                 # population cases don't finish evacuating along the same path at the
                 # same time right now, so this is an extremely rare edge case, meaning
@@ -285,6 +288,7 @@ class FireWorld:
                         done_evacuating[j, 1],
                     )
                     self.evacuating_timestamps[update_row, update_col] = np.inf
+                    self.finished_evacuating_cells.append([update_row, update_col])
 
                 # No more population centers are using this path, so we delete it
                 if len(self.evacuating_paths[i]) == 0:
@@ -341,7 +345,8 @@ class FireWorld:
                 pop_cell_row, pop_cell_col = pop_cell[0], pop_cell[1]
 
                 # Ensure that the path chosen and populated cell haven't
-                # burned down and it's not already evacuating
+                # burned down and it's not already evacuating and it has not
+                # already evacuated
                 if (
                     self.paths[path_index][1]
                     and self.state_space[POPULATED_INDEX, pop_cell_row, pop_cell_col]
