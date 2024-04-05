@@ -149,24 +149,24 @@ def generate_map_info(
     num_paths_stdev=1,
 ):
     if num_populated_areas > (num_rows * num_cols - (2 * num_rows + 2 * num_cols)):
-        raise Exception("Cannot have more than 100 percent of the map be populated!")
+        raise ValueError("Cannot have more than 100 percent of the map be populated!")
     if num_rows <= 0:
-        raise Exception("Number of rows must be a positive value!")
+        raise ValueError("Number of rows must be a positive value!")
     if num_cols <= 0:
-        raise Exception("Number of columns must be a positive value!")
+        raise ValueError("Number of columns must be a positive value!")
     if percent_go_straight > 99:
-        raise Exception(
+        raise ValueError(
             "Cannot have the percent chance of going straight be greater than 99!"
         )
     if num_paths_mean < 1:
-        raise Exception("The mean for the number of paths cannot be less than 1!")
+        raise ValueError("The mean for the number of paths cannot be less than 1!")
     if steps_lower_bound > steps_upper_bound:
-        raise Exception(
+        raise ValueError(
             """The lower bound for the number of steps cannot be
             greater than the upper bound!"""
         )
     if steps_lower_bound < 1 or steps_upper_bound < 1:
-        raise Exception("The bounds for the number of steps cannot be less than 1!")
+        raise ValueError("The bounds for the number of steps cannot be less than 1!")
 
     paths_to_pops = {}
     populated_areas = generate_pop_locations(num_rows, num_cols, num_populated_areas)
