@@ -19,6 +19,11 @@ POPULATED_INDEX = 2
 EVACUATING_INDEX = 3
 PATHS_INDEX = 4
 
+"""
+Fuel level constants
+"""
+FUEL_MEAN = 8.5
+FUEL_STDEV = 3
 
 class FireWorld:
     """
@@ -43,13 +48,14 @@ class FireWorld:
         """
         The constructor defines the state and action space, initializes the fires,
         and sets the paths and populated areas.
+        - wind angle is in radians
         """
         # Assert that number of rows, columns, and fire cells are both positive
-        if num_rows < 0:
+        if num_rows < 1:
             raise ValueError("Number of rows should be positive!")
-        if num_cols < 0:
+        if num_cols < 1:
             raise ValueError("Number of rows should be positive!")
-        if num_fire_cells < 0:
+        if num_fire_cells < 1:
             raise ValueError("Number of fire cells should be positive!")
 
         # Check that populated areas are within the grid
@@ -150,7 +156,7 @@ class FireWorld:
         # Initialize fuel levels
         # Note: make the fire spread parameters to constants?
         num_values = num_rows * num_cols
-        self.state_space[FUEL_INDEX] = np.random.normal(8.5, 3, num_values).reshape(
+        self.state_space[FUEL_INDEX] = np.random.normal(FUEL_MEAN, FUEL_STDEV, num_values).reshape(
             (num_rows, num_cols)
         )
 
@@ -158,13 +164,13 @@ class FireWorld:
         pop_rows, pop_cols = populated_areas[:, 0], populated_areas[:, 1]
         self.state_space[POPULATED_INDEX, pop_rows, pop_cols] = 1
 
-        # Initialize paths
-        # Note: right now paths is different from self.paths
-        # but we can change this later if needed
+        # Initialize self.paths
         self.paths: List[List[Any]] = []
         for path in paths:
             path_array = np.array(path)
-            path_rows, path_cols = path_array[:, 0].astype(int), path_array[:, 1].astype(int)
+            path_rows, path_cols = path_array[:, 0].astype(int), path_array[
+                :, 1
+            ].astype(int)
             self.state_space[PATHS_INDEX, path_rows, path_cols] += 1
 
             # Each path in self.paths is a list that records what the path is and
@@ -182,12 +188,11 @@ class FireWorld:
                     "When setting wind details, "
                     "wind speed and wind angle must both be provided"
                 )
-            global fire_mask
             self.fire_mask = linear_wind_transform(wind_speed, wind_angle)
         else:
             self.fire_mask = torch.from_numpy(fire_mask)
-        
-        # record which population cells have finished evacuating
+
+        # Record which population cells have finished evacuating
         self.finished_evacuating_cells = []
 
     def sample_fire_propogation(self):
@@ -226,7 +231,6 @@ class FireWorld:
             np.array(new_fire), self.state_space[FIRE_INDEX]
         )
 
-    # Note to self: make sure to update evacuation timestep state
     def update_paths_and_evactuations(self):
         """
         Performs three functions:
@@ -235,7 +239,7 @@ class FireWorld:
         3. Also decrements the evacuation timestamps
         """
         for i in range(len(self.paths)):
-            # Decrement path counts and remove path
+            # Decrement path counts and remove path if path is on fire
             if (
                 self.paths[i][1]
                 and np.sum(
@@ -251,12 +255,12 @@ class FireWorld:
                     pop_centers = np.array(self.evacuating_paths[i])
                     pop_rows, pop_cols = pop_centers[:, 0], pop_centers[:, 1]
 
-                    # Reset timestamp and evacuation index
+                    # Reset timestamp and evacuation index for populated areas
                     self.evacuating_timestamps[pop_rows, pop_cols] = np.inf
                     self.state_space[EVACUATING_INDEX, pop_rows, pop_cols] = 0
                     del self.evacuating_paths[i]
 
-            # We need to decrement the evacuating paths timestep
+            # We need to decrement the evacuating paths timestamp
             elif i in self.evacuating_paths:
 
                 # For the below, this code works for if multiple population centers
@@ -268,10 +272,10 @@ class FireWorld:
                 self.evacuating_timestamps[pop_rows, pop_cols] -= 1
                 done_evacuating = np.where(self.evacuating_timestamps == 0)
 
-                self.state_space[EVACUATING_INDEX, done_evacuating] = 0
-                self.state_space[POPULATED_INDEX, done_evacuating] = 0
+                self.state_space[EVACUATING_INDEX, done_evacuating[0], done_evacuating[1]] = 0
+                self.state_space[POPULATED_INDEX, done_evacuating[0], done_evacuating[1]] = 0
 
-                # note that right now it is going to be vastly often the case that two
+                # Note that right now it is going to be vastly often the case that two
                 # population cases don't finish evacuating along the same path at the
                 # same time right now, so this is an extremely rare edge case, meaning
                 # that most often this for loop will run for a single iteration
@@ -294,18 +298,6 @@ class FireWorld:
                 if len(self.evacuating_paths[i]) == 0:
                     del self.evacuating_paths[i]
 
-    def advance_to_next_timestep(self):
-        """
-        Take three steps:
-        1. Advance fire forward one timestep
-        2. Update paths and evacuation
-        3. Accumulate reward and document enflamed areas
-        """
-        self.sample_fire_propogation()
-        self.update_paths_and_evactuations()
-        self.accumulate_reward()
-        self.time_step += 1
-
     def accumulate_reward(self):
         """
         Mark enflamed areas as no longer populated or evacuating and calculate reward.
@@ -317,7 +309,7 @@ class FireWorld:
 
         # Mark enflamed areas as no longer populated or evacuating
         enflamed_populated_areas = np.where(
-            self.state_space[FIRE_INDEX][populated_areas] == 1
+            fire == 1
         )[0]
         enflamed_rows = populated_areas[0][enflamed_populated_areas]
         enflamed_cols = populated_areas[1][enflamed_populated_areas]
@@ -329,6 +321,18 @@ class FireWorld:
         # Update reward
         self.reward -= 100 * len(enflamed_populated_areas)
         self.reward += len((np.where(fire + evacuating == 0))[0])
+
+    def advance_to_next_timestep(self):
+        """
+        Take three steps:
+        1. Advance fire forward one timestep
+        2. Update paths and evacuation
+        3. Accumulate reward and document enflamed areas
+        """
+        self.sample_fire_propogation()
+        self.update_paths_and_evactuations()
+        self.accumulate_reward()
+        self.time_step += 1
 
     def set_action(self, action: int):
         """
@@ -395,3 +399,9 @@ class FireWorld:
         Get the status of the simulation.
         """
         return self.time_step >= 100
+
+    def get_finished_evacuating(self) -> list:
+        """
+        Get the populated areas that are finished evacuating.
+        """
+        return self.finished_evacuating_cells

@@ -3,7 +3,14 @@ Unit tests for each of the functions in environment.py
 """
 
 import numpy as np
-from pyrorl.envs.environment.environment import *
+from pyrorl.envs.environment.environment import (
+    FireWorld,
+    FIRE_INDEX,
+    FUEL_INDEX,
+    POPULATED_INDEX,
+    EVACUATING_INDEX,
+    PATHS_INDEX,
+)
 import pytest
 import random
 
@@ -359,7 +366,8 @@ def test_invalid_fire_locations():
 
 def test_remove_path_on_fire():
     """
-    Test to make sure that if a path goes on fire, they are removed from the state space for paths.
+    Test to make sure that if a path goes on fire, 
+    they are removed from the state space for paths.
     """
     populated_areas = np.array([[1, 2]])
     paths = np.array([[[1, 0], [1, 1]]])
@@ -569,7 +577,7 @@ def test_multiple_evacuation_decrement():
 def test_finished_evacuating():
     """
     Test to make sure that if a populated area finishes evacuating it is removed from the evacuating
-    populated areas state.
+    populated areas state and is added to finished evacuating cells.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
     paths = np.array([[[1, 0], [1, 1]]])
@@ -597,6 +605,7 @@ def test_finished_evacuating():
     assert test_world.state_space[POPULATED_INDEX, pop_area[0], pop_area[1]] == 0
     assert 0 not in test_world.evacuating_paths
     assert test_world.evacuating_timestamps[pop_area[0], pop_area[1]] == np.inf
+    assert len(test_world.finished_evacuating_cells) == 1
 
 
 def test_set_actions():
@@ -761,7 +770,8 @@ def test_pop_taking_first_action():
 
 def test_multiple_pop_cells_same_path():
     """
-    Test to make sure that taking an action works for one populated area if another populated area is already taking the same path.
+    Test to make sure that taking an action works for one populated area 
+    if another populated area is already taking the same path.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
     paths = np.array([[[1, 0], [1, 1]], [[0, 0]]], dtype=object)

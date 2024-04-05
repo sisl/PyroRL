@@ -10,15 +10,7 @@ import torch
 # Distance along axis from origin. Origin is referring to the cell we are
 # presently trying to determine if becomes enflamed in the next timestep.
 distance_to_probability_of_enflaming_ratio = 0.094
-distance_matrix = torch.tensor(
-    [
-        [2, 1, 0, 1, 2],
-        [2, 1, 0, 1, 2],
-        [2, 1, 0, 1, 2],
-        [2, 1, 0, 1, 2],
-        [2, 1, 0, 1, 2],
-    ]
-)
+distance_matrix = torch.tensor([[2, 1, 0, 1, 2] for _ in range(5)])
 
 # Squaring of values for later calculating square of L2 norm
 temp = distance_matrix**2
@@ -36,10 +28,12 @@ base_fire_mask = distance_matrix.reshape((25, 1))
 fire_mask = np.copy(base_fire_mask)
 
 # Wind components
-# The rate with which speed of wind converts to a percent change in the chance of a neighbor cell igniting the center cell
+# The rate with which speed of wind converts to a percent change in
+# the chance of a neighbor cell igniting the center cell
 speed_to_percent_ratio = 0.004
 axis_distance = np.array([5 * [-i] for i in range(-2, 3)])
-# a 5x5 matrix where each element represents a vector pointing in the direction of the corresponding neihboring cell
+# a 5x5 matrix where each element represents a vector pointing in the
+# direction of the corresponding neihboring cell
 neighbor_vectors = np.stack((-axis_distance.T, axis_distance), axis=2).reshape((-1, 2))
 neighbor_vectors[12, :] = 1
 # Normalizes these vectors to unit vectors
