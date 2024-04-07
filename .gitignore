@@ -22,3 +22,6 @@ docs/site/
 
 # Creating a GIF for the visualization
 grid_screenshots/
+
+# Don't need to update training.gif every time
+examples/training.gif
