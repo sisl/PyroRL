@@ -46,7 +46,7 @@ def test_path_structure():
 
 def test_paths_not_fold():
     """
-    Make sure that paths do not fold in on themselves.
+    Make sure that paths do not intersect with themselves.
     """
     num_rows = 1000
     num_cols = 1000

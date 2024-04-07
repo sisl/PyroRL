@@ -18,7 +18,7 @@ if __name__ == "__main__":
     Run basic environment.
     """
     # Set up parameters
-    num_rows, num_cols = 20, 20
+    num_rows, num_cols = 200, 100
     num_populated_areas = 5
 
     # example of generating map (other parameters are set to their default values)
@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     # Run a simple loop of the environment
     env.reset()
-    for _ in range(10):
+    for _ in range(20):
 
         # Take action and observation
         action = env.action_space.sample()

@@ -6,7 +6,6 @@ import numpy as np
 from pyrorl.envs.environment.environment import (
     FireWorld,
     FIRE_INDEX,
-    FUEL_INDEX,
     POPULATED_INDEX,
     EVACUATING_INDEX,
     PATHS_INDEX,
@@ -21,7 +20,6 @@ def dummy_environment():
     """
     # Define hardcoded paramaters of the gridworld -- populated areas, paths,
     # and which areas can use whicn paths.
-    # Note: discuss if these should be dynamically generated or others.
     populated_areas = np.array([[1, 2], [4, 8], [6, 4], [8, 7]])
     paths = np.array(
         [
@@ -115,7 +113,7 @@ def test_setup():
     Set up grid world and initiate loop of action-taking + updating.
     """
     test_world = dummy_environment()
-    for i in range(25):
+    for _ in range(25):
         # Take a random action
         all_actions = test_world.get_actions()
         action = random.randint(0, len(all_actions) - 1)
@@ -366,7 +364,7 @@ def test_invalid_fire_locations():
 
 def test_remove_path_on_fire():
     """
-    Test to make sure that if a path goes on fire, 
+    Test to make sure that if a path goes on fire,
     they are removed from the state space for paths.
     """
     populated_areas = np.array([[1, 2]])
@@ -458,7 +456,7 @@ def test_stop_evacuating():
     # Initialize fire world
     test_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
 
-    # turn off fires
+    # Turn off fires
     test_world.state_space[FIRE_INDEX] = np.zeros((num_rows, num_cols))
 
     # Manually set popualted area to be evacuating
@@ -490,7 +488,7 @@ def test_multiple_stop_evacuating():
     # Initialize fire world
     test_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
 
-    # turn off fires
+    # Turn off fires
     test_world.state_space[FIRE_INDEX] = np.zeros((num_rows, num_cols))
 
     # Manually set popualted area to be evacuating
@@ -530,10 +528,10 @@ def test_evacuation_decrement():
     # Initialize fire world
     test_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
 
-    # turn off fires
+    # Turn off fires
     test_world.state_space[FIRE_INDEX] = np.zeros((num_rows, num_cols))
 
-    # set populated area evacuation timstamp
+    # Set populated area evacuation timstamp
     pop_area = populated_areas[0]
     test_world.evacuating_timestamps[pop_area[0], pop_area[1]] = 10
     test_world.evacuating_paths[0] = [pop_area]
@@ -557,10 +555,10 @@ def test_multiple_evacuation_decrement():
     # Initialize fire world
     test_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
 
-    # turn off fires
+    # Turn off fires
     test_world.state_space[FIRE_INDEX] = np.zeros((num_rows, num_cols))
 
-    # set populated areas evacuation timstamp
+    # Set populated areas evacuation timstamp
     first_pop_area = populated_areas[0]
     test_world.evacuating_timestamps[first_pop_area[0], first_pop_area[1]] = 10
     test_world.evacuating_paths[0] = [first_pop_area]
@@ -588,15 +586,15 @@ def test_finished_evacuating():
     # Initialize fire world
     test_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
 
-    # turn off fires
+    # Turn off fires
     test_world.state_space[FIRE_INDEX] = np.zeros((num_rows, num_cols))
 
-    # set populated areas evacuation timstamp
+    # Set populated areas evacuation timstamp
     pop_area = list(populated_areas[0])
     test_world.evacuating_timestamps[pop_area[0], pop_area[1]] = 1
     test_world.evacuating_paths[0] = [pop_area]
 
-    # set populated area to be evacuating
+    # Set populated area to be evacuating
     test_world.state_space[EVACUATING_INDEX, pop_area[0], pop_area[1]] = 1
 
     test_world.update_paths_and_evactuations()
@@ -732,7 +730,7 @@ def test_already_evacuating():
     test_world = FireWorld(num_rows, num_cols, populated_areas, paths, paths_to_pops)
 
     test_world.evacuating_timestamps[1, 2] = (
-        9  # intentially make this lower than default to see if it's reset
+        9  # Intentially make this lower than default to see if it's reset
     )
     test_world.state_space[EVACUATING_INDEX, 1, 2] = 1
     test_world.evacuating_paths[0] = [[1, 2]]
@@ -770,7 +768,7 @@ def test_pop_taking_first_action():
 
 def test_multiple_pop_cells_same_path():
     """
-    Test to make sure that taking an action works for one populated area 
+    Test to make sure that taking an action works for one populated area
     if another populated area is already taking the same path.
     """
     populated_areas = np.array([[1, 2], [0, 1]])
