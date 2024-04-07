@@ -230,7 +230,7 @@ class WildfireEvacuationEnv(gym.Env):
                         color = POPULATED_COLOR
                     if state_space[3][x][y] > 0:
                         color = EVACUATING_COLOR
-                    if ([x, y] in finished_evacuating):
+                    if [x, y] in finished_evacuating:
                         color = FINISHED_COLOR
 
                     # Draw the square
