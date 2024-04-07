@@ -25,6 +25,7 @@ Fuel level constants
 FUEL_MEAN = 8.5
 FUEL_STDEV = 3
 
+
 class FireWorld:
     """
     We represent the world as a 5 by n by m tensor:
@@ -156,9 +157,9 @@ class FireWorld:
         # Initialize fuel levels
         # Note: make the fire spread parameters to constants?
         num_values = num_rows * num_cols
-        self.state_space[FUEL_INDEX] = np.random.normal(FUEL_MEAN, FUEL_STDEV, num_values).reshape(
-            (num_rows, num_cols)
-        )
+        self.state_space[FUEL_INDEX] = np.random.normal(
+            FUEL_MEAN, FUEL_STDEV, num_values
+        ).reshape((num_rows, num_cols))
 
         # Initialize populated areas
         pop_rows, pop_cols = populated_areas[:, 0], populated_areas[:, 1]
@@ -272,8 +273,12 @@ class FireWorld:
                 self.evacuating_timestamps[pop_rows, pop_cols] -= 1
                 done_evacuating = np.where(self.evacuating_timestamps == 0)
 
-                self.state_space[EVACUATING_INDEX, done_evacuating[0], done_evacuating[1]] = 0
-                self.state_space[POPULATED_INDEX, done_evacuating[0], done_evacuating[1]] = 0
+                self.state_space[
+                    EVACUATING_INDEX, done_evacuating[0], done_evacuating[1]
+                ] = 0
+                self.state_space[
+                    POPULATED_INDEX, done_evacuating[0], done_evacuating[1]
+                ] = 0
 
                 # Note that right now it is going to be vastly often the case that two
                 # population cases don't finish evacuating along the same path at the
@@ -308,9 +313,7 @@ class FireWorld:
         evacuating = self.state_space[EVACUATING_INDEX][populated_areas]
 
         # Mark enflamed areas as no longer populated or evacuating
-        enflamed_populated_areas = np.where(
-            fire == 1
-        )[0]
+        enflamed_populated_areas = np.where(fire == 1)[0]
         enflamed_rows = populated_areas[0][enflamed_populated_areas]
         enflamed_cols = populated_areas[1][enflamed_populated_areas]
 

@@ -36,9 +36,12 @@ def generate_pop_locations(num_rows, num_cols, num_populated_areas):
     """
     populated_areas = set()
     for _ in range(num_populated_areas):
+        # We don't generate populated cells on the edge of the
+        # map
         pop_row = random.randint(1, num_rows - 2)
         pop_col = random.randint(1, num_cols - 2)
-        # make sure that n
+        # Continue generating populated areas until one that 
+        # has not already been created is made
         while (pop_row, pop_col) in populated_areas:
             pop_row = random.randint(1, num_rows - 2)
             pop_col = random.randint(1, num_cols - 2)
@@ -46,10 +49,19 @@ def generate_pop_locations(num_rows, num_cols, num_populated_areas):
     populated_areas = np.array(list(populated_areas))
     return populated_areas
 
-
 def save_map_info(
     num_rows, num_cols, num_populated_areas, populated_areas, paths, paths_to_pops
 ):
+    """
+    This function saves five files:
+    - map_info.txt: lets the user easily see the number of rows, 
+    the number of columns, and the number of populated areas
+    - populated_areas_array.pkl: saves the populated areas array
+    - paths_array.pkl: saves the paths array
+    - paths_to_pops_array.pkl: saves the paths to pops array
+    - map_size_and_percent_populated_list.pkl: saves a list that contains 
+    the number of rows, number of columns, and number of populated areas
+    """
     # the map information is saved in the user's current working directory
     user_working_directory = os.getcwd()
     maps_info_directory = os.path.join(user_working_directory, MAP_DIRECTORY)
@@ -72,24 +84,14 @@ def save_map_info(
         percent_pop_info = "num_populated_areas: " + str(num_populated_areas)
         f.write(percent_pop_info)
 
-    # saved the populated areas array
-    populated_areas_filename = os.path.join(
-        current_map_directory, "populated_areas_array.pkl"
-    )
-    with open(populated_areas_filename, "wb") as f:
-        pkl.dump(populated_areas, f)
-
-    # save the paths array
-    paths_filename = os.path.join(current_map_directory, "paths_array.pkl")
-    with open(paths_filename, "wb") as f:
-        pkl.dump(paths, f)
-
-    # save the paths to pops array
-    paths_to_pops_filename = os.path.join(
-        current_map_directory, "paths_to_pops_array.pkl"
-    )
-    with open(paths_to_pops_filename, "wb") as f:
-        pkl.dump(paths_to_pops, f)
+    # saved the populated areas array, paths array, and paths_to_pops arrays
+    def save_array_to_pickle(current_map_directory, array, name):
+        array_filename = os.path.join(current_map_directory, name)
+        with open(array_filename, "wb") as f:
+            pkl.dump(array, f)
+    save_array_to_pickle(current_map_directory, populated_areas, "populated_areas_array.pkl")
+    save_array_to_pickle(current_map_directory, paths, "paths_array.pkl")
+    save_array_to_pickle(current_map_directory, paths_to_pops, "paths_to_pops_array.pkl")
 
     # save the number of rows, number of columns, and number of populated areas
     map_size_and_percent_populated_list = [num_rows, num_cols, num_populated_areas]
@@ -99,31 +101,30 @@ def save_map_info(
     with open(map_size_and_percent_populated_list_filename, "wb") as f:
         pkl.dump(map_size_and_percent_populated_list, f)
 
-
 def load_map_info(map_directory_path):
-    # load the populated areas array
-    populated_areas_filename = os.path.join(
-        map_directory_path, "populated_areas_array.pkl"
-    )
-    with open(populated_areas_filename, "rb") as f:
-        populated_areas = pkl.load(f)
+    """
+    This function loads in six variables to initialize a wildfire environment:
+    - number of rows
+    - number of columns
+    - populated areas array
+    - paths array
+    - paths to pops array
+    - number of populated areas
+    """
+    def load_pickle_file(name):
+        array_filename = os.path.join(
+            map_directory_path, name
+        )
+        with open(array_filename, "rb") as f:
+            return pkl.load(f)
 
-    # load the paths array
-    paths_filename = os.path.join(map_directory_path, "paths_array.pkl")
-    with open(paths_filename, "rb") as f:
-        paths = pkl.load(f)
-
-    # load the paths to pops array
-    paths_to_pops_filename = os.path.join(map_directory_path, "paths_to_pops_array.pkl")
-    with open(paths_to_pops_filename, "rb") as f:
-        paths_to_pops = pkl.load(f)
+    # load the populated areas array, paths array, and paths_to_pops arrays
+    populated_areas = load_pickle_file("populated_areas_array.pkl")
+    paths = load_pickle_file("paths_array.pkl")
+    paths_to_pops = load_pickle_file("paths_to_pops_array.pkl")
 
     # load the number of rows, number of columns, and number of populated areas
-    map_size_and_percent_populated_list_filename = os.path.join(
-        map_directory_path, "map_size_and_percent_populated_list.pkl"
-    )
-    with open(map_size_and_percent_populated_list_filename, "rb") as f:
-        map_size_and_percent_populated_list = pkl.load(f)
+    map_size_and_percent_populated_list = load_pickle_file("map_size_and_percent_populated_list.pkl")
     num_rows = map_size_and_percent_populated_list[0]
     num_cols = map_size_and_percent_populated_list[1]
     num_populated_areas = map_size_and_percent_populated_list[2]
@@ -148,7 +149,10 @@ def generate_map_info(
     num_paths_mean=3,
     num_paths_stdev=1,
 ):
-    if num_populated_areas > (num_rows * num_cols - (2 * num_rows + 2 * num_cols)):
+    """
+    This function generates the populated areas and paths for a map.
+    """
+    if num_populated_areas > (num_rows * num_cols - (2 * num_rows + 2 * num_cols - 4)):
         raise ValueError("Cannot have more than 100 percent of the map be populated!")
     if num_rows <= 0:
         raise ValueError("Number of rows must be a positive value!")
@@ -171,7 +175,7 @@ def generate_map_info(
     paths_to_pops = {}
     populated_areas = generate_pop_locations(num_rows, num_cols, num_populated_areas)
 
-    # the number of paths for each populated area is chosen from normal distribution
+    # the number of paths for each populated area is chosen from a normal distribution
     num_paths_array = np.random.normal(
         num_paths_mean, num_paths_stdev, num_populated_areas
     ).astype(int)
@@ -190,25 +194,23 @@ def generate_map_info(
 
             cur_row, cur_col = pop_row, pop_col
 
-            # initialize bounds to not restrict to start
-            x_min = num_rows
-            x_max = -1
-            y_min = num_cols
-            y_max = -1
+            # Initialize bounds to not restrict to start
+            x_min, x_max = num_rows, -1
+            y_min, y_max = num_cols, -1
 
-            # which direction to span out from first
+            # Which orientaion to span out from first
             orientation = random.choice(["north", "south", "east", "west"])
 
+            # We loop until we reach the edge of the map
             done = False
             while not done:
-
-                # we want to make sure that the current
-                # path will not intersect with itself
-                direction_chosen = False
                 num_steps = random.randint(steps_lower_bound, steps_upper_bound)
 
+                # We want to make sure that the current
+                # path will not intersect with itself
+                direction_chosen = False
                 while not direction_chosen:
-                    # choose whether to go straight, left, or right based
+                    # Choose whether to go straight, left, or right based
                     # on percent_go_straight -> if we don't go straight,
                     # we go left or right with equal probability
                     direction_index = 0
@@ -239,7 +241,7 @@ def generate_map_info(
                     cur_row += row_update
                     cur_col += col_update
 
-                    # update bounds if necessary
+                    # Update bounds if necessary
                     # (so that paths do not intersect with themselves)
                     if cur_row > x_max:
                         x_max = cur_row
@@ -250,17 +252,6 @@ def generate_map_info(
                     if cur_col < y_min:
                         y_min = cur_col
 
-                    # the population center is on the edge of the map,
-                    # so we don't want to add a path in this direction
-                    if (
-                        cur_row == -1
-                        or cur_row == num_cols
-                        or cur_col == -1
-                        or cur_col == num_rows
-                    ):
-                        done = True
-                        break
-
                     current_path.append([cur_row, cur_col])
                     if (
                         cur_row == 0
@@ -270,7 +261,7 @@ def generate_map_info(
                     ):
                         # we want unique paths
                         done = True
-                        if current_path in paths:
+                        if current_path in paths or [pop_row, pop_col] in current_path:
                             break
                         paths.append(current_path)
                         paths_to_pops[path_num] = [[pop_row, pop_col]]
