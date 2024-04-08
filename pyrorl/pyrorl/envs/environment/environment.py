@@ -19,12 +19,6 @@ POPULATED_INDEX = 2
 EVACUATING_INDEX = 3
 PATHS_INDEX = 4
 
-"""
-Fuel level constants
-"""
-FUEL_MEAN = 8.5
-FUEL_STDEV = 3
-
 
 class FireWorld:
     """
@@ -45,6 +39,8 @@ class FireWorld:
         custom_fire_locations: Optional[np.ndarray] = None,
         wind_speed: Optional[float] = None,
         wind_angle: Optional[float] = None,
+        fuel_mean:float = 8.5,
+        fuel_stdev:float = 3
     ):
         """
         The constructor defines the state and action space, initializes the fires,
@@ -158,7 +154,7 @@ class FireWorld:
         # Note: make the fire spread parameters to constants?
         num_values = num_rows * num_cols
         self.state_space[FUEL_INDEX] = np.random.normal(
-            FUEL_MEAN, FUEL_STDEV, num_values
+            fuel_mean, fuel_stdev, num_values
         ).reshape((num_rows, num_cols))
 
         # Initialize populated areas
