@@ -44,7 +44,7 @@ Our environment for wildfire evacuation builds upon the Gymnasium API standard. 
 
 ## Wildfire Evacuation as a Markov Decision Process
 
-Under the hood, the environment is a gridworld, with dimensions that the user can specify. Each cell in the grid is one of the following:
+Under the hood, the environment is a grid world with dimensions that the user can specify. Each cell in the grid is one of the following:
 
 - Normal terrain
 - A populated area
@@ -54,10 +54,10 @@ Under the hood, the environment is a gridworld, with dimensions that the user ca
 The task at hand is to evacuate all of the populated areas through paths before they are ignited. Similar to how evacuation would occur in real life, a centralized decision maker assigns paths to populated areas. Furthermore, the amount of time to evacuate a populated area is proportional to the number of grid squares in the path.
 
 The problem is modeled as a fully observable Markov Decision Process (MDP) [@kochenderfer2022algorithms].
-
+ 
 ### State Space
 
-Each possible configuration of the grid. Internally, this is represented as a $5$ by $m$ by $n$ tensor, where $m$ and $n$ represent the number of rows and columns of the grid world, respectively. Each of the $5$ indices corresponds to a specific attribute:
+The state space is each possible configuration of the grid. Internally, this is represented as a $5$ by $m$ by $n$ tensor, where $m$ and $n$ represent the number of rows and columns of the grid world, respectively. Each of the $5$ indices corresponds to a specific attribute:
 
 - `0 = FIRE_INDEX` – whether or not a square in the grid world is on fire or not
 - `1 = FUEL_INDEX` – the amount of fuel in the square, which is used to determine if an area will be enflamed or not
@@ -66,7 +66,7 @@ Each possible configuration of the grid. Internally, this is represented as a $5
 - `4 = PATHS_INDEX` – the number of paths a square is a part of
 
 ### Action Space
-Whether or not to evacuate. If evacuating, the agent must choose a specific populated area to evacuate, as well as a path to evacuate from.
+The action space describes whether or not a populated area should evacuate. If evacuating, the agent must choose a specific populated area to evacuate, as well as a path from which to evacuate.
 
 - Transition Model: determined by the stochastic nature of the wildfire implementation, which we describe below
 - Reward Model: $+1$ for every populated area that has not evacuated and is not ignited, and $-100$ if a populated area is burned down
@@ -77,9 +77,11 @@ Finally, our stochastic wildfire model is based on prior work [@Julian2019]:
 
 ### Fuel
 
-Each fire cell has an initial fuel level $\sim \mathcal{N}(8.5, \, (\sqrt{3})^{2})$
+Each fire cell has an initial fuel level $\sim \mathcal{N}(\mu, \, (\sigma)^{2})$
 
 - A cell currently on fire has its fuel level drop by $1$ after each time step until it runs out of fuel
+
+Users can configure $\mu$ and $\sigma$. By defualt, their respective values are $\mu=8.5$ and $\sigma=\sqrt(3)$
 
 ### Fire Spread
 
@@ -87,9 +89,11 @@ We define the spread of the fire by the following equation: $p(s)=1-\Pi_{s'}(1 -
 
 - $p(s)$ represents the probability of non-inflamed cell $s$ alighting
 - $s'$ represents an adjacent cell
-- $\lambda$ is a hyperparameter that affects the probability of fire spreading from one cell to an adjacent one (we set $\lambda = 0.094$)
+- $\lambda$ is a hyperparameter that affects the probability of fire spreading from one cell to an adjacent one
 - $d(s,s')$ is the Euclidean distance between cells
 - $B(s)$ is a Boolean to check if cell is currently on fire
+
+Users can configure $\lambda$. By defualt, the value is $\lambda=0.094$.
 
 ### Wind
 
