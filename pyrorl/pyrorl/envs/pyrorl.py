@@ -49,6 +49,8 @@ class WildfireEvacuationEnv(gym.Env):
         self.custom_fire_locations = custom_fire_locations
         self.wind_speed = wind_speed
         self.wind_angle = wind_angle
+        self.fuel_mean = fuel_mean
+        self.fuel_stdev = fuel_stdev
         self.fire_env = FireWorld(
             num_rows,
             num_cols,
@@ -58,6 +60,8 @@ class WildfireEvacuationEnv(gym.Env):
             custom_fire_locations=custom_fire_locations,
             wind_speed=wind_speed,
             wind_angle=wind_angle,
+            fuel_mean = fuel_mean,
+            fuel_stdev = fuel_stdev
         )
 
         # Set up action space
