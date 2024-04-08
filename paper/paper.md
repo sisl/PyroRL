@@ -81,7 +81,7 @@ Each fire cell has an initial fuel level $\sim \mathcal{N}(\mu, \, (\sigma)^{2})
 
 - A cell currently on fire has its fuel level drop by $1$ after each time step until it runs out of fuel
 
-Users can configure $\mu$ and $\sigma$. By defualt, their respective values are $\mu=8.5$ and $\sigma=\sqrt(3)$
+Users can configure $\mu$ and $\sigma$. By defualt, their respective values are $\mu=8.5$ and $\sigma=\sqrt 3$
 
 ### Fire Spread
 
