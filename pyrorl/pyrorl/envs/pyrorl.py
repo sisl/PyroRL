@@ -34,6 +34,8 @@ class WildfireEvacuationEnv(gym.Env):
         custom_fire_locations: Optional[np.ndarray] = None,
         wind_speed: Optional[float] = None,
         wind_angle: Optional[float] = None,
+        fuel_mean:float = 8.5,
+        fuel_stdev:float = 3
     ):
         """
         Set up the basic environment and its parameters.
