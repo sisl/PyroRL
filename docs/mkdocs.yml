@@ -3,9 +3,10 @@ site_url: https://sisl.github.io/PyroRL/
 nav:
   - Home: index.md
   - Quickstart: quickstart.md
+  - API Reference: api.md
   - How It Works: how-it-works.md
   - Contribution Guide: contribution-guide.md
-  - Reference: reference.md
+  - Contact: contact.md
 theme: readthedocs
 markdown_extensions:
   - pymdownx.arithmatex:
