@@ -18,7 +18,7 @@ if __name__ == "__main__":
     Run basic environment.
     """
     # Set up parameters
-    num_rows, num_cols = 200, 100
+    num_rows, num_cols = 25, 50
     num_populated_areas = 5
 
     # example of generating map (other parameters are set to their default values)
@@ -58,6 +58,7 @@ if __name__ == "__main__":
         "populated_areas": populated_areas,
         "paths": paths,
         "paths_to_pops": paths_to_pops,
+        "skip": True,
     }
     env = gymnasium.make("pyrorl/PyroRL-v0", **kwargs)
 

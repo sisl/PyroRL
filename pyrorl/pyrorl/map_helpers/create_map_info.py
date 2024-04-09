@@ -40,7 +40,7 @@ def generate_pop_locations(num_rows, num_cols, num_populated_areas):
         # map
         pop_row = random.randint(1, num_rows - 2)
         pop_col = random.randint(1, num_cols - 2)
-        # Continue generating populated areas until one that 
+        # Continue generating populated areas until one that
         # has not already been created is made
         while (pop_row, pop_col) in populated_areas:
             pop_row = random.randint(1, num_rows - 2)
@@ -49,17 +49,18 @@ def generate_pop_locations(num_rows, num_cols, num_populated_areas):
     populated_areas = np.array(list(populated_areas))
     return populated_areas
 
+
 def save_map_info(
     num_rows, num_cols, num_populated_areas, populated_areas, paths, paths_to_pops
 ):
     """
     This function saves five files:
-    - map_info.txt: lets the user easily see the number of rows, 
+    - map_info.txt: lets the user easily see the number of rows,
     the number of columns, and the number of populated areas
     - populated_areas_array.pkl: saves the populated areas array
     - paths_array.pkl: saves the paths array
     - paths_to_pops_array.pkl: saves the paths to pops array
-    - map_size_and_percent_populated_list.pkl: saves a list that contains 
+    - map_size_and_percent_populated_list.pkl: saves a list that contains
     the number of rows, number of columns, and number of populated areas
     """
     # the map information is saved in the user's current working directory
@@ -89,9 +90,14 @@ def save_map_info(
         array_filename = os.path.join(current_map_directory, name)
         with open(array_filename, "wb") as f:
             pkl.dump(array, f)
-    save_array_to_pickle(current_map_directory, populated_areas, "populated_areas_array.pkl")
+
+    save_array_to_pickle(
+        current_map_directory, populated_areas, "populated_areas_array.pkl"
+    )
     save_array_to_pickle(current_map_directory, paths, "paths_array.pkl")
-    save_array_to_pickle(current_map_directory, paths_to_pops, "paths_to_pops_array.pkl")
+    save_array_to_pickle(
+        current_map_directory, paths_to_pops, "paths_to_pops_array.pkl"
+    )
 
     # save the number of rows, number of columns, and number of populated areas
     map_size_and_percent_populated_list = [num_rows, num_cols, num_populated_areas]
@@ -100,6 +106,7 @@ def save_map_info(
     )
     with open(map_size_and_percent_populated_list_filename, "wb") as f:
         pkl.dump(map_size_and_percent_populated_list, f)
+
 
 def load_map_info(map_directory_path):
     """
@@ -111,10 +118,9 @@ def load_map_info(map_directory_path):
     - paths to pops array
     - number of populated areas
     """
+
     def load_pickle_file(name):
-        array_filename = os.path.join(
-            map_directory_path, name
-        )
+        array_filename = os.path.join(map_directory_path, name)
         with open(array_filename, "rb") as f:
             return pkl.load(f)
 
@@ -124,7 +130,9 @@ def load_map_info(map_directory_path):
     paths_to_pops = load_pickle_file("paths_to_pops_array.pkl")
 
     # load the number of rows, number of columns, and number of populated areas
-    map_size_and_percent_populated_list = load_pickle_file("map_size_and_percent_populated_list.pkl")
+    map_size_and_percent_populated_list = load_pickle_file(
+        "map_size_and_percent_populated_list.pkl"
+    )
     num_rows = map_size_and_percent_populated_list[0]
     num_cols = map_size_and_percent_populated_list[1]
     num_populated_areas = map_size_and_percent_populated_list[2]
