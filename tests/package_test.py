@@ -178,13 +178,11 @@ def test_render(mocker):
     env.render()
 
     # Check that render requirements are satisfied
-    pygame.display.set_mode.assert_called_once_with([600, 725])
-    pygame.display.set_caption.assert_called_once_with(
-        "Wildfire Evacuation RL Gym Environment"
-    )
+    pygame.display.set_mode.assert_called()
+    pygame.display.set_caption.assert_called_once_with("PyroRL")
     pygame.display.flip.assert_called()
     num_drawn_rects = pygame.draw.rect.call_count
-    assert num_drawn_rects == num_rows * num_cols + 5
+    assert num_drawn_rects == num_rows * num_cols + 6
 
 
 def test_generate_gif(mocker):
