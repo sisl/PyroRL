@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://sisl.github.io/PyroRL/api/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>API Reference - PyroRL</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "API Reference";
+        var mkdocs_page_input_path = "api.md";
+        var mkdocs_page_url = "/PyroRL/api/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyroRL
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../quickstart/">Quickstart</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">API Reference</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#wildfireevacuationenv">WildfireEvacuationEnv</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#__init__">__init__</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#parameters">Parameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#return-values">Return Values</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#reset">reset</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#parameters_1">Parameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#return-values_1">Return Values</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step">step</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#parameters_2">Parameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#return-values_2">Return Values</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#render">render</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#parameters_3">Parameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#return-values_3">Return Values</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#generate_gif">generate_gif</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#parameters_4">Parameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#return-values_4">Return Values</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create_map_info">create_map_info</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#load_map_info">load_map_info</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#parameters_5">Parameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#return-values_5">Return Values</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#generate_map_info">generate_map_info</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#parameters_6">Parameters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#return-values_6">Return Values</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../how-it-works/">How It Works</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contribution-guide/">Contribution Guide</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyroRL</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="api-reference">API Reference</h1>
+<p>We provide API documentation for the public endpoints that are intended to be utilized by the end user. Namely, we describe the functionality of our wildfire evacuation environment and our map generation functions.</p>
+<h2 id="wildfireevacuationenv"><code>WildfireEvacuationEnv</code></h2>
+<p>Below are the member functions for the core wildfire evacuation environment, which is an extension of the <a href="https://gymnasium.farama.org/index.html">Gymnasium API</a> Standard.</p>
+<h3 id="__init__"><code>__init__</code></h3>
+<pre><code>__init__(
+    self,
+    num_rows: int,
+    num_cols: int,
+    populated_areas: np.ndarray,
+    paths: np.ndarray,
+    paths_to_pops: dict,
+    num_fire_cells: int = 2,
+    custom_fire_locations: Optional[np.ndarray] = None,
+    wind_speed: Optional[float] = None,
+    wind_angle: Optional[float] = None,
+    fuel_mean: float = 8.5,
+    fuel_stdev: float = 3,
+    fire_propagation_rate: float = 0.094,
+    skip: bool = False,
+):
+</code></pre>
+<p>This function is the constructor for our wildfire environment.</p>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>num_rows</code> (<code>int</code>) -- The number of rows in the grid.</li>
+<li><code>num_cols</code> (<code>int</code>) -- The number of columns in the grid.</li>
+<li><code>populated_areas</code> (<code>np.ndarray</code>) -- A <code>numpy</code> array containing the information of the location of every populated area in the map. Formatting is specified as <code>[[row_i,col_i],[row_i, col_i]]</code></li>
+<li><code>paths</code> (<code>np.ndarray</code>) -- A <code>numpy</code> array of type object where each element represents a list of locations taken by a single path. Formatting is specified for j as <code>[[[row_{j0},col_{j0}],[row_{j1},col_{j1}]]_j]</code></li>
+<li><code>paths_to_pops</code> (<code>dict</code>) -- The i'th path specified in paths is specified by the key i in this dict which leads to a location of a populated area specified in <code>populated_areas</code> to identify that path as servicing that populated area.</li>
+<li><code>num_fire_cells</code> (<code>int</code>) -- The number of fires the user wishes to start the simulation with.</li>
+<li><code>custom_fire_locations</code> (<code>Optional[np.ndarray]</code>) -- A user can specify the exact location fires will start at. Overrides <code>num_fire_cells</code> if given by user.</li>
+<li><code>wind_speed</code> (<code>optional[float]</code>) -- Optional parameter specifying the speed of wind to affect fire propogation patterns. If used, user must also specify wind_angle.</li>
+<li><code>wind_angle</code> (<code>optional[float]</code>) -- Optional parameter specifying the angle of wind in radians to affect fire propogation patterns. If used, user must also specify wind_speed.</li>
+<li><code>fuel_mean</code> (<code>float</code>) -- Mean in normal distribution to decide the amount of fuel in a given cell.</li>
+<li><code>fuel_stdev</code> (<code>float</code>) -- Standard deviation in normal distribution to decide the amount of fuel in a given cell.</li>
+<li><code>fire_propagation_rate</code> (<code>float</code>) -- Proportional scaling term to describe the chance an enflamed cell lights another cell.</li>
+<li><code>skip</code> (<code>bool</code>) -- If set to true, calls to visualization will not display visualization at runtime, but just save data for post simulation complete visualization. </li>
+</ul>
+<h4 id="return-values">Return Values</h4>
+<ul>
+<li>None</li>
+</ul>
+<h3 id="reset"><code>reset</code></h3>
+<pre><code>WildfireEvacuationEnv.reset(
+    self, seed: Optional[int] = None, options: Optional[dict[str, Any]] = None
+) -&gt; tuple[np.ndarray, dict[str, Any]]:
+</code></pre>
+<p>This function resets the wildfire environment to its initial state.</p>
+<h4 id="parameters_1">Parameters</h4>
+<ul>
+<li><code>seed</code> (<code>Optional[int]</code>) -- Ignored</li>
+<li><code>options</code> (<code>Optional[dict[str, Any]]</code>) -- Ignored</li>
+</ul>
+<h4 id="return-values_1">Return Values</h4>
+<ul>
+<li><code>state_space</code> (<code>np.ndarray</code>) -- The reset state space after performing the action</li>
+<li><code>info</code> (<code>dict</code>) -- Ignored</li>
+</ul>
+<h3 id="step"><code>step</code></h3>
+<pre><code>WildfireEvacuationEnv.step(self, action: int) -&gt; tuple
+</code></pre>
+<p>This function takes an action in the wildfire environment and also updates the corresponding state space.</p>
+<h4 id="parameters_2">Parameters</h4>
+<ul>
+<li><code>action</code> (<code>int</code>) -- the action to take in our environment. In this context, the action is sampled from the environment's <code>action_space</code> and corresponds to evacuating a singular populated area from a singular path.</li>
+</ul>
+<h4 id="return-values_2">Return Values</h4>
+<ul>
+<li><code>observations</code> (<code>np.ndarray</code>) -- The updated state space after performing the action</li>
+<li><code>rewards</code> (<code>int</code>) -- The reward accrued after taking an action</li>
+<li><code>terminated</code> (<code>bool</code>) -- Whether or not the simulation has come to an end</li>
+<li><code>truncated</code> (<code>bool</code>) -- Ignored</li>
+<li><code>info</code> (<code>dict</code>) -- Ignored</li>
+</ul>
+<h3 id="render"><code>render</code></h3>
+<pre><code>WildfireEvacuationEnv.render(self) -&gt; None
+</code></pre>
+<p>This function renders the environment in a Pygame grid for the user to visualize or save. </p>
+<h4 id="parameters_3">Parameters</h4>
+<ul>
+<li>None</li>
+</ul>
+<h4 id="return-values_3">Return Values</h4>
+<ul>
+<li>None</li>
+</ul>
+<h3 id="generate_gif"><code>generate_gif</code></h3>
+<pre><code>WildfireEvacuationEnv.generate_gif(self) -&gt; None
+</code></pre>
+<p>This function saves a stitched GIF of all visualizations rendered by the user.</p>
+<h4 id="parameters_4">Parameters</h4>
+<ul>
+<li>None</li>
+</ul>
+<h4 id="return-values_4">Return Values</h4>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="create_map_info"><code>create_map_info</code></h2>
+<p>Below are the member functions for the helper fiile that helps generate maps dynamically.</p>
+<h3 id="load_map_info"><code>load_map_info</code></h3>
+<pre><code>create_map_info.load_map_info(map_directory_path: str) -&gt; tuple:
+</code></pre>
+<p>This function loads in the saved information for a grid. </p>
+<h4 id="parameters_5">Parameters</h4>
+<ul>
+<li><code>map_directory_path</code> (<code>str</code>): The path for the subdirectory where the data for the relevant grid is stored.</li>
+</ul>
+<h4 id="return-values_5">Return Values</h4>
+<ul>
+<li><code>num_rows</code> (<code>int</code>) -- The number of rows in the grid.</li>
+<li><code>num_cols</code> (<code>int</code>) -- The number of columns in the grid.</li>
+<li><code>populated_areas</code> (<code>np.ndarray</code>) -- A <code>numpy</code> array containing the information of the location of every populated area in the map. Formatting is specified as <code>[[row_i,col_i],[row_i, col_i]]</code></li>
+<li><code>paths</code> (<code>np.ndarray</code>) -- A <code>numpy</code> array of type object where each element represents a list of locations taken by a single path. Formatting is specified for j as <code>[[[row_{j0},col_{j0}],[row_{j1},col_{j1}]]_j]</code></li>
+<li><code>paths_to_pops</code> (<code>dict</code>) -- The i'th path specified in paths is specified by the key i in this dict which leads to a location of a populated area specified in <code>populated_areas</code> to identify that path as servicing that populated area.</li>
+<li><code>num_populated_areas</code> (<code>int</code>) -- The number of populated areas on the grid.</li>
+</ul>
+<h3 id="generate_map_info"><code>generate_map_info</code></h3>
+<pre><code>generate_map_info(
+    num_rows: int,
+    num_cols: int,
+    num_populated_areas: int,
+    save_map: bool = True,
+    steps_lower_bound: int = 2,
+    steps_upper_bound: int = 4,
+    percent_go_straight: int = 50,
+    num_paths_mean: int = 3,
+    num_paths_stdev: int = 1,
+) -&gt; tuple:
+</code></pre>
+<p>This function generates the data needed to create a grid.</p>
+<h4 id="parameters_6">Parameters</h4>
+<ul>
+<li><code>num_rows</code> (<code>int</code>) -- The number of rows in the grid.</li>
+<li><code>num_cols</code> (<code>int</code>) -- The number of columns in the grid.</li>
+<li><code>num_populated_areas</code> (<code>int</code>) -- The number of populated areas in the grid.</li>
+<li><code>save_map</code> (<code>bool</code>) -- Whether or not the information for the map generation should be saved for later use.</li>
+<li><code>steps_lower_bound</code> (<code>int</code>) -- The lower bound for the random generation of how many steps are taken during each iteration of a path creation.t- <code>steps_upper_bound</code> (<code>int</code>) -- The upper bound for the random generation of how many steps are taken during each iteration of a path creation.</li>
+<li><code>percent_go_straight</code> (<code>int</code>) -- What percent of the time a path will try to continue straight rather than taking a turn.</li>
+<li><code>num_paths_mean</code> (<code>int</code>) -- The mean of the normal distribution that is sampled from to determine the number of paths for a populated area.</li>
+<li><code>num_paths_stdev</code> (<code>int</code>) -- The standard deviation of the normal distribution that is sampled from to determine the number of paths for a populated area.</li>
+</ul>
+<h4 id="return-values_6">Return Values</h4>
+<ul>
+<li><code>populated_areas</code> (<code>np.ndarray</code>) -- A <code>numpy</code> array containing the information of the location of every populated area in the map. Formatting is specified as <code>[[row_i,col_i],[row_i, col_i]]</code></li>
+<li><code>paths</code> (<code>np.ndarray</code>) -- A <code>numpy</code> array of type object where each element represents a list of locations taken by a single path. Formatting is specified for j as <code>[[[row_{j0},col_{j0}],[row_{j1},col_{j1}]]_j]</code></li>
+<li><code>paths_to_pops</code> (<code>dict</code>) -- The i'th path specified in paths is specified by the key i in this dict which leads to a location of a populated area specified in <code>populated_areas</code> to identify that path as servicing that populated area.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../quickstart/" class="btn btn-neutral float-left" title="Quickstart"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../how-it-works/" class="btn btn-neutral float-right" title="How It Works">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../quickstart/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../how-it-works/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../javascripts/mathjax.js"></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

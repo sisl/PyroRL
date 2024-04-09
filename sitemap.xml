@@ -6,6 +6,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://sisl.github.io/PyroRL/api/</loc>
+         <lastmod>2024-04-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://sisl.github.io/PyroRL/contact/</loc>
+         <lastmod>2024-04-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://sisl.github.io/PyroRL/contribution-guide/</loc>
          <lastmod>2024-04-09</lastmod>
          <changefreq>daily</changefreq>
@@ -17,11 +27,6 @@
     </url>
     <url>
          <loc>https://sisl.github.io/PyroRL/quickstart/</loc>
-         <lastmod>2024-04-09</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://sisl.github.io/PyroRL/reference/</loc>
          <lastmod>2024-04-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
