@@ -40,7 +40,8 @@ class FireWorld:
         wind_speed: Optional[float] = None,
         wind_angle: Optional[float] = None,
         fuel_mean:float = 8.5,
-        fuel_stdev:float = 3
+        fuel_stdev:float = 3,
+        fire_propagation_rate:float = 0.094
     ):
         """
         The constructor defines the state and action space, initializes the fires,
@@ -179,7 +180,7 @@ class FireWorld:
         self.time_step = 0
 
         # set fire mask
-        self.fire_mask = set_fire_mask(0.094)
+        self.fire_mask = set_fire_mask(fire_propagation_rate)
 
         # Factor in wind speeds
         if wind_speed is not None or wind_angle is not None:
