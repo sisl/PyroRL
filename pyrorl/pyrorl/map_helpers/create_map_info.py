@@ -30,7 +30,10 @@ ORIENTATONS = {
 MAP_DIRECTORY = "pyrorl_map_info"
 
 
-def generate_pop_locations(num_rows, num_cols, num_populated_areas):
+def generate_pop_locations(
+    num_rows:int, 
+    num_cols:int, 
+    num_populated_areas:int):
     """
     Randomly generate populated areas.
     """
@@ -51,7 +54,12 @@ def generate_pop_locations(num_rows, num_cols, num_populated_areas):
 
 
 def save_map_info(
-    num_rows, num_cols, num_populated_areas, populated_areas, paths, paths_to_pops
+    num_rows:int, 
+    num_cols:int, 
+    num_populated_areas:int, 
+    populated_areas: np.ndarray,
+    paths: np.ndarray,
+    paths_to_pops: dict
 ):
     """
     This function saves five files:
@@ -108,7 +116,7 @@ def save_map_info(
         pkl.dump(map_size_and_percent_populated_list, f)
 
 
-def load_map_info(map_directory_path):
+def load_map_info(map_directory_path:str):
     """
     This function loads in six variables to initialize a wildfire environment:
     - number of rows
@@ -147,15 +155,15 @@ def load_map_info(map_directory_path):
 
 
 def generate_map_info(
-    num_rows,
-    num_cols,
-    num_populated_areas,
-    save_map=True,
-    steps_lower_bound=2,
-    steps_upper_bound=4,
-    percent_go_straight=50,
-    num_paths_mean=3,
-    num_paths_stdev=1,
+    num_rows:int,
+    num_cols:int,
+    num_populated_areas:int,
+    save_map:bool=True,
+    steps_lower_bound:int=2,
+    steps_upper_bound:int=4,
+    percent_go_straight:int=50,
+    num_paths_mean:int=3,
+    num_paths_stdev:int=1,
 ):
     """
     This function generates the populated areas and paths for a map.
