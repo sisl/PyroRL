@@ -40,7 +40,7 @@ for _ in range(10):
 
 A compiled visualization of numerous iterations is seen below. For more examples, check out the `examples/` folder in the online repository.
 
-![Example Visualization of PyroRL](imgs/example_visualization.gif)
+![Example Visualization of PyroRL](https://github.com/sisl/PyroRL/raw/master/imgs/example_visualization.gif)
 
 ## How to Contribute
 

@@ -6,11 +6,10 @@ with open("README.md", "r") as f:
 
 setup(
     name="pyrorl",
-    version="0.0.3",
-    author="Celtics Big 3",
-    author_email="clpondoc@stanford.edu",
-    description="An RL OpenAI Gym Environment for Wildfire Evacuation",
-    url="https://github.com/sisl/wildfire",
+    version="1.0.1",
+    author="Stanford Intelligent Systems Laboratory",
+    description="An RL Environment for Wildfire Evacuation",
+    url="https://sisl.github.io/PyroRL/",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
