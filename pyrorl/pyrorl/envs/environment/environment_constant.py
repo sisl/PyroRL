@@ -7,7 +7,8 @@ import torch
 
 base_fire_mask = None
 
-def set_fire_mask(distance_to_probability_of_enflaming_ratio = 0.094):
+
+def set_fire_mask(distance_to_probability_of_enflaming_ratio=0.094):
     # Mask used for calculating the probability a cell alighting following
     # the same propagation formula from existing research.
     # Distance along axis from origin. Origin is referring to the cell we are
@@ -19,7 +20,9 @@ def set_fire_mask(distance_to_probability_of_enflaming_ratio = 0.094):
 
     # Calculate the probability an enflamed neighboring cell does not
     # enflame the cell located at the origin
-    distance_matrix = 1 - 1 / (temp + temp.T) * distance_to_probability_of_enflaming_ratio
+    distance_matrix = (
+        1 - 1 / (temp + temp.T) * distance_to_probability_of_enflaming_ratio
+    )
 
     # As there is zero distance between the origin and itself, we set this
     # value to 1, so the contribution of the origin is ignored in the product
@@ -29,6 +32,7 @@ def set_fire_mask(distance_to_probability_of_enflaming_ratio = 0.094):
     global base_fire_mask
     base_fire_mask = distance_matrix.reshape((25, 1))
     return np.copy(base_fire_mask)
+
 
 # Wind components
 # The rate with which speed of wind converts to a percent change in
@@ -55,7 +59,9 @@ def linear_wind_transform(wind_speed: float, wind_angle: float) -> np.ndarray:
     - Probabilities are clamped around 0 and 1.
     """
     if base_fire_mask is None:
-        return RuntimeError("wind transform is set over fire propogation without having yet initialized fire mask")
+        return RuntimeError(
+            "wind transform is set over fire propogation without having yet initialized fire mask"
+        )
     wind_vector = np.array([[np.cos(wind_angle)], [np.sin(wind_angle)]])
     scaling_term = (
         neighbor_vectors @ wind_vector

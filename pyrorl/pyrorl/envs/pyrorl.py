@@ -36,7 +36,7 @@ class WildfireEvacuationEnv(gym.Env):
         wind_angle: Optional[float] = None,
         fuel_mean: float = 8.5,
         fuel_stdev: float = 3,
-        fire_propagation_rate: float=0.094,
+        fire_propagation_rate: float = 0.094,
         skip: bool = False,
     ):
         """
@@ -66,7 +66,7 @@ class WildfireEvacuationEnv(gym.Env):
             wind_angle=wind_angle,
             fuel_mean=fuel_mean,
             fuel_stdev=fuel_stdev,
-            fire_propagation_rate = fire_propagation_rate
+            fire_propagation_rate=fire_propagation_rate,
         )
 
         # Set up action space
@@ -97,9 +97,9 @@ class WildfireEvacuationEnv(gym.Env):
             self.paths_to_pops,
             wind_speed=self.wind_speed,
             wind_angle=self.wind_angle,
-            fuel_mean = self.fuel_mean,
-            fuel_stdev = self.fuel_stdev,
-            fire_propagation_rate = self.fire_propagation_rate
+            fuel_mean=self.fuel_mean,
+            fuel_stdev=self.fuel_stdev,
+            fire_propagation_rate=self.fire_propagation_rate,
         )
 
         state_space = self.fire_env.get_state()
@@ -261,5 +261,5 @@ class WildfireEvacuationEnv(gym.Env):
         """
         files = [str(i) for i in range(1, self.fire_env.get_timestep() + 1)]
         images = [imageio.imread(IMG_DIRECTORY + f + ".png") for f in files]
-        imageio.mimsave("training.gif", images)
+        imageio.mimsave("training.gif", images, loop=0)
         shutil.rmtree(IMG_DIRECTORY)
