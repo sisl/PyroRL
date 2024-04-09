@@ -59,8 +59,9 @@ populated_areas, paths, paths_to_pops = generate_map_info(
 If you set the `save_map` parameter to be `True`, you can also save the map configuration information to be used at a later time. You can then later load in the information for use:
 
 ```python
-# showing how to load in map just created for good measure,
-# would otherwise provide the desired map path to load_map_info
+# showing how to load in the most recent map created for good measure,
+# would otherwise just provide the desired map path to load_map_info
+# (i.e. only use the last line with load_map_info)
 map_info_root = os.path.join(os.getcwd(), MAP_DIRECTORY)
 current_map_directory = max(
     os.listdir(map_info_root),
