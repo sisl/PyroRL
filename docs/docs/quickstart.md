@@ -77,12 +77,21 @@ num_rows, num_cols, populated_areas, paths, paths_to_pops, num_populated_areas =
 Using these parameters, you can then define them as kwargs and use gymnasium.make to create the environment:
 
 ```python
+# Note that additional parameters are listed (i.e. all parameters past paths_to_pops below). 
+# These are currently set to their default values but can also be specified by the user.
 kwargs = {
         'num_rows': num_rows,
         'num_cols': num_cols,
         'populated_areas': populated_areas,
         'paths': paths,
-        'paths_to_pops': paths_to_pops
+        'paths_to_pops': paths_to_pops,
+        'num_fire_cells': 2,
+        'custom_fire_locations': None, # would be a numpy array of locations if specified
+        'wind_speed': None, # would be a float if specified
+        'wind_angle': None, # would be a float if specified
+        'fuel_mean': 8.5,
+        'fuel_stdev': 3,
+        'fire_propagation_rate': 0.094
     }
 env = gymnasium.make('pyrorl/PyroRL-v0', **kwargs)
 ```
