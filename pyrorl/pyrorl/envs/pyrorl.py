@@ -36,7 +36,7 @@ class WildfireEvacuationEnv(gym.Env):
         wind_angle: Optional[float] = None,
         fuel_mean: float = 8.5,
         fuel_stdev: float = 3,
-        fire_propagation_rate: float=0.094
+        fire_propagation_rate: float=0.094,
         skip: bool = False,
     ):
         """
