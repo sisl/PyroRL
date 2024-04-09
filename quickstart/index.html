@@ -46,7 +46,19 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Quickstart</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#environment-definition">Environment Definition</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-maps">Creating Maps</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#running-the-environment">Running the Environment</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rendering-the-environment">Rendering the Environment</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#use-with-stable-baselines-3">Use with Stable Baselines 3</a>
     </li>
@@ -89,10 +101,12 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="quickstart">Quickstart</h1>
-<h2 id="basic-usage">Basic Usage</h2>
+<h2 id="installation">Installation</h2>
 <p>First, download our Python package:</p>
 <pre><code class="language-bash">pip install pyrorl
 </code></pre>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="environment-definition">Environment Definition</h3>
 <p>To use our environment, you need to define five parameters:</p>
 <ul>
 <li><code>num_rows</code> and <code>num_cols</code> – these two integers define a (<code>num_rows</code>, <code>num_cols</code>) grid world</li>
@@ -100,19 +114,69 @@
 <li><code>paths</code> – an array of paths. Each path is an array of <code>[x, y]</code> coordinates that indicate each square in a path</li>
 <li><code>paths_to_pops</code> – a dictionary that maps paths to which populated areas can use those paths. The keys are integers that represent the index of the path in the <code>paths</code> array. The values are arrays of integers that represent the populated area in the <code>populated_areas</code> array.</li>
 </ul>
-<p>You can see an example below:</p>
+<h3 id="creating-maps">Creating Maps</h3>
+<p>To create a map, you can specify each of the above parameters manually:</p>
 <pre><code class="language-python">num_rows, num_cols = 10, 10
 populated_areas = np.array([[1,2],[4,8], [6,4], [8, 7]])
 paths = np.array([[[1,0],[1,1]], [[2,2],[3,2],[4,2],[4,1],[4,0]], [[2,9],[2,8],[3,8]], [[5,8],[6,8],[6,9]], [[7,7], [6,7], [6,8], [6,9]], [[8,6], [8,5], [9,5]], [[8,5], [9,5], [7,5],[7,4]]], dtype=object)
 paths_to_pops = {0:[[1,2]], 1:[[1,2]], 2: [[4,8]], 3:[[4,8]], 4:[[8, 7]], 5:[[8, 7]], 6:[[6,4]]}
 </code></pre>
+<p>We also provide functionality to generate custom maps programmatically. If you import <code>pyrorl.map_helpers.create_map_info</code>, you can create your own maps by specificying just a few parameters:</p>
+<pre><code class="language-python"># Import map helpers
+from pyrorl.map_helpers.create_map_info import (
+    generate_map_info,
+    MAP_DIRECTORY,
+    load_map_info,
+)
+
+# Set up parameters
+num_rows, num_cols = 20, 20
+num_populated_areas = 5
+
+# example of generating map (other parameters are set to their default values)
+populated_areas, paths, paths_to_pops = generate_map_info(
+    num_rows,
+    num_cols,
+    num_populated_areas,
+    save_map=True,
+    steps_lower_bound=2,
+    steps_upper_bound=4,
+    percent_go_straight=50,
+    num_paths_mean=3,
+    num_paths_stdev=1,
+)
+</code></pre>
+<p>If you set the <code>save_map</code> parameter to be <code>True</code>, you can also save the map configuration information to be used at a later time. You can then later load in the information for use:</p>
+<pre><code class="language-python"># showing how to load in the most recent map created for good measure,
+# would otherwise just provide the desired map path to load_map_info
+# (i.e. only use the last line with load_map_info)
+map_info_root = os.path.join(os.getcwd(), MAP_DIRECTORY)
+current_map_directory = max(
+    os.listdir(map_info_root),
+    key=lambda f: os.path.getctime(os.path.join(map_info_root, f)),
+)
+map_info_path = os.path.join(map_info_root, current_map_directory)
+num_rows, num_cols, populated_areas, paths, paths_to_pops, num_populated_areas = (
+    load_map_info(map_info_path)
+)
+</code></pre>
+<h3 id="running-the-environment">Running the Environment</h3>
 <p>Using these parameters, you can then define them as kwargs and use gymnasium.make to create the environment:</p>
-<pre><code class="language-python">kwargs = {
+<pre><code class="language-python"># Note that additional parameters are listed (i.e. all parameters past paths_to_pops below). 
+# These are currently set to their default values but can also be specified by the user.
+kwargs = {
         'num_rows': num_rows,
         'num_cols': num_cols,
         'populated_areas': populated_areas,
         'paths': paths,
-        'paths_to_pops': paths_to_pops
+        'paths_to_pops': paths_to_pops,
+        'num_fire_cells': 2,
+        'custom_fire_locations': None, # would be a numpy array of locations if specified
+        'wind_speed': None, # would be a float if specified
+        'wind_angle': None, # would be a float if specified
+        'fuel_mean': 8.5,
+        'fuel_stdev': 3,
+        'fire_propagation_rate': 0.094
     }
 env = gymnasium.make('pyrorl/PyroRL-v0', **kwargs)
 </code></pre>
@@ -136,6 +200,7 @@ for _ in range(10):
 # Generate the gif
 env.generate_gif()
 </code></pre>
+<h3 id="rendering-the-environment">Rendering the Environment</h3>
 <p>Finally, we can see that the function <code>generate_gif</code> allows us to collate all of the visualizations generated by the <code>render</code> function and stitch them together into a GIF:</p>
 <div style="text-align:center;">
     <video width="75%" autoplay loop muted playsinline>
@@ -205,6 +270,9 @@ for _ in range(10):
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="../javascripts/mathjax.js"></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {
