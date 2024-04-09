@@ -5,27 +5,30 @@ Constants used for fire propagation in the environment.
 import numpy as np
 import torch
 
-# Mask used for calculating the probability a cell alighting following
-# the same propagation formula from existing research.
-# Distance along axis from origin. Origin is referring to the cell we are
-# presently trying to determine if becomes enflamed in the next timestep.
-distance_to_probability_of_enflaming_ratio = 0.094
-distance_matrix = torch.tensor([[2, 1, 0, 1, 2] for _ in range(5)])
+base_fire_mask = None
 
-# Squaring of values for later calculating square of L2 norm
-temp = distance_matrix**2
+def set_fire_mask(distance_to_probability_of_enflaming_ratio = 0.094):
+    # Mask used for calculating the probability a cell alighting following
+    # the same propagation formula from existing research.
+    # Distance along axis from origin. Origin is referring to the cell we are
+    # presently trying to determine if becomes enflamed in the next timestep.
+    distance_matrix = torch.tensor([[2, 1, 0, 1, 2] for _ in range(5)])
 
-# Calculate the probability an enflamed neighboring cell does not
-# enflame the cell located at the origin
-distance_matrix = 1 - 1 / (temp + temp.T) * distance_to_probability_of_enflaming_ratio
+    # Squaring of values for later calculating square of L2 norm
+    temp = distance_matrix**2
 
-# As there is zero distance between the origin and itself, we set this
-# value to 1, so the contribution of the origin is ignored in the product
-distance_matrix[2, 2] = 1
+    # Calculate the probability an enflamed neighboring cell does not
+    # enflame the cell located at the origin
+    distance_matrix = 1 - 1 / (temp + temp.T) * distance_to_probability_of_enflaming_ratio
 
-# Flatten probably mask so it can be efficiently used as a kernel
-base_fire_mask = distance_matrix.reshape((25, 1))
-fire_mask = np.copy(base_fire_mask)
+    # As there is zero distance between the origin and itself, we set this
+    # value to 1, so the contribution of the origin is ignored in the product
+    distance_matrix[2, 2] = 1
+
+    # Flatten probably mask so it can be efficiently used as a kernel
+    global base_fire_mask
+    base_fire_mask = distance_matrix.reshape((25, 1))
+    return np.copy(base_fire_mask)
 
 # Wind components
 # The rate with which speed of wind converts to a percent change in
@@ -51,6 +54,8 @@ def linear_wind_transform(wind_speed: float, wind_angle: float) -> np.ndarray:
     wind direction and the direction to the neighboring cell.
     - Probabilities are clamped around 0 and 1.
     """
+    if base_fire_mask is None:
+        return RuntimeError("wind transform is set over fire propogation without having yet initialized fire mask")
     wind_vector = np.array([[np.cos(wind_angle)], [np.sin(wind_angle)]])
     scaling_term = (
         neighbor_vectors @ wind_vector

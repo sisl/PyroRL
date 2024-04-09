@@ -36,6 +36,7 @@ class WildfireEvacuationEnv(gym.Env):
         wind_angle: Optional[float] = None,
         fuel_mean: float = 8.5,
         fuel_stdev: float = 3,
+        fire_propagation_rate: float=0.094
         skip: bool = False,
     ):
         """
@@ -52,6 +53,7 @@ class WildfireEvacuationEnv(gym.Env):
         self.wind_angle = wind_angle
         self.fuel_mean = fuel_mean
         self.fuel_stdev = fuel_stdev
+        self.fire_propagation_rate = fire_propagation_rate
         self.skip = skip
         self.fire_env = FireWorld(
             num_rows,
@@ -64,6 +66,7 @@ class WildfireEvacuationEnv(gym.Env):
             wind_angle=wind_angle,
             fuel_mean=fuel_mean,
             fuel_stdev=fuel_stdev,
+            fire_propagation_rate = fire_propagation_rate
         )
 
         # Set up action space
@@ -94,6 +97,9 @@ class WildfireEvacuationEnv(gym.Env):
             self.paths_to_pops,
             wind_speed=self.wind_speed,
             wind_angle=self.wind_angle,
+            fuel_mean = self.fuel_mean,
+            fuel_stdev = self.fuel_stdev,
+            fire_propagation_rate = self.fire_propagation_rate
         )
 
         state_space = self.fire_env.get_state()

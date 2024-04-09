@@ -8,7 +8,7 @@ import torch
 from typing import Optional, Any, Tuple, Dict, List
 
 # For wind bias
-from .environment_constant import fire_mask, linear_wind_transform
+from .environment_constant import set_fire_mask, linear_wind_transform
 
 """
 Indices corresponding to each layer of state
@@ -41,6 +41,7 @@ class FireWorld:
         wind_angle: Optional[float] = None,
         fuel_mean: float = 8.5,
         fuel_stdev: float = 3,
+        fire_propagation_rate:float = 0.094
     ):
         """
         The constructor defines the state and action space, initializes the fires,
@@ -178,6 +179,9 @@ class FireWorld:
         # Set the timestep
         self.time_step = 0
 
+        # set fire mask
+        self.fire_mask = set_fire_mask(fire_propagation_rate)
+
         # Factor in wind speeds
         if wind_speed is not None or wind_angle is not None:
             if wind_speed is None or wind_angle is None:
@@ -187,7 +191,7 @@ class FireWorld:
                 )
             self.fire_mask = linear_wind_transform(wind_speed, wind_angle)
         else:
-            self.fire_mask = torch.from_numpy(fire_mask)
+            self.fire_mask = torch.from_numpy(self.fire_mask)
 
         # Record which population cells have finished evacuating
         self.finished_evacuating_cells = []
