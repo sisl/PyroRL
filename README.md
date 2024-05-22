@@ -1,4 +1,11 @@
-# PyroRL
+<pre>
+██████╗ ██╗   ██╗██████╗  ██████╗ ██████╗ ██╗     
+██╔══██╗╚██╗ ██╔╝██╔══██╗██╔═══██╗██╔══██╗██║     
+██████╔╝ ╚████╔╝ ██████╔╝██║   ██║██████╔╝██║     
+██╔═══╝   ╚██╔╝  ██╔══██╗██║   ██║██╔══██╗██║     
+██║        ██║   ██║  ██║╚██████╔╝██║  ██║███████╗
+╚═╝        ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+</pre>
 
 ![example workflow](https://github.com/sisl/PyroRL/actions/workflows/testing.yml/badge.svg) [![codecov](https://codecov.io/github/sisl/PyroRL/graph/badge.svg?token=wBlFGsd5sS)](https://codecov.io/github/sisl/PyroRL) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://sisl.github.io/PyroRL/)
 
