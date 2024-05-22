@@ -32,9 +32,9 @@ A major effect of climate change today is the increased frequency and intensity 
 
 # Statement of Need
 
-There has been significant traction in the use of computational methods to study wildfires. In particular, reinforcement learning -- a subdomain of artificial intelligence where models learn through interaction with their environment -- has seen growing interest from researchers. Applying reinforcement learning requires modeling the spread of wildfires. Traditionally, modeling was primarily done using physics-based methods [@rothermel1972mathematical; @Andrews_1986]. However, newer methods are more data-driven, enabling the use of a higher diversity of features [@https://doi.org/10.1002/eap.1898; @diao2020uncertainty].
+There has been significant traction in the use of computational methods to study wildfires. In particular, reinforcement learning -- a subdomain of artificial intelligence where models learn through interaction with their environment -- has seen growing interest from researchers. Applying reinforcement learning requires modeling the spread of wildfires. Traditionally, modeling was primarily done using physics-based methods [@rothermel1972mathematical; @Andrews_1986]. However, newer methods are more data-driven, enabling the use of a higher diversity of features [@https://doi.org/10.1002/eap.1898; @Diao2020].
 
-Researchers have recently been studying wildfire surveillance and monitoring. While various forms of machine learning, such as computer vision [@ganapathi2018using], have been used to solve this task, the most popular method by far has been reinforcement learning [@julian2019distributed; @altamimi2022large; @9340340]. Research in surveillance and monitoring has been supported by open-source environments for modeling wildfire spread and surveillance [@cellular_automata; @forest_fire].
+Researchers have recently been studying wildfire surveillance and monitoring. While various forms of machine learning, such as computer vision [@ganapathi2018using], have been used to solve this task, the most popular method by far has been reinforcement learning [@Julian2019; @altamimi2022large; @9340340]. Research in surveillance and monitoring has been supported by open-source environments for modeling wildfire spread and surveillance [@cellular_automata; @forest_fire].
 
 There has also been emerging interest in optimizing the evacuation process using computational methods [@https://doi.org/10.1111/risa.12944]. However, no reinforcement learning environments exist for the task of evacuation. We hope that open-source tools for evacuation will spur development in this area.
 
@@ -101,7 +101,7 @@ The spread of wildfire is also influenced by wind. This bias is modeled through 
 
 # Features
 
-Users can control the configuration of the environment, including the dimensions of the grid world, the locations of populated areas and paths, and initial fire placement. Users can also select from our library of example environments or have the program dynamically generate environments. We also offer examples of how to use popular RL libraries with our environment, such as Stable-Baselines3 [@JMLR:v22:20-1364].
+Users can control the configuration of the environment, including the dimensions of the grid world, the locations of populated areas and paths, and initial fire placement. Users can also select from our library of example environments or have the program dynamically generate environments. We also offer examples of how to use popular RL libraries with our environment, such as Stable-Baselines3 [@stableBaselines].
 
 In addition, users can generate visualizations of the environment by calling the `render` function of the Gymnasium environment object. After executing a set of actions on the environment, the user can call `generate_gif`, which stitches together all of the images rendered by the user into a single GIF.
 
