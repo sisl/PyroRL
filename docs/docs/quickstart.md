@@ -2,7 +2,7 @@
 
 ## Installation
 
-First, download our Python package:
+First, install our Python package. Note that PyroRL requires Python version 3.8:
 
 ```bash
 pip install pyrorl

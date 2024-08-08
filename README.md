@@ -13,7 +13,7 @@ PyroRL is a new reinforcement learning environment built for the simulation of w
 
 ## How to Use
 
-First, install our package. Note that PyroRL requires Python version $3.8$:
+First, install our package. Note that PyroRL requires Python version 3.8:
 
 ```bash
 pip install pyrorl
