@@ -127,7 +127,15 @@ Finally, we can see that the function `generate_gif` allows us to collate all of
 
 ## Use with Stable Baselines 3
 
-[Stable Baselines 3](https://stable-baselines3.readthedocs.io/en/master/) is a popular library for reinforcement learning algorithms. You can use Stable Baseline algorithms to find optimal policies for the wildfire evacuation problem. Given that our environment conforms to the `gymnasium` specification, training a model is no different than with other environments:
+[Stable Baselines 3](https://stable-baselines3.readthedocs.io/en/master/) is a popular library for reinforcement learning algorithms. You can use Stable Baseline algorithms to find optimal policies for the wildfire evacuation problem.
+
+First, install the library:
+
+```bash
+pip install stable-baselines3
+```
+
+Given that our environment conforms to the `gymnasium` specification, training a model is no different than with other environments.
 
 ```python
 # Train a model and delete

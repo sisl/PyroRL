@@ -1,5 +1,8 @@
 """
 An example of how to use our environment with Stable Baselines 3
+
+To run, make sure to install Stable Baselines 3:
+pip install stable-baselines3
 """
 
 import gymnasium
