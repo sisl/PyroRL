@@ -49,6 +49,8 @@ A compiled visualization of numerous iterations is seen below. For more examples
 
 ![Example Visualization of PyroRL](imgs/example_visualization.gif)
 
+For a more comprehensive tutorial, check out the [quickstart](https://sisl.github.io/PyroRL/quickstart/) page on our docs website.
+
 ## How to Contribute
 
 For information on how to contribute, check out our [contribution guide](https://sisl.github.io/PyroRL/contribution-guide/).
