@@ -19,4 +19,5 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=["numpy", "scipy", "torch", "gymnasium", "pygame", "imageio"],
+    python_requires=">=3.8",
 )
