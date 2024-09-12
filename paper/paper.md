@@ -102,7 +102,7 @@ The spread of wildfire is also influenced by wind. This bias is modeled through 
 
 # Features
 
-Users can control the configuration of the environment, including the dimensions of the grid world, the locations of populated areas and paths, and initial fire placement. Users can also select from our library of example environments or have the program dynamically generate environments. We also offer examples of how to use popular RL libraries with our environment, such as Stable-Baselines3 [@stableBaselines].
+Users can control the configuration of the environment, including the dimensions of the grid world, the locations of populated areas and paths, and initial fire placement. Users can also select from our library of example environments or have the program dynamically generate environments. We also offer examples of how to use popular RL libraries with our environment, such as Stable-Baselines3 [@stable_baselines].
 
 In addition, users can generate visualizations of the environment by calling the `render` function of the Gymnasium environment object. After executing a set of actions on the environment, the user can call `generate_gif`, which stitches together all of the images rendered by the user into a single GIF.
 
