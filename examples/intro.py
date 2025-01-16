@@ -58,4 +58,4 @@ if __name__ == "__main__":
         print("Reward: " + str(reward))
 
     # Generate the gif
-    env.generate_gif()
+    env.unwrapped.generate_gif()
